@@ -4,6 +4,74 @@
 </header>
 
 <main class="main">
+  <section class="custom-tts" aria-labelledby="custom-tts-title">
+    <h2 id="custom-tts-title" class="custom-tts-title">Savo frazė</h2>
+    <p class="custom-tts-note">
+      Įvesk tekstą – naršyklėje offline sugeneruos lietuvišką neuralinį balsą (WASM + ONNX, ~71 MB pirmą kartą).
+      Vyras – tono nuleidimas (modelis vienas, moteriškas); ne tikslūs Leonas/Ona iš žaidimo.
+    </p>
+
+    @if (ttsModelLoading()) {
+      <p class="custom-tts-status" aria-live="polite">{{ ttsModelLoading() }}</p>
+    }
+
+    <label class="field-label" for="custom-text">Tekstas</label>
+    <textarea
+      id="custom-text"
+      class="custom-text"
+      rows="3"
+      maxlength="220"
+      placeholder="Pvz.: Gal susitarsim, viršininke?"
+      [ngModel]="customText()"
+      (ngModelChange)="customText.set($event)"
+    ></textarea>
+
+    <fieldset class="gender-fieldset">
+      <legend class="field-label">Balsas</legend>
+      <div class="gender-options">
+        <label class="gender-option">
+          <input
+            type="radio"
+            name="custom-gender"
+            value="vyras"
+            [checked]="customGender() === 'vyras'"
+            (change)="customGender.set('vyras')"
+          />
+          Vyras
+        </label>
+        <label class="gender-option">
+          <input
+            type="radio"
+            name="custom-gender"
+            value="moteris"
+            [checked]="customGender() === 'moteris'"
+            (change)="customGender.set('moteris')"
+          />
+          Moteris
+        </label>
+      </div>
+    </fieldset>
+
+    <div class="custom-actions">
+      <button
+        type="button"
+        class="btn btn-play"
+        [disabled]="ttsBusy()"
+        (click)="onCustomPreview()"
+      >
+        ▶ Klausytis
+      </button>
+      <button
+        type="button"
+        class="btn btn-share btn-generate"
+        [disabled]="ttsBusy()"
+        (click)="onCustomShare()"
+      >
+        {{ ttsBusy() ? 'Kuriama…' : '📤 Sukurti ir dalintis' }}
+      </button>
+    </div>
+  </section>
+
   @if (loading()) {
     <p class="status" aria-live="polite">Kraunama…</p>
   } @else if (error()) {

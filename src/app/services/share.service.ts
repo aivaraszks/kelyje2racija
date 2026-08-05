@@ -7,6 +7,26 @@ export class ShareService {
     return typeof navigator.canShare === 'function';
   }
 
+  async shareBlob(
+    blob: Blob,
+    filename: string,
+    title: string,
+  ): Promise<'shared' | 'downloaded'> {
+    const file = new File([blob], filename, { type: blob.type || 'application/octet-stream' });
+
+    if (navigator.canShare?.({ files: [file] })) {
+      await navigator.share({
+        files: [file],
+        title,
+        text: title,
+      });
+      return 'shared';
+    }
+
+    this.downloadBlob(blob, filename);
+    return 'downloaded';
+  }
+
   async shareSound(sound: SoundEntry, url: string): Promise<'shared' | 'downloaded'> {
     const filename = sound.file.split('/').pop() ?? `${sound.id}.wav`;
     const mimeType = filename.endsWith('.wav') ? 'audio/wav' : 'audio/mpeg';
