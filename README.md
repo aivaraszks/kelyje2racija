@@ -47,7 +47,7 @@ Atidaryk `http://localhost:4200/`
 npm run build
 ```
 
-Production build naudoja `baseHref: /kelyje/`. Jei repo pavadinimas kitoks – pakeisk `angular.json` → `projects.kelyje.architect.build.configurations.production.baseHref`.
+Production build naudoja `baseHref: /kelyje2racija/`. Jei repo pavadinimas kitoks – pakeisk `angular.json` → `projects.kelyje.architect.build.configurations.production.baseHref`.
 
 ## GitHub Pages diegimas
 
@@ -55,6 +55,6 @@ Production build naudoja `baseHref: /kelyje/`. Jei repo pavadinimas kitoks – p
 2. **Settings → Pages → Build and deployment → Source:** GitHub Actions
 3. Push į `main` automatiškai subuildins ir deployins
 
-Svetainė: `https://<tavo-vartotojas>.github.io/kelyje/`
+Svetainė: `https://aivaraszks.github.io/kelyje2racija/`
 
 > Dalinimosi funkcija veikia per **HTTPS** ir dažniausiai tik **mobiliajame** (Android Chrome, iOS Safari).

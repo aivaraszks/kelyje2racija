@@ -46,7 +46,7 @@
                 }
               ],
               "outputHashing": "all",
-              "baseHref": "/kelyje/"
+              "baseHref": "/kelyje2racija/"
             },
             "development": {
               "optimization": false,
