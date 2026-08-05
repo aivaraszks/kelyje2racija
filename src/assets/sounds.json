@@ -1,0 +1,382 @@
+[
+  {
+    "id": "atleisk-nepatampysiu-moteris",
+    "title": "Atleisk, nepatampysiu. (moteris)",
+    "file": "sounds/atleisk-nepatampysiu-moteris.wav"
+  },
+  {
+    "id": "atleisk-nepatampysiu-vyras",
+    "title": "Atleisk, nepatampysiu. (vyras)",
+    "file": "sounds/atleisk-nepatampysiu-vyras.wav"
+  },
+  {
+    "id": "bandetai-lipant-kuo-nors-pagelbek-virsininke-moteris",
+    "title": "Bandėtai, lipant, kuo nors pagelbėk, viršininke. (moteris)",
+    "file": "sounds/bandetai-lipant-kuo-nors-pagelbek-virsininke-moteris.wav"
+  },
+  {
+    "id": "bandetai-lipant-kuo-nors-pagelbek-virsininke-vyras",
+    "title": "Bandėtai, lipant, kuo nors pagelbėk, viršininke. (vyras)",
+    "file": "sounds/bandetai-lipant-kuo-nors-pagelbek-virsininke-vyras.wav"
+  },
+  {
+    "id": "be-sansu-moteris",
+    "title": "Be šansų! (moteris)",
+    "file": "sounds/be-sansu-moteris.wav"
+  },
+  {
+    "id": "be-sansu-vyras",
+    "title": "Be šansų! (vyras)",
+    "file": "sounds/be-sansu-vyras.wav"
+  },
+  {
+    "id": "brangoka-virsininke-moteris",
+    "title": "Brangoka, viršininke. (moteris)",
+    "file": "sounds/brangoka-virsininke-moteris.wav"
+  },
+  {
+    "id": "brangoka-virsininke-vyras",
+    "title": "Brangoka, viršininke. (vyras)",
+    "file": "sounds/brangoka-virsininke-vyras.wav"
+  },
+  {
+    "id": "gal-susitarsim-virsininke-moteris",
+    "title": "Gal susitarsim, viršininke? (moteris)",
+    "file": "sounds/gal-susitarsim-virsininke-moteris.wav"
+  },
+  {
+    "id": "gal-susitarsim-virsininke-vyras",
+    "title": "Gal susitarsim, viršininke? (vyras)",
+    "file": "sounds/gal-susitarsim-virsininke-vyras.wav"
+  },
+  {
+    "id": "gerai-kita-karta-vyras",
+    "title": "Gerai, kitą kartą! (vyras)",
+    "file": "sounds/gerai-kita-karta-vyras.wav"
+  },
+  {
+    "id": "gerai-kita-karta-moteris",
+    "title": "Gerai, kitą kartą. (moteris)",
+    "file": "sounds/gerai-kita-karta-moteris.wav"
+  },
+  {
+    "id": "iki-kito-karto-moteris",
+    "title": "Iki kito karto. (moteris)",
+    "file": "sounds/iki-kito-karto-moteris.wav"
+  },
+  {
+    "id": "iki-kito-karto-vyras",
+    "title": "Iki kito karto? (vyras)",
+    "file": "sounds/iki-kito-karto-vyras.wav"
+  },
+  {
+    "id": "iki-pasimatimo-vyras",
+    "title": "Iki pasimatimo! (vyras)",
+    "file": "sounds/iki-pasimatimo-vyras.wav"
+  },
+  {
+    "id": "iki-pasimatimo-moteris",
+    "title": "Iki pasimatimo. (moteris)",
+    "file": "sounds/iki-pasimatimo-moteris.wav"
+  },
+  {
+    "id": "ir-is-cia-po-to-moteris",
+    "title": "Ir iš čia po to. (moteris)",
+    "file": "sounds/ir-is-cia-po-to-moteris.wav"
+  },
+  {
+    "id": "ir-is-cia-po-to-vyras",
+    "title": "Ir iš čia po to. (vyras)",
+    "file": "sounds/ir-is-cia-po-to-vyras.wav"
+  },
+  {
+    "id": "ir-neprasyk-moteris",
+    "title": "Ir neprašyk. (moteris)",
+    "file": "sounds/ir-neprasyk-moteris.wav"
+  },
+  {
+    "id": "ir-neprasyk-vyras",
+    "title": "Ir neprašyk. (vyras)",
+    "file": "sounds/ir-neprasyk-vyras.wav"
+  },
+  {
+    "id": "kas-nutiko-moteris",
+    "title": "Kas nutiko? (moteris)",
+    "file": "sounds/kas-nutiko-moteris.wav"
+  },
+  {
+    "id": "kas-nutiko-vyras",
+    "title": "Kas nutiko? (vyras)",
+    "file": "sounds/kas-nutiko-vyras.wav"
+  },
+  {
+    "id": "klausau-moteris",
+    "title": "Klausau! (moteris)",
+    "file": "sounds/klausau-moteris.wav"
+  },
+  {
+    "id": "klausau-vyras",
+    "title": "Klausau! (vyras)",
+    "file": "sounds/klausau-vyras.wav"
+  },
+  {
+    "id": "klok-babkes-moteris",
+    "title": "Klok babkes! (moteris)",
+    "file": "sounds/klok-babkes-moteris.wav"
+  },
+  {
+    "id": "klok-babkes-vyras",
+    "title": "Klok babkes! (vyras)",
+    "file": "sounds/klok-babkes-vyras.wav"
+  },
+  {
+    "id": "koreke-moteris",
+    "title": "Korekė! (moteris)",
+    "file": "sounds/koreke-moteris.wav"
+  },
+  {
+    "id": "koreke-vyras",
+    "title": "Korekė! (vyras)",
+    "file": "sounds/koreke-vyras.wav"
+  },
+  {
+    "id": "labai-daug-nori-moteris",
+    "title": "Labai daug nori. (moteris)",
+    "file": "sounds/labai-daug-nori-moteris.wav"
+  },
+  {
+    "id": "labai-daug-nori-vyras",
+    "title": "Labai daug nori. (vyras)",
+    "file": "sounds/labai-daug-nori-vyras.wav"
+  },
+  {
+    "id": "mes-krovini-susitarsim-moteris",
+    "title": "Mes krovinį susitarsim. (moteris)",
+    "file": "sounds/mes-krovini-susitarsim-moteris.wav"
+  },
+  {
+    "id": "mes-krovini-susitarsim-vyras",
+    "title": "Mes krovinį susitarsim. (vyras)",
+    "file": "sounds/mes-krovini-susitarsim-vyras.wav"
+  },
+  {
+    "id": "mokek-moteris",
+    "title": "Mokėk! (moteris)",
+    "file": "sounds/mokek-moteris.wav"
+  },
+  {
+    "id": "mokek-vyras",
+    "title": "Mokėk! (vyras)",
+    "file": "sounds/mokek-vyras.wav"
+  },
+  {
+    "id": "mokek-didvyri-moteris",
+    "title": "Mokėk, didvyri! (moteris)",
+    "file": "sounds/mokek-didvyri-moteris.wav"
+  },
+  {
+    "id": "mokek-didvyri-vyras",
+    "title": "Mokėk, didvyri! (vyras)",
+    "file": "sounds/mokek-didvyri-vyras.wav"
+  },
+  {
+    "id": "nesijaudink-moteris",
+    "title": "Nesijaudink. (moteris)",
+    "file": "sounds/nesijaudink-moteris.wav"
+  },
+  {
+    "id": "nesijaudink-vyras",
+    "title": "Nesijaudink. (vyras)",
+    "file": "sounds/nesijaudink-vyras.wav"
+  },
+  {
+    "id": "nori-pakeisti-ratus-moteris",
+    "title": "Nori pakeisti ratus? (moteris)",
+    "file": "sounds/nori-pakeisti-ratus-moteris.wav"
+  },
+  {
+    "id": "nori-pakeisti-ratus-vyras",
+    "title": "Nori pakeisti ratus? (vyras)",
+    "file": "sounds/nori-pakeisti-ratus-vyras.wav"
+  },
+  {
+    "id": "noriu-uzsakyti-masina-moteris",
+    "title": "Noriu užsakyti mašiną. (moteris)",
+    "file": "sounds/noriu-uzsakyti-masina-moteris.wav"
+  },
+  {
+    "id": "noriu-uzsakyti-masina-vyras",
+    "title": "Noriu užsakyti mašiną? (vyras)",
+    "file": "sounds/noriu-uzsakyti-masina-vyras.wav"
+  },
+  {
+    "id": "ok-moteris",
+    "title": "Ok. (moteris)",
+    "file": "sounds/ok-moteris.wav"
+  },
+  {
+    "id": "ok-vyras",
+    "title": "Ok. (vyras)",
+    "file": "sounds/ok-vyras.wav"
+  },
+  {
+    "id": "pamerk-moteris",
+    "title": "Pamerk. (moteris)",
+    "file": "sounds/pamerk-moteris.wav"
+  },
+  {
+    "id": "pamerk-moteris-2",
+    "title": "Pamerk. (moteris)",
+    "file": "sounds/pamerk-moteris-2.wav"
+  },
+  {
+    "id": "pamerk-vyras",
+    "title": "Pamerk. (vyras)",
+    "file": "sounds/pamerk-vyras.wav"
+  },
+  {
+    "id": "pamerk-vyras-2",
+    "title": "Pamerk. (vyras)",
+    "file": "sounds/pamerk-vyras-2.wav"
+  },
+  {
+    "id": "priekyje-moteris",
+    "title": "Priekyje. (moteris)",
+    "file": "sounds/priekyje-moteris.wav"
+  },
+  {
+    "id": "priekyje-vyras",
+    "title": "Priekyje. (vyras)",
+    "file": "sounds/priekyje-vyras.wav"
+  },
+  {
+    "id": "problemos-su-masina-padesi-moteris",
+    "title": "Problemos su mašina, padėsi? (moteris)",
+    "file": "sounds/problemos-su-masina-padesi-moteris.wav"
+  },
+  {
+    "id": "problemos-su-masina-padesi-vyras",
+    "title": "Problemos su mašina, padėsi? (vyras)",
+    "file": "sounds/problemos-su-masina-padesi-vyras.wav"
+  },
+  {
+    "id": "rinkis-moteris",
+    "title": "Rinkis! (moteris)",
+    "file": "sounds/rinkis-moteris.wav"
+  },
+  {
+    "id": "rinkis-moteris-2",
+    "title": "Rinkis! (moteris)",
+    "file": "sounds/rinkis-moteris-2.wav"
+  },
+  {
+    "id": "rinkis-vyras",
+    "title": "Rinkis! (vyras)",
+    "file": "sounds/rinkis-vyras.wav"
+  },
+  {
+    "id": "rinkis-vyras-2",
+    "title": "Rinkis! (vyras)",
+    "file": "sounds/rinkis-vyras-2.wav"
+  },
+  {
+    "id": "skambink-drauge-atsiskaitysim-moteris",
+    "title": "Skambink, drauge, atsiskaitysim. (moteris)",
+    "file": "sounds/skambink-drauge-atsiskaitysim-moteris.wav"
+  },
+  {
+    "id": "skambink-drauge-atsiskaitysim-vyras",
+    "title": "Skambink, drauge, atsiskaitysim. (vyras)",
+    "file": "sounds/skambink-drauge-atsiskaitysim-vyras.wav"
+  },
+  {
+    "id": "sutarta-moteris",
+    "title": "Sutarta. (moteris)",
+    "file": "sounds/sutarta-moteris.wav"
+  },
+  {
+    "id": "sutarta-vyras",
+    "title": "Sutarta. (vyras)",
+    "file": "sounds/sutarta-vyras.wav"
+  },
+  {
+    "id": "sutinku-moteris",
+    "title": "Sutinku. (moteris)",
+    "file": "sounds/sutinku-moteris.wav"
+  },
+  {
+    "id": "sutinku-vyras",
+    "title": "Sutinku. (vyras)",
+    "file": "sounds/sutinku-vyras.wav"
+  },
+  {
+    "id": "tuoj-jau-sustabdykite-automobili-arba-mes-sausime-nezinoma",
+    "title": "Tuoj jau sustabdykite automobilį arba mes šausime. (nezinoma)",
+    "file": "sounds/tuoj-jau-sustabdykite-automobili-arba-mes-sausime-nezinoma.wav"
+  },
+  {
+    "id": "tuoj-jau-sustabdysite-automobili-nezinoma",
+    "title": "Tuoj jau sustabdysite automobilį? (nezinoma)",
+    "file": "sounds/tuoj-jau-sustabdysite-automobili-nezinoma.wav"
+  },
+  {
+    "id": "turi-problemu-moteris",
+    "title": "Turi problemų? (moteris)",
+    "file": "sounds/turi-problemu-moteris.wav"
+  },
+  {
+    "id": "turi-problemu-vyras",
+    "title": "Turi problemų? (vyras)",
+    "file": "sounds/turi-problemu-vyras.wav"
+  },
+  {
+    "id": "tvarka-moteris",
+    "title": "Tvarka! (moteris)",
+    "file": "sounds/tvarka-moteris.wav"
+  },
+  {
+    "id": "tvarka-vyras",
+    "title": "Tvarka! (vyras)",
+    "file": "sounds/tvarka-vyras.wav"
+  },
+  {
+    "id": "vaikinai-man-nereikia-nemalonumu-moteris",
+    "title": "Vaikinai, man nereikia nemalonumų. (moteris)",
+    "file": "sounds/vaikinai-man-nereikia-nemalonumu-moteris.wav"
+  },
+  {
+    "id": "vaikinai-man-nereikia-nemalonumu-vyras",
+    "title": "Vaikinai, man nereikia nemalonumų. (vyras)",
+    "file": "sounds/vaikinai-man-nereikia-nemalonumu-vyras.wav"
+  },
+  {
+    "id": "verciau-papurti-kita-mano-konkurenta-moteris",
+    "title": "Verčiau papurti kitą mano konkurentą. (moteris)",
+    "file": "sounds/verciau-papurti-kita-mano-konkurenta-moteris.wav"
+  },
+  {
+    "id": "verciau-papurti-kita-mano-konkurenta-vyras",
+    "title": "Verčiau papurti kitą mano konkurentą? (vyras)",
+    "file": "sounds/verciau-papurti-kita-mano-konkurenta-vyras.wav"
+  },
+  {
+    "id": "virsininke-prispaus-konkurenta-moteris",
+    "title": "Viršininke, prispaus konkurentą. (moteris)",
+    "file": "sounds/virsininke-prispaus-konkurenta-moteris.wav"
+  },
+  {
+    "id": "virsininke-prispaus-konkurenta-vyras",
+    "title": "Viršininke, prispaus konkurentą. (vyras)",
+    "file": "sounds/virsininke-prispaus-konkurenta-vyras.wav"
+  },
+  {
+    "id": "imusyta-moteris",
+    "title": "Įmušyta. (moteris)",
+    "file": "sounds/imusyta-moteris.wav"
+  },
+  {
+    "id": "imusyta-vyras",
+    "title": "Įmušyta. (vyras)",
+    "file": "sounds/imusyta-vyras.wav"
+  }
+]

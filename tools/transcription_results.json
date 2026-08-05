@@ -1,0 +1,1512 @@
+[
+  {
+    "file": "01f.wav",
+    "text": "Gal susitersim viršininkė.",
+    "language": "lt",
+    "language_probability": 1,
+    "duration": 2.06,
+    "has_speech": true,
+    "gender": "moteris",
+    "suggested_slug": "gal-susitersim-virsininke"
+  },
+  {
+    "file": "01m.wav",
+    "text": "Gal susitarsime viršninkia",
+    "language": "lt",
+    "language_probability": 1,
+    "duration": 2.06,
+    "has_speech": true,
+    "gender": "vyras",
+    "suggested_slug": "gal-susitarsime-virsninkia"
+  },
+  {
+    "file": "02f.wav",
+    "text": "Bandytai lipant kulnų pagelbėk viršininkę.",
+    "language": "lt",
+    "language_probability": 1,
+    "duration": 2.82,
+    "has_speech": true,
+    "gender": "moteris",
+    "suggested_slug": "bandytai-lipant-kulnu-pagelbek-virsininke"
+  },
+  {
+    "file": "02m.wav",
+    "text": "Bandėtai lipankulnų pagalbėk viršnikia.",
+    "language": "lt",
+    "language_probability": 1,
+    "duration": 3.0,
+    "has_speech": true,
+    "gender": "vyras",
+    "suggested_slug": "bandetai-lipankulnu-pagalbek-virsnikia"
+  },
+  {
+    "file": "03f.wav",
+    "text": "Viršininkia prispaus konkurentą.",
+    "language": "lt",
+    "language_probability": 1,
+    "duration": 2.2,
+    "has_speech": true,
+    "gender": "moteris",
+    "suggested_slug": "virsininkia-prispaus-konkurenta"
+  },
+  {
+    "file": "03m.wav",
+    "text": "Viršininkė, prispaus konkurentą.",
+    "language": "lt",
+    "language_probability": 1,
+    "duration": 2.64,
+    "has_speech": true,
+    "gender": "vyras",
+    "suggested_slug": "virsininke-prispaus-konkurenta"
+  },
+  {
+    "file": "04f.wav",
+    "text": "įkiki to karto.",
+    "language": "lt",
+    "language_probability": 1,
+    "duration": 1.13,
+    "has_speech": true,
+    "gender": "moteris",
+    "suggested_slug": "ikiki-to-karto"
+  },
+  {
+    "file": "04m.wav",
+    "text": "Iki kito karto?",
+    "language": "lt",
+    "language_probability": 1,
+    "duration": 1.39,
+    "has_speech": true,
+    "gender": "vyras",
+    "suggested_slug": "iki-kito-karto"
+  },
+  {
+    "file": "05f.wav",
+    "text": "Sutartą",
+    "language": "lt",
+    "language_probability": 1,
+    "duration": 0.83,
+    "has_speech": true,
+    "gender": "moteris",
+    "suggested_slug": "sutarta"
+  },
+  {
+    "file": "05m.wav",
+    "text": "Su tarte.",
+    "language": "lt",
+    "language_probability": 1,
+    "duration": 0.8,
+    "has_speech": true,
+    "gender": "vyras",
+    "suggested_slug": "su-tarte"
+  },
+  {
+    "file": "06f.wav",
+    "text": "Brangoką viršininkę.",
+    "language": "lt",
+    "language_probability": 1,
+    "duration": 1.75,
+    "has_speech": true,
+    "gender": "moteris",
+    "suggested_slug": "brangoka-virsininke"
+  },
+  {
+    "file": "06m.wav",
+    "text": "Brangoką viršininkę.",
+    "language": "lt",
+    "language_probability": 1,
+    "duration": 1.66,
+    "has_speech": true,
+    "gender": "vyras",
+    "suggested_slug": "brangoka-virsininke"
+  },
+  {
+    "file": "07f.wav",
+    "text": "Vaikinai, man nereikė ne malonumu.",
+    "language": "lt",
+    "language_probability": 1,
+    "duration": 2.32,
+    "has_speech": true,
+    "gender": "moteris",
+    "suggested_slug": "vaikinai-man-nereike-ne-malonumu"
+  },
+  {
+    "file": "07m.wav",
+    "text": "Vaikinai, man nereikia nemalonumu.",
+    "language": "lt",
+    "language_probability": 1,
+    "duration": 2.43,
+    "has_speech": true,
+    "gender": "vyras",
+    "suggested_slug": "vaikinai-man-nereikia-nemalonumu"
+  },
+  {
+    "file": "08f.wav",
+    "text": "Verčiau papurti kitą mano konkurentą.",
+    "language": "lt",
+    "language_probability": 1,
+    "duration": 2.32,
+    "has_speech": true,
+    "gender": "moteris",
+    "suggested_slug": "verciau-papurti-kita-mano-konkurenta"
+  },
+  {
+    "file": "08m.wav",
+    "text": "Ir čia o papurtį, kį temaną konkurentą?",
+    "language": "lt",
+    "language_probability": 1,
+    "duration": 2.3,
+    "has_speech": true,
+    "gender": "vyras",
+    "suggested_slug": "ir-cia-o-papurti-ki-temana-konkurenta"
+  },
+  {
+    "file": "09f.wav",
+    "text": "nori pakeisti ratus",
+    "language": "lt",
+    "language_probability": 1,
+    "duration": 1.47,
+    "has_speech": true,
+    "gender": "moteris",
+    "suggested_slug": "nori-pakeisti-ratus"
+  },
+  {
+    "file": "09m.wav",
+    "text": "Norio pakeisti ratus.",
+    "language": "lt",
+    "language_probability": 1,
+    "duration": 1.53,
+    "has_speech": true,
+    "gender": "vyras",
+    "suggested_slug": "norio-pakeisti-ratus"
+  },
+  {
+    "file": "10f.wav",
+    "text": "ir iš apabai gan.",
+    "language": "lt",
+    "language_probability": 1,
+    "duration": 0.97,
+    "has_speech": true,
+    "gender": "moteris",
+    "suggested_slug": "ir-is-apabai-gan"
+  },
+  {
+    "file": "10m.wav",
+    "text": "Rį iščiopo baigą.",
+    "language": "lt",
+    "language_probability": 1,
+    "duration": 1.08,
+    "has_speech": true,
+    "gender": "vyras",
+    "suggested_slug": "ri-isciopo-baiga"
+  },
+  {
+    "file": "11f.wav",
+    "text": "Ok",
+    "language": "lt",
+    "language_probability": 1,
+    "duration": 0.52,
+    "has_speech": false,
+    "gender": "moteris",
+    "suggested_slug": null
+  },
+  {
+    "file": "11m.wav",
+    "text": "Ok",
+    "language": "lt",
+    "language_probability": 1,
+    "duration": 0.92,
+    "has_speech": false,
+    "gender": "vyras",
+    "suggested_slug": null
+  },
+  {
+    "file": "12f.wav",
+    "text": "Atlaisk, nepatempsių.",
+    "language": "lt",
+    "language_probability": 1,
+    "duration": 1.39,
+    "has_speech": true,
+    "gender": "moteris",
+    "suggested_slug": "atlaisk-nepatempsiu"
+  },
+  {
+    "file": "12m.wav",
+    "text": "Atleisk, nepatamsiu.",
+    "language": "lt",
+    "language_probability": 1,
+    "duration": 1.42,
+    "has_speech": true,
+    "gender": "vyras",
+    "suggested_slug": "atleisk-nepatamsiu"
+  },
+  {
+    "file": "13f.wav",
+    "text": "Staptelk, draug užėje, atsiskai tisim.",
+    "language": "lt",
+    "language_probability": 1,
+    "duration": 2.46,
+    "has_speech": true,
+    "gender": "moteris",
+    "suggested_slug": "staptelk-draug-uzeje-atsiskai-tisim"
+  },
+  {
+    "file": "13m.wav",
+    "text": "Staptelk, draugužiai, atsiskaiteisim.",
+    "language": "lt",
+    "language_probability": 1,
+    "duration": 2.71,
+    "has_speech": true,
+    "gender": "vyras",
+    "suggested_slug": "staptelk-drauguziai-atsiskaiteisim"
+  },
+  {
+    "file": "14f.wav",
+    "text": "Mes krovinės susitersim.",
+    "language": "lt",
+    "language_probability": 1,
+    "duration": 1.7,
+    "has_speech": true,
+    "gender": "moteris",
+    "suggested_slug": "mes-krovines-susitersim"
+  },
+  {
+    "file": "14m.wav",
+    "text": "Mės Krovinis, usitersim.",
+    "language": "lt",
+    "language_probability": 1,
+    "duration": 1.89,
+    "has_speech": true,
+    "gender": "vyras",
+    "suggested_slug": "mes-krovinis-usitersim"
+  },
+  {
+    "file": "15f.wav",
+    "text": "Panėršk.",
+    "language": "lt",
+    "language_probability": 1,
+    "duration": 0.94,
+    "has_speech": true,
+    "gender": "moteris",
+    "suggested_slug": "panersk"
+  },
+  {
+    "file": "15m.wav",
+    "text": "Pameršk.",
+    "language": "lt",
+    "language_probability": 1,
+    "duration": 0.73,
+    "has_speech": true,
+    "gender": "vyras",
+    "suggested_slug": "pamersk"
+  },
+  {
+    "file": "16f.wav",
+    "text": "Tvarka!",
+    "language": "lt",
+    "language_probability": 1,
+    "duration": 0.68,
+    "has_speech": true,
+    "gender": "moteris",
+    "suggested_slug": "tvarka"
+  },
+  {
+    "file": "16m.wav",
+    "text": "Tvarko!",
+    "language": "lt",
+    "language_probability": 1,
+    "duration": 0.64,
+    "has_speech": true,
+    "gender": "vyras",
+    "suggested_slug": "tvarko"
+  },
+  {
+    "file": "17f.wav",
+    "text": "Labai daug nori.",
+    "language": "lt",
+    "language_probability": 1,
+    "duration": 0.99,
+    "has_speech": true,
+    "gender": "moteris",
+    "suggested_slug": "labai-daug-nori"
+  },
+  {
+    "file": "17m.wav",
+    "text": "Lobo į dokno ar į",
+    "language": "lt",
+    "language_probability": 1,
+    "duration": 1.28,
+    "has_speech": true,
+    "gender": "vyras",
+    "suggested_slug": "lobo-i-dokno-ar-i"
+  },
+  {
+    "file": "18f.wav",
+    "text": "Problemos sumošina, padėjaušsio?",
+    "language": "lt",
+    "language_probability": 1,
+    "duration": 1.97,
+    "has_speech": true,
+    "gender": "moteris",
+    "suggested_slug": "problemos-sumosina-padejaussio"
+  },
+  {
+    "file": "18m.wav",
+    "text": "Problemo, su mašiną, parėsi?",
+    "language": "lt",
+    "language_probability": 1,
+    "duration": 1.81,
+    "has_speech": true,
+    "gender": "vyras",
+    "suggested_slug": "problemo-su-masina-paresi"
+  },
+  {
+    "file": "19f.wav",
+    "text": "Noriu už takyti mašina.",
+    "language": "lt",
+    "language_probability": 1,
+    "duration": 1.47,
+    "has_speech": true,
+    "gender": "moteris",
+    "suggested_slug": "noriu-uz-takyti-masina"
+  },
+  {
+    "file": "19m.wav",
+    "text": "Noriu užsakyti mašiną?",
+    "language": "lt",
+    "language_probability": 1,
+    "duration": 1.52,
+    "has_speech": true,
+    "gender": "vyras",
+    "suggested_slug": "noriu-uzsakyti-masina"
+  },
+  {
+    "file": "20f.wav",
+    "text": "Iki pasimatimo.",
+    "language": "lt",
+    "language_probability": 1,
+    "duration": 1.09,
+    "has_speech": true,
+    "gender": "moteris",
+    "suggested_slug": "iki-pasimatimo"
+  },
+  {
+    "file": "20m.wav",
+    "text": "Iki pasimatimo!",
+    "language": "lt",
+    "language_probability": 1,
+    "duration": 1.14,
+    "has_speech": true,
+    "gender": "vyras",
+    "suggested_slug": "iki-pasimatimo"
+  },
+  {
+    "file": "21f.wav",
+    "text": "Sūtinko.",
+    "language": "lt",
+    "language_probability": 1,
+    "duration": 0.87,
+    "has_speech": true,
+    "gender": "moteris",
+    "suggested_slug": "sutinko"
+  },
+  {
+    "file": "21m.wav",
+    "text": "Sėdinko!",
+    "language": "lt",
+    "language_probability": 1,
+    "duration": 0.74,
+    "has_speech": true,
+    "gender": "vyras",
+    "suggested_slug": "sedinko"
+  },
+  {
+    "file": "22f.wav",
+    "text": "Pamerušk.",
+    "language": "lt",
+    "language_probability": 1,
+    "duration": 0.8,
+    "has_speech": true,
+    "gender": "moteris",
+    "suggested_slug": "pamerusk"
+  },
+  {
+    "file": "22m.wav",
+    "text": "Pameršk.",
+    "language": "lt",
+    "language_probability": 1,
+    "duration": 0.73,
+    "has_speech": true,
+    "gender": "vyras",
+    "suggested_slug": "pamersk"
+  },
+  {
+    "file": "23f.wav",
+    "text": "Į mūsčiota",
+    "language": "lt",
+    "language_probability": 1,
+    "duration": 0.97,
+    "has_speech": true,
+    "gender": "moteris",
+    "suggested_slug": "i-musciota"
+  },
+  {
+    "file": "23m.wav",
+    "text": "Įmušyta.",
+    "language": "lt",
+    "language_probability": 1,
+    "duration": 0.81,
+    "has_speech": true,
+    "gender": "vyras",
+    "suggested_slug": "imusyta"
+  },
+  {
+    "file": "24f.wav",
+    "text": "Garį, kitą kartą.",
+    "language": "lt",
+    "language_probability": 1,
+    "duration": 1.48,
+    "has_speech": true,
+    "gender": "moteris",
+    "suggested_slug": "gari-kita-karta"
+  },
+  {
+    "file": "24m.wav",
+    "text": "Gerai, kitą kartą!",
+    "language": "lt",
+    "language_probability": 1,
+    "duration": 1.58,
+    "has_speech": true,
+    "gender": "vyras",
+    "suggested_slug": "gerai-kita-karta"
+  },
+  {
+    "file": "alarm.wav",
+    "text": "",
+    "language": "lt",
+    "language_probability": 1,
+    "duration": 0.87,
+    "has_speech": false,
+    "gender": "nezinoma",
+    "suggested_slug": null
+  },
+  {
+    "file": "antiradar.wav",
+    "text": "",
+    "language": "lt",
+    "language_probability": 1,
+    "duration": 1.0,
+    "has_speech": false,
+    "gender": "nezinoma",
+    "suggested_slug": null
+  },
+  {
+    "file": "applause.wav",
+    "text": "",
+    "language": "lt",
+    "language_probability": 1,
+    "duration": 3.38,
+    "has_speech": false,
+    "gender": "nezinoma",
+    "suggested_slug": null
+  },
+  {
+    "file": "blowgazstation0.wav",
+    "text": "",
+    "language": "lt",
+    "language_probability": 1,
+    "duration": 2.25,
+    "has_speech": false,
+    "gender": "nezinoma",
+    "suggested_slug": null
+  },
+  {
+    "file": "blowgazstation1.wav",
+    "text": "",
+    "language": "lt",
+    "language_probability": 1,
+    "duration": 6.87,
+    "has_speech": false,
+    "gender": "nezinoma",
+    "suggested_slug": null
+  },
+  {
+    "file": "blowgazstation2.wav",
+    "text": "",
+    "language": "lt",
+    "language_probability": 1,
+    "duration": 5.83,
+    "has_speech": false,
+    "gender": "nezinoma",
+    "suggested_slug": null
+  },
+  {
+    "file": "blowgazstation3.wav",
+    "text": "",
+    "language": "lt",
+    "language_probability": 1,
+    "duration": 3.71,
+    "has_speech": false,
+    "gender": "nezinoma",
+    "suggested_slug": null
+  },
+  {
+    "file": "blowkapot0.wav",
+    "text": "",
+    "language": "lt",
+    "language_probability": 1,
+    "duration": 1.0,
+    "has_speech": false,
+    "gender": "nezinoma",
+    "suggested_slug": null
+  },
+  {
+    "file": "blowkapot1.wav",
+    "text": "",
+    "language": "lt",
+    "language_probability": 1,
+    "duration": 1.0,
+    "has_speech": false,
+    "gender": "nezinoma",
+    "suggested_slug": null
+  },
+  {
+    "file": "blowkapot2.wav",
+    "text": "",
+    "language": "lt",
+    "language_probability": 1,
+    "duration": 3.36,
+    "has_speech": false,
+    "gender": "nezinoma",
+    "suggested_slug": null
+  },
+  {
+    "file": "blowkapot3.wav",
+    "text": "",
+    "language": "lt",
+    "language_probability": 1,
+    "duration": 2.38,
+    "has_speech": false,
+    "gender": "nezinoma",
+    "suggested_slug": null
+  },
+  {
+    "file": "break.wav",
+    "text": "",
+    "language": "lt",
+    "language_probability": 1,
+    "duration": 3.5,
+    "has_speech": false,
+    "gender": "nezinoma",
+    "suggested_slug": null
+  },
+  {
+    "file": "burning0.wav",
+    "text": "",
+    "language": "lt",
+    "language_probability": 1,
+    "duration": 1.05,
+    "has_speech": false,
+    "gender": "nezinoma",
+    "suggested_slug": null
+  },
+  {
+    "file": "burning1.wav",
+    "text": "",
+    "language": "lt",
+    "language_probability": 1,
+    "duration": 0.85,
+    "has_speech": false,
+    "gender": "nezinoma",
+    "suggested_slug": null
+  },
+  {
+    "file": "carhorn.wav",
+    "text": "",
+    "language": "lt",
+    "language_probability": 1,
+    "duration": 0.91,
+    "has_speech": false,
+    "gender": "nezinoma",
+    "suggested_slug": null
+  },
+  {
+    "file": "crash2.wav",
+    "text": "",
+    "language": "lt",
+    "language_probability": 1,
+    "duration": 0.56,
+    "has_speech": false,
+    "gender": "nezinoma",
+    "suggested_slug": null
+  },
+  {
+    "file": "crash4a.wav",
+    "text": "",
+    "language": "lt",
+    "language_probability": 1,
+    "duration": 0.41,
+    "has_speech": false,
+    "gender": "nezinoma",
+    "suggested_slug": null
+  },
+  {
+    "file": "crash9.wav",
+    "text": "",
+    "language": "lt",
+    "language_probability": 1,
+    "duration": 0.37,
+    "has_speech": false,
+    "gender": "nezinoma",
+    "suggested_slug": null
+  },
+  {
+    "file": "driver1_f.wav",
+    "text": "Klauso!",
+    "language": "lt",
+    "language_probability": 1,
+    "duration": 0.84,
+    "has_speech": true,
+    "gender": "moteris",
+    "suggested_slug": "klauso"
+  },
+  {
+    "file": "driver1_m.wav",
+    "text": "Kluso.",
+    "language": "lt",
+    "language_probability": 1,
+    "duration": 0.72,
+    "has_speech": true,
+    "gender": "vyras",
+    "suggested_slug": "kluso"
+  },
+  {
+    "file": "driver2_f.wav",
+    "text": "Nesymsiu.",
+    "language": "lt",
+    "language_probability": 1,
+    "duration": 1.02,
+    "has_speech": true,
+    "gender": "moteris",
+    "suggested_slug": "nesymsiu"
+  },
+  {
+    "file": "driver2_m.wav",
+    "text": "Nesyjimse.",
+    "language": "lt",
+    "language_probability": 1,
+    "duration": 1.13,
+    "has_speech": true,
+    "gender": "vyras",
+    "suggested_slug": "nesyjimse"
+  },
+  {
+    "file": "driver3_f.wav",
+    "text": "Peniugusi prieki.",
+    "language": "lt",
+    "language_probability": 1,
+    "duration": 1.14,
+    "has_speech": true,
+    "gender": "moteris",
+    "suggested_slug": "peniugusi-prieki"
+  },
+  {
+    "file": "driver3_m.wav",
+    "text": "Penegus į priekyje.",
+    "language": "lt",
+    "language_probability": 1,
+    "duration": 1.45,
+    "has_speech": true,
+    "gender": "vyras",
+    "suggested_slug": "penegus-i-priekyje"
+  },
+  {
+    "file": "driver4_f.wav",
+    "text": "Ir neprasik.",
+    "language": "lt",
+    "language_probability": 1,
+    "duration": 1.16,
+    "has_speech": true,
+    "gender": "moteris",
+    "suggested_slug": "ir-neprasik"
+  },
+  {
+    "file": "driver4_m.wav",
+    "text": "Ir neprasik.",
+    "language": "lt",
+    "language_probability": 1,
+    "duration": 1.2,
+    "has_speech": true,
+    "gender": "vyras",
+    "suggested_slug": "ir-neprasik"
+  },
+  {
+    "file": "driver5_f.wav",
+    "text": "Rinkis!",
+    "language": "lt",
+    "language_probability": 1,
+    "duration": 0.77,
+    "has_speech": true,
+    "gender": "moteris",
+    "suggested_slug": "rinkis"
+  },
+  {
+    "file": "driver5_m.wav",
+    "text": "Rinkis",
+    "language": "lt",
+    "language_probability": 1,
+    "duration": 0.8,
+    "has_speech": true,
+    "gender": "vyras",
+    "suggested_slug": "rinkis"
+  },
+  {
+    "file": "emptytank.wav",
+    "text": "",
+    "language": "lt",
+    "language_probability": 1,
+    "duration": 0.52,
+    "has_speech": false,
+    "gender": "nezinoma",
+    "suggested_slug": null
+  },
+  {
+    "file": "explos.wav",
+    "text": "",
+    "language": "lt",
+    "language_probability": 1,
+    "duration": 3.92,
+    "has_speech": false,
+    "gender": "nezinoma",
+    "suggested_slug": null
+  },
+  {
+    "file": "extcar.wav",
+    "text": "",
+    "language": "lt",
+    "language_probability": 1,
+    "duration": 2.32,
+    "has_speech": false,
+    "gender": "nezinoma",
+    "suggested_slug": null
+  },
+  {
+    "file": "full.wav",
+    "text": "",
+    "language": "lt",
+    "language_probability": 1,
+    "duration": 1.87,
+    "has_speech": false,
+    "gender": "nezinoma",
+    "suggested_slug": null
+  },
+  {
+    "file": "gear.wav",
+    "text": "",
+    "language": "lt",
+    "language_probability": 1,
+    "duration": 0.76,
+    "has_speech": false,
+    "gender": "nezinoma",
+    "suggested_slug": null
+  },
+  {
+    "file": "helicopt.wav",
+    "text": "",
+    "language": "lt",
+    "language_probability": 1,
+    "duration": 5.42,
+    "has_speech": false,
+    "gender": "nezinoma",
+    "suggested_slug": null
+  },
+  {
+    "file": "hit.wav",
+    "text": "",
+    "language": "lt",
+    "language_probability": 1,
+    "duration": 2.49,
+    "has_speech": false,
+    "gender": "nezinoma",
+    "suggested_slug": null
+  },
+  {
+    "file": "hit_bullet.wav",
+    "text": "",
+    "language": "lt",
+    "language_probability": 1,
+    "duration": 0.17,
+    "has_speech": false,
+    "gender": "nezinoma",
+    "suggested_slug": null
+  },
+  {
+    "file": "hit_def1.wav",
+    "text": "",
+    "language": "lt",
+    "language_probability": 1,
+    "duration": 0.31,
+    "has_speech": false,
+    "gender": "nezinoma",
+    "suggested_slug": null
+  },
+  {
+    "file": "hit_def2.wav",
+    "text": "",
+    "language": "lt",
+    "language_probability": 1,
+    "duration": 0.43,
+    "has_speech": false,
+    "gender": "nezinoma",
+    "suggested_slug": null
+  },
+  {
+    "file": "hit_def_fara.wav",
+    "text": "",
+    "language": "lt",
+    "language_probability": 1,
+    "duration": 1.24,
+    "has_speech": false,
+    "gender": "nezinoma",
+    "suggested_slug": null
+  },
+  {
+    "file": "hit_explosion.wav",
+    "text": "",
+    "language": "lt",
+    "language_probability": 1,
+    "duration": 1.8,
+    "has_speech": false,
+    "gender": "nezinoma",
+    "suggested_slug": null
+  },
+  {
+    "file": "hit_gluh_f.wav",
+    "text": "",
+    "language": "lt",
+    "language_probability": 1,
+    "duration": 0.19,
+    "has_speech": false,
+    "gender": "moteris",
+    "suggested_slug": null
+  },
+  {
+    "file": "hit_gluh_m.wav",
+    "text": "",
+    "language": "lt",
+    "language_probability": 1,
+    "duration": 0.3,
+    "has_speech": false,
+    "gender": "vyras",
+    "suggested_slug": null
+  },
+  {
+    "file": "hit_gluh_r.wav",
+    "text": "",
+    "language": "lt",
+    "language_probability": 1,
+    "duration": 0.4,
+    "has_speech": false,
+    "gender": "robotas",
+    "suggested_slug": null
+  },
+  {
+    "file": "hit_gluh_squeak.wav",
+    "text": "",
+    "language": "lt",
+    "language_probability": 1,
+    "duration": 0.41,
+    "has_speech": false,
+    "gender": "nezinoma",
+    "suggested_slug": null
+  },
+  {
+    "file": "hit_ironpillar.wav",
+    "text": "",
+    "language": "lt",
+    "language_probability": 1,
+    "duration": 0.4,
+    "has_speech": false,
+    "gender": "nezinoma",
+    "suggested_slug": null
+  },
+  {
+    "file": "hit_sign.wav",
+    "text": "",
+    "language": "lt",
+    "language_probability": 1,
+    "duration": 0.4,
+    "has_speech": false,
+    "gender": "nezinoma",
+    "suggested_slug": null
+  },
+  {
+    "file": "hit_suspension.wav",
+    "text": "",
+    "language": "lt",
+    "language_probability": 1,
+    "duration": 0.37,
+    "has_speech": false,
+    "gender": "nezinoma",
+    "suggested_slug": null
+  },
+  {
+    "file": "hitgrnd.wav",
+    "text": "",
+    "language": "lt",
+    "language_probability": 1,
+    "duration": 0.82,
+    "has_speech": false,
+    "gender": "nezinoma",
+    "suggested_slug": null
+  },
+  {
+    "file": "hitme.wav",
+    "text": "",
+    "language": "lt",
+    "language_probability": 1,
+    "duration": 0.73,
+    "has_speech": false,
+    "gender": "nezinoma",
+    "suggested_slug": null
+  },
+  {
+    "file": "horn.wav",
+    "text": "",
+    "language": "lt",
+    "language_probability": 1,
+    "duration": 1.15,
+    "has_speech": false,
+    "gender": "nezinoma",
+    "suggested_slug": null
+  },
+  {
+    "file": "hornupgr.wav",
+    "text": "",
+    "language": "lt",
+    "language_probability": 1,
+    "duration": 1.99,
+    "has_speech": false,
+    "gender": "nezinoma",
+    "suggested_slug": null
+  },
+  {
+    "file": "idle.wav",
+    "text": "",
+    "language": "lt",
+    "language_probability": 1,
+    "duration": 0.47,
+    "has_speech": false,
+    "gender": "nezinoma",
+    "suggested_slug": null
+  },
+  {
+    "file": "jfull.wav",
+    "text": "",
+    "language": "lt",
+    "language_probability": 1,
+    "duration": 1.93,
+    "has_speech": false,
+    "gender": "nezinoma",
+    "suggested_slug": null
+  },
+  {
+    "file": "jidle.wav",
+    "text": "",
+    "language": "lt",
+    "language_probability": 1,
+    "duration": 1.27,
+    "has_speech": false,
+    "gender": "nezinoma",
+    "suggested_slug": null
+  },
+  {
+    "file": "kriak.wav",
+    "text": "",
+    "language": "lt",
+    "language_probability": 1,
+    "duration": 3.43,
+    "has_speech": false,
+    "gender": "nezinoma",
+    "suggested_slug": null
+  },
+  {
+    "file": "mafia1_f.wav",
+    "text": "Turi problemo?",
+    "language": "lt",
+    "language_probability": 1,
+    "duration": 1.32,
+    "has_speech": true,
+    "gender": "moteris",
+    "suggested_slug": "turi-problemo"
+  },
+  {
+    "file": "mafia1_m.wav",
+    "text": "Turi problemu?",
+    "language": "lt",
+    "language_probability": 1,
+    "duration": 1.78,
+    "has_speech": true,
+    "gender": "vyras",
+    "suggested_slug": "turi-problemu"
+  },
+  {
+    "file": "mafia2_f.wav",
+    "text": "Klok, babkies!",
+    "language": "lt",
+    "language_probability": 1,
+    "duration": 1.44,
+    "has_speech": true,
+    "gender": "moteris",
+    "suggested_slug": "klok-babkies"
+  },
+  {
+    "file": "mafia2_m.wav",
+    "text": "Klok bapkas!",
+    "language": "lt",
+    "language_probability": 1,
+    "duration": 1.37,
+    "has_speech": true,
+    "gender": "vyras",
+    "suggested_slug": "klok-bapkas"
+  },
+  {
+    "file": "mafia3_f.wav",
+    "text": "Rinkis!",
+    "language": "lt",
+    "language_probability": 1,
+    "duration": 1.02,
+    "has_speech": true,
+    "gender": "moteris",
+    "suggested_slug": "rinkis"
+  },
+  {
+    "file": "mafia3_m.wav",
+    "text": "Rinkis!",
+    "language": "lt",
+    "language_probability": 1,
+    "duration": 1.16,
+    "has_speech": true,
+    "gender": "vyras",
+    "suggested_slug": "rinkis"
+  },
+  {
+    "file": "mine.wav",
+    "text": "",
+    "language": "lt",
+    "language_probability": 1,
+    "duration": 1.68,
+    "has_speech": false,
+    "gender": "nezinoma",
+    "suggested_slug": null
+  },
+  {
+    "file": "oponent1_f.wav",
+    "text": "Koreikia!",
+    "language": "lt",
+    "language_probability": 1,
+    "duration": 0.92,
+    "has_speech": true,
+    "gender": "moteris",
+    "suggested_slug": "koreikia"
+  },
+  {
+    "file": "oponent1_m.wav",
+    "text": "Korėkė!",
+    "language": "lt",
+    "language_probability": 1,
+    "duration": 0.85,
+    "has_speech": true,
+    "gender": "vyras",
+    "suggested_slug": "koreke"
+  },
+  {
+    "file": "oponent2_f.wav",
+    "text": "Be šansu!",
+    "language": "lt",
+    "language_probability": 1,
+    "duration": 1.22,
+    "has_speech": true,
+    "gender": "moteris",
+    "suggested_slug": "be-sansu"
+  },
+  {
+    "file": "oponent2_m.wav",
+    "text": "Be šantų.",
+    "language": "lt",
+    "language_probability": 1,
+    "duration": 1.02,
+    "has_speech": true,
+    "gender": "vyras",
+    "suggested_slug": "be-santu"
+  },
+  {
+    "file": "oponent3_f.wav",
+    "text": "Mokiek!",
+    "language": "lt",
+    "language_probability": 1,
+    "duration": 0.84,
+    "has_speech": true,
+    "gender": "moteris",
+    "suggested_slug": "mokiek"
+  },
+  {
+    "file": "oponent3_m.wav",
+    "text": "Mokėk",
+    "language": "lt",
+    "language_probability": 1,
+    "duration": 1.06,
+    "has_speech": true,
+    "gender": "vyras",
+    "suggested_slug": "mokek"
+  },
+  {
+    "file": "order.wav",
+    "text": "",
+    "language": "lt",
+    "language_probability": 1,
+    "duration": 1.07,
+    "has_speech": false,
+    "gender": "nezinoma",
+    "suggested_slug": null
+  },
+  {
+    "file": "order1.wav",
+    "text": "",
+    "language": "lt",
+    "language_probability": 1,
+    "duration": 1.65,
+    "has_speech": false,
+    "gender": "nezinoma",
+    "suggested_slug": null
+  },
+  {
+    "file": "ovation.wav",
+    "text": "",
+    "language": "lt",
+    "language_probability": 1,
+    "duration": 6.42,
+    "has_speech": false,
+    "gender": "nezinoma",
+    "suggested_slug": null
+  },
+  {
+    "file": "ovation1.wav",
+    "text": "",
+    "language": "lt",
+    "language_probability": 1,
+    "duration": 2.34,
+    "has_speech": false,
+    "gender": "nezinoma",
+    "suggested_slug": null
+  },
+  {
+    "file": "pager.wav",
+    "text": "",
+    "language": "lt",
+    "language_probability": 1,
+    "duration": 0.26,
+    "has_speech": false,
+    "gender": "nezinoma",
+    "suggested_slug": null
+  },
+  {
+    "file": "photo.wav",
+    "text": "",
+    "language": "lt",
+    "language_probability": 1,
+    "duration": 0.38,
+    "has_speech": false,
+    "gender": "nezinoma",
+    "suggested_slug": null
+  },
+  {
+    "file": "police.wav",
+    "text": "",
+    "language": "lt",
+    "language_probability": 1,
+    "duration": 0.31,
+    "has_speech": false,
+    "gender": "nezinoma",
+    "suggested_slug": null
+  },
+  {
+    "file": "police1_f.wav",
+    "text": "Kas nutiko?",
+    "language": "lt",
+    "language_probability": 1,
+    "duration": 1.22,
+    "has_speech": true,
+    "gender": "moteris",
+    "suggested_slug": "kas-nutiko"
+  },
+  {
+    "file": "police1_m.wav",
+    "text": "Kas nu tikom?",
+    "language": "lt",
+    "language_probability": 1,
+    "duration": 0.97,
+    "has_speech": true,
+    "gender": "vyras",
+    "suggested_slug": "kas-nu-tikom"
+  },
+  {
+    "file": "police2_f.wav",
+    "text": "Mokėk didvirė",
+    "language": "lt",
+    "language_probability": 1,
+    "duration": 1.62,
+    "has_speech": true,
+    "gender": "moteris",
+    "suggested_slug": "mokek-didvire"
+  },
+  {
+    "file": "police2_m.wav",
+    "text": "Mokek didbiry",
+    "language": "lt",
+    "language_probability": 1,
+    "duration": 1.85,
+    "has_speech": true,
+    "gender": "vyras",
+    "suggested_slug": "mokek-didbiry"
+  },
+  {
+    "file": "police_01.wav",
+    "text": "Tuo što jau susitabdykite automobilį?",
+    "language": "lt",
+    "language_probability": 1,
+    "duration": 2.22,
+    "has_speech": true,
+    "gender": "nezinoma",
+    "suggested_slug": "tuo-sto-jau-susitabdykite-automobili"
+  },
+  {
+    "file": "police_02.wav",
+    "text": "Tuči to jau sustabdikide automobilį arba mes šausime.",
+    "language": "lt",
+    "language_probability": 1,
+    "duration": 3.77,
+    "has_speech": true,
+    "gender": "nezinoma",
+    "suggested_slug": "tuci-to-jau-sustabdikide-automobili-arba-mes-sausime"
+  },
+  {
+    "file": "pss.wav",
+    "text": "",
+    "language": "lt",
+    "language_probability": 1,
+    "duration": 0.62,
+    "has_speech": false,
+    "gender": "nezinoma",
+    "suggested_slug": null
+  },
+  {
+    "file": "pss2.wav",
+    "text": "",
+    "language": "lt",
+    "language_probability": 1,
+    "duration": 0.49,
+    "has_speech": false,
+    "gender": "nezinoma",
+    "suggested_slug": null
+  },
+  {
+    "file": "rain.wav",
+    "text": "",
+    "language": "lt",
+    "language_probability": 1,
+    "duration": 2.28,
+    "has_speech": false,
+    "gender": "nezinoma",
+    "suggested_slug": null
+  },
+  {
+    "file": "refuel.wav",
+    "text": "",
+    "language": "lt",
+    "language_probability": 1,
+    "duration": 2.72,
+    "has_speech": false,
+    "gender": "nezinoma",
+    "suggested_slug": null
+  },
+  {
+    "file": "repair.wav",
+    "text": "",
+    "language": "lt",
+    "language_probability": 1,
+    "duration": 5.0,
+    "has_speech": false,
+    "gender": "nezinoma",
+    "suggested_slug": null
+  },
+  {
+    "file": "sea.wav",
+    "text": "",
+    "language": "lt",
+    "language_probability": 1,
+    "duration": 6.69,
+    "has_speech": false,
+    "gender": "nezinoma",
+    "suggested_slug": null
+  },
+  {
+    "file": "shield.wav",
+    "text": "",
+    "language": "lt",
+    "language_probability": 1,
+    "duration": 1.84,
+    "has_speech": false,
+    "gender": "nezinoma",
+    "suggested_slug": null
+  },
+  {
+    "file": "shoot.wav",
+    "text": "",
+    "language": "lt",
+    "language_probability": 1,
+    "duration": 1.67,
+    "has_speech": false,
+    "gender": "nezinoma",
+    "suggested_slug": null
+  },
+  {
+    "file": "splash.wav",
+    "text": "",
+    "language": "lt",
+    "language_probability": 1,
+    "duration": 2.69,
+    "has_speech": false,
+    "gender": "nezinoma",
+    "suggested_slug": null
+  },
+  {
+    "file": "squeak.wav",
+    "text": "",
+    "language": "lt",
+    "language_probability": 1,
+    "duration": 1.11,
+    "has_speech": false,
+    "gender": "nezinoma",
+    "suggested_slug": null
+  },
+  {
+    "file": "start.wav",
+    "text": "",
+    "language": "lt",
+    "language_probability": 1,
+    "duration": 0.55,
+    "has_speech": false,
+    "gender": "nezinoma",
+    "suggested_slug": null
+  },
+  {
+    "file": "start0.wav",
+    "text": "",
+    "language": "lt",
+    "language_probability": 1,
+    "duration": 0.64,
+    "has_speech": false,
+    "gender": "nezinoma",
+    "suggested_slug": null
+  },
+  {
+    "file": "startgloch.wav",
+    "text": "",
+    "language": "lt",
+    "language_probability": 1,
+    "duration": 5.49,
+    "has_speech": false,
+    "gender": "nezinoma",
+    "suggested_slug": null
+  },
+  {
+    "file": "stones.wav",
+    "text": "",
+    "language": "lt",
+    "language_probability": 1,
+    "duration": 5.2,
+    "has_speech": false,
+    "gender": "nezinoma",
+    "suggested_slug": null
+  },
+  {
+    "file": "stop_eng.wav",
+    "text": "",
+    "language": "lt",
+    "language_probability": 1,
+    "duration": 2.98,
+    "has_speech": false,
+    "gender": "nezinoma",
+    "suggested_slug": null
+  },
+  {
+    "file": "thunder.wav",
+    "text": "",
+    "language": "lt",
+    "language_probability": 1,
+    "duration": 12.91,
+    "has_speech": false,
+    "gender": "nezinoma",
+    "suggested_slug": null
+  },
+  {
+    "file": "timeout.wav",
+    "text": "",
+    "language": "lt",
+    "language_probability": 1,
+    "duration": 0.33,
+    "has_speech": false,
+    "gender": "nezinoma",
+    "suggested_slug": null
+  },
+  {
+    "file": "wa_fall.wav",
+    "text": "",
+    "language": "lt",
+    "language_probability": 1,
+    "duration": 4.44,
+    "has_speech": false,
+    "gender": "nezinoma",
+    "suggested_slug": null
+  },
+  {
+    "file": "wind.wav",
+    "text": "",
+    "language": "lt",
+    "language_probability": 1,
+    "duration": 8.1,
+    "has_speech": false,
+    "gender": "nezinoma",
+    "suggested_slug": null
+  },
+  {
+    "file": "wipers.wav",
+    "text": "",
+    "language": "lt",
+    "language_probability": 1,
+    "duration": 1.62,
+    "has_speech": false,
+    "gender": "nezinoma",
+    "suggested_slug": null
+  },
+  {
+    "file": "youlost.wav",
+    "text": "",
+    "language": "lt",
+    "language_probability": 1,
+    "duration": 2.38,
+    "has_speech": false,
+    "gender": "nezinoma",
+    "suggested_slug": null
+  },
+  {
+    "file": "youwin.wav",
+    "text": "Waaaa",
+    "language": "lt",
+    "language_probability": 1,
+    "duration": 7.2,
+    "has_speech": true,
+    "gender": "nezinoma",
+    "suggested_slug": "waaaa"
+  }
+]

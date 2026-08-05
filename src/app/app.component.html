@@ -1,0 +1,58 @@
+<header class="header">
+  <h1>Kelyje</h1>
+  <p class="subtitle">Pasirink garsą, grok arba dalinkis kaip balso žinute</p>
+</header>
+
+<main class="main">
+  @if (loading()) {
+    <p class="status" aria-live="polite">Kraunama…</p>
+  } @else if (error()) {
+    <p class="status status-error" aria-live="polite">{{ error() }}</p>
+  } @else if (sounds().length === 0) {
+    <p class="status">
+      Dar nėra garsų. Pridėk MP3 į <code>src/assets/sounds/</code> ir atnaujink
+      <code>sounds.json</code>.
+    </p>
+  } @else {
+    <ul class="sound-list">
+      @for (sound of sounds(); track sound.id) {
+        <li class="sound-card" [class.playing]="audioService.playingId() === sound.id">
+          <div class="sound-info">
+            <h2 class="sound-title">{{ sound.title }}</h2>
+            @if (sound.description) {
+              <p class="sound-meta">{{ sound.description }}</p>
+            }
+          </div>
+          <div class="sound-actions">
+            <button
+              type="button"
+              class="btn btn-play"
+              [class.playing]="audioService.playingId() === sound.id"
+              [attr.aria-label]="'Groti ' + sound.title"
+              (click)="onPlay(sound)"
+            >
+              {{ playLabel(sound.id) }}
+            </button>
+            <button
+              type="button"
+              class="btn btn-share"
+              [attr.aria-label]="'Dalintis ' + sound.title"
+              [title]="canShare ? 'Dalintis kaip MP3 failu' : 'Atsisiųsti MP3'"
+              (click)="onShare(sound)"
+            >
+              📤
+            </button>
+          </div>
+        </li>
+      }
+    </ul>
+  }
+</main>
+
+<footer class="footer">
+  <p>Veikia geriausiai mobiliajame (Chrome / Safari). Dalinimuisi reikia HTTPS.</p>
+</footer>
+
+@if (toast()) {
+  <div class="toast" role="status" aria-live="polite">{{ toast() }}</div>
+}
