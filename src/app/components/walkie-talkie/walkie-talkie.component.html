@@ -1,0 +1,78 @@
+<div class="walkie-page">
+  <div
+    class="walkie-shell"
+    role="region"
+    aria-label="Racija"
+    [style.aspect-ratio]="shellWidth + ' / ' + shellHeight"
+  >
+    <img
+      class="walkie-art"
+      src="assets/walkie-shell.png"
+      [width]="shellWidth"
+      [height]="shellHeight"
+      alt=""
+      aria-hidden="true"
+    />
+
+    <div class="walkie-overlay">
+      <div class="walkie-screen">
+        <div class="walkie-screen-scroll" tabindex="0">
+          @if (loading()) {
+            <p class="screen-msg">Kraunama…</p>
+          } @else if (error()) {
+            <p class="screen-msg screen-error">{{ error() }}</p>
+          } @else if (sounds().length === 0) {
+            <p class="screen-msg">Dar nėra garsų.</p>
+          } @else if (filteredSounds().length === 0) {
+            <p class="screen-msg">Nėra garsų šiai lyčiai.</p>
+          } @else {
+            <ul class="sound-list">
+              @for (sound of filteredSounds(); track sound.id) {
+                <li>
+                  <button
+                    type="button"
+                    class="sound-item"
+                    [class.selected]="selectedId() === sound.id"
+                    [class.playing]="isPlaying(sound.id)"
+                    (click)="onSoundClick(sound)"
+                  >
+                    {{ sound.title }}
+                  </button>
+                </li>
+              }
+            </ul>
+          }
+        </div>
+
+        <div class="gender-toggle" role="group" aria-label="Kalbėtojo lytis">
+          <button
+            type="button"
+            class="gender-btn"
+            [class.active]="speakerGender() === 'vyras'"
+            [attr.aria-pressed]="speakerGender() === 'vyras'"
+            (click)="setSpeakerGender('vyras')"
+          >
+            Vyras
+          </button>
+          <button
+            type="button"
+            class="gender-btn"
+            [class.active]="speakerGender() === 'moteris'"
+            [attr.aria-pressed]="speakerGender() === 'moteris'"
+            (click)="setSpeakerGender('moteris')"
+          >
+            Moteris
+          </button>
+        </div>
+      </div>
+
+      <button type="button" class="btn-overlay btn-groti" (click)="onGroti()">
+        PALEISTI
+      </button>
+
+      <button type="button" class="btn-overlay btn-dalintis" (click)="onDalintis()">
+        SIŲSTI
+      </button>
+    </div>
+  </div>
+</div>

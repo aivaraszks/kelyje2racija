@@ -14,10 +14,13 @@ export class AudioPlayerService {
       return 'stopped';
     }
 
+    return this.play(sound, url);
+  }
+
+  play(sound: SoundEntry, url: string): 'playing' | 'error' {
     this.stop();
     this.playingId.set(sound.id);
     void this.startPlayback(url, sound.id);
-
     return 'playing';
   }
 

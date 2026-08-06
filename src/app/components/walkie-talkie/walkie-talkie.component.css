@@ -1,0 +1,222 @@
+:host {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.walkie-page {
+  width: 100%;
+  height: 100dvh;
+  background: #000;
+  padding: 10%;
+  box-sizing: border-box;
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-template-rows: 1fr;
+  place-items: center;
+}
+
+.walkie-shell {
+  position: relative;
+  height: 100%;
+  width: auto;
+  max-width: 100%;
+  max-height: 100%;
+  line-height: 0;
+
+  --screen-top: 15%;
+  --screen-left: 13.5%;
+  --screen-width: 72%;
+  --screen-height: 27.5%;
+
+  --btn-groti-top: 43.2%;
+  --btn-groti-left: 16.63%;
+  --btn-groti-width: 30.4%;
+  --btn-groti-height: 9.5%;
+
+  --btn-dalintis-top: 45%;
+  --btn-dalintis-left: 51.98%;
+  --btn-dalintis-width: 33.45%;
+
+  container-type: inline-size;
+}
+
+.walkie-art {
+  display: block;
+  width: 100%;
+  height: 100%;
+  user-select: none;
+  pointer-events: none;
+}
+
+.walkie-overlay {
+  position: absolute;
+  inset: 0;
+  line-height: normal;
+}
+
+.walkie-screen {
+  position: absolute;
+  top: var(--screen-top);
+  left: var(--screen-left);
+  width: var(--screen-width);
+  height: var(--screen-height);
+  box-sizing: border-box;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.walkie-screen-scroll {
+  flex: 1;
+  min-height: 0;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 2% 3% 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0, 0, 0, 0.35) transparent;
+}
+
+.walkie-screen-scroll::-webkit-scrollbar {
+  width: 3px;
+}
+
+.walkie-screen-scroll::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.35);
+  border-radius: 2px;
+}
+
+.screen-msg {
+  margin: 0;
+  font-family: "Lucida Console", "Courier New", monospace;
+  font-size: clamp(0.45rem, 2.6cqw, 0.78rem);
+  color: #1a1a1a;
+  text-align: center;
+}
+
+.screen-error {
+  color: #8b2020;
+}
+
+.sound-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.sound-item {
+  display: block;
+  width: 100%;
+  text-align: left;
+  padding: 0.22em 0.1em;
+  border: none;
+  background: transparent;
+  color: #1a1a1a;
+  font-family: "Lucida Console", "Courier New", monospace;
+  font-size: clamp(0.42rem, 2.4cqw, 0.72rem);
+  line-height: 1.35;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
+.sound-item:hover,
+.sound-item:focus-visible {
+  background: rgba(0, 0, 0, 0.07);
+  outline: none;
+}
+
+.sound-item.selected {
+  font-weight: 700;
+}
+
+.sound-item.playing {
+  background: rgba(0, 0, 0, 0.1);
+  font-weight: 700;
+}
+
+.gender-toggle {
+  flex-shrink: 0;
+  display: flex;
+  gap: 2px;
+  padding: 1.5% 5% 2% 2%;
+}
+
+.gender-btn {
+  flex: 1;
+  appearance: none;
+  border: 1px solid #4a5030;
+  border-radius: 3px;
+  background: rgba(255, 255, 255, 0.28);
+  color: #1a1a1a;
+  font-family: "Lucida Console", "Courier New", monospace;
+  font-size: clamp(0.38rem, 2.1cqw, 0.65rem);
+  font-weight: 600;
+  padding: 0.25em 0.15em;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
+.gender-btn.active {
+  background: rgba(0, 0, 0, 0.14);
+  font-weight: 700;
+}
+
+.gender-btn:focus-visible {
+  outline: 2px solid #4a5030;
+  outline-offset: 1px;
+}
+
+.btn-overlay {
+  position: absolute;
+  appearance: none;
+  border: none;
+  background: transparent;
+  color: #111;
+  font-family: "Arial Narrow", "Arial", sans-serif;
+  font-weight: 800;
+  cursor: pointer;
+  touch-action: manipulation;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.btn-overlay:active {
+  opacity: 0.65;
+}
+
+.btn-groti {
+  top: var(--btn-groti-top);
+  left: var(--btn-groti-left);
+  width: var(--btn-groti-width);
+  height: var(--btn-groti-height);
+  font-size: clamp(0.8rem, 3.6cqw, 1rem);
+  font-weight: 900;
+  letter-spacing: 0.05em;
+  color: #444;
+}
+
+.btn-dalintis {
+  top: var(--btn-dalintis-top);
+  left: var(--btn-dalintis-left);
+  width: var(--btn-dalintis-width);
+  aspect-ratio: 1;
+  height: auto;
+  font-size: clamp(1rem, 3cqw, 0.92rem);
+  font-weight: 900;
+  letter-spacing: 0.03em;
+  line-height: 1.1;
+  color: #444;
+}
+
+@media (orientation: landscape) and (max-height: 520px) {
+  .walkie-page {
+    padding: 5%;
+  }
+}
