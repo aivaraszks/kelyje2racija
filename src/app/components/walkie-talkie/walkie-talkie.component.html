@@ -16,33 +16,55 @@
 
     <div class="walkie-overlay">
       <div class="walkie-screen">
-        <div class="walkie-screen-scroll" tabindex="0">
-          @if (loading()) {
-            <p class="screen-msg">Kraunama…</p>
-          } @else if (error()) {
-            <p class="screen-msg screen-error">{{ error() }}</p>
-          } @else if (sounds().length === 0) {
-            <p class="screen-msg">Dar nėra garsų.</p>
-          } @else if (filteredSounds().length === 0) {
-            <p class="screen-msg">Nėra garsų šiai lyčiai.</p>
-          } @else {
-            <ul class="sound-list">
-              @for (sound of filteredSounds(); track sound.id) {
-                <li>
-                  <button
-                    type="button"
-                    class="sound-item"
-                    [class.selected]="selectedId() === sound.id"
-                    [class.playing]="isPlaying(sound.id)"
-                    (click)="onSoundClick(sound)"
-                  >
-                    {{ sound.title }}
-                  </button>
-                </li>
-              }
-            </ul>
-          }
-        </div>
+        @if (mode() === 'sounds') {
+          <div class="walkie-screen-scroll" tabindex="0">
+            @if (loading()) {
+              <p class="screen-msg">Kraunama…</p>
+            } @else if (error()) {
+              <p class="screen-msg screen-error">{{ error() }}</p>
+            } @else if (sounds().length === 0) {
+              <p class="screen-msg">Dar nėra garsų.</p>
+            } @else if (filteredSounds().length === 0) {
+              <p class="screen-msg">Nėra garsų šiai lyčiai.</p>
+            } @else {
+              <ul class="sound-list">
+                @for (sound of filteredSounds(); track sound.id) {
+                  <li>
+                    <button
+                      type="button"
+                      class="sound-item"
+                      [class.selected]="selectedId() === sound.id"
+                      [class.playing]="isPlaying(sound.id)"
+                      (click)="onSoundClick(sound)"
+                    >
+                      {{ sound.title }}
+                    </button>
+                  </li>
+                }
+              </ul>
+            }
+          </div>
+        } @else {
+          <div class="walkie-screen-create">
+            <textarea
+              class="custom-text"
+              rows="4"
+              maxlength="220"
+              placeholder="Įvesk frazę…"
+              [value]="customText()"
+              (input)="customText.set($any($event.target).value)"
+            ></textarea>
+          </div>
+
+          <button
+            type="button"
+            class="screen-preview-btn"
+            [disabled]="ttsBusy()"
+            (click)="onPreviewTts()"
+          >
+            PALEISTI
+          </button>
+        }
 
         <div class="gender-toggle" role="group" aria-label="Kalbėtojo lytis">
           <button
@@ -66,11 +88,16 @@
         </div>
       </div>
 
-      <button type="button" class="btn-overlay btn-groti" (click)="onGroti()">
-        PALEISTI
+      <button type="button" class="btn-overlay btn-groti" (click)="onLeftButton()">
+        {{ leftButtonLabel() }}
       </button>
 
-      <button type="button" class="btn-overlay btn-dalintis" (click)="onDalintis()">
+      <button
+        type="button"
+        class="btn-overlay btn-dalintis"
+        [disabled]="ttsBusy()"
+        (click)="onSiusti()"
+      >
         SIŲSTI
       </button>
     </div>
