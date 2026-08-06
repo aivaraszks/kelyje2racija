@@ -93,7 +93,7 @@
 .screen-msg {
   margin: 0;
   font-family: "Lucida Console", "Courier New", monospace;
-  font-size: clamp(0.45rem, 2.6cqw, 0.78rem);
+  font-size: clamp(0.59rem, 3.38cqw, 1.01rem);
   color: #1a1a1a;
   text-align: center;
 }
@@ -117,7 +117,7 @@
   background: transparent;
   color: #1a1a1a;
   font-family: "Lucida Console", "Courier New", monospace;
-  font-size: clamp(0.42rem, 2.4cqw, 0.72rem);
+  font-size: clamp(0.55rem, 3.12cqw, 0.94rem);
   line-height: 1.35;
   cursor: pointer;
   touch-action: manipulation;
@@ -162,7 +162,7 @@
   background: rgba(255, 255, 255, 0.28);
   color: #1a1a1a;
   font-family: "Lucida Console", "Courier New", monospace;
-  font-size: clamp(0.42rem, 2.4cqw, 0.72rem);
+  font-size: clamp(0.55rem, 3.12cqw, 0.94rem);
   line-height: 1.35;
   padding: 0.35em 0.4em;
   box-sizing: border-box;
@@ -183,7 +183,7 @@
   background: rgba(255, 255, 255, 0.35);
   color: #1a1a1a;
   font-family: "Lucida Console", "Courier New", monospace;
-  font-size: clamp(0.4rem, 2.2cqw, 0.68rem);
+  font-size: clamp(0.52rem, 2.86cqw, 0.88rem);
   font-weight: 700;
   letter-spacing: 0.04em;
   cursor: pointer;
@@ -207,7 +207,7 @@
   background: rgba(255, 255, 255, 0.28);
   color: #1a1a1a;
   font-family: "Lucida Console", "Courier New", monospace;
-  font-size: clamp(0.38rem, 2.1cqw, 0.65rem);
+  font-size: clamp(0.49rem, 2.73cqw, 0.85rem);
   font-weight: 600;
   padding: 0.25em 0.15em;
   cursor: pointer;
