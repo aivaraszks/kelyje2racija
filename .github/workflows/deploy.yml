@@ -10,9 +10,10 @@ permissions:
   pages: write
   id-token: write
 
+# Svarbu: atšaukti tik "build" žingsnius, bet leisti pabaigti jau prasidėjusį "deploy"
 concurrency:
-  group: pages
-  cancel-in-progress: true
+  group: "pages"
+  cancel-in-progress: false
 
 jobs:
   build:
@@ -33,9 +34,15 @@ jobs:
       - name: Build Angular app
         run: npm run build
 
+      # (Papildoma) Žingsnis patikrinti, kur tiksliai sugeneruoti failai
+      - name: List build directory
+        run: ls -la dist/kelyje
+
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
+          # Jei dist/kelyje viduje YRA browser papildomas katalogas, palikite: dist/kelyje/browser
+          # Jei index.html yra tiesiai dist/kelyje, pakeiskite į: dist/kelyje
           path: dist/kelyje/browser
 
   deploy:
