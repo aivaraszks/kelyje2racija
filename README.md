@@ -1,6 +1,6 @@
 # Kelyje – Garsai (Angular)
 
-Mobiliam pritaikyta Angular web applikacija su MP3 garsais. Galima klausytis naršyklėje ir **dalintis kaip MP3 failu** (pvz. per Messenger, WhatsApp, Telegram).
+Mobiliam pritaikyta Angular web aplikacija su MP3 garsais. Galima klausytis naršyklėje ir **dalintis kaip MP3 failu** (pvz. per Messenger, WhatsApp, Telegram).
 
 ## Funkcijos
 
