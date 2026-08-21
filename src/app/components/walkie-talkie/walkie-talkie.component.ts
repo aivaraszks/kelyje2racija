@@ -2,6 +2,7 @@ import { Component, computed, inject, input, output, signal } from '@angular/cor
 import { CommonModule } from '@angular/common';
 import { SoundEntry } from '../../models/sound.model';
 import { AudioPlayerService } from '../../services/audio-player.service';
+import { PlayCounterService } from '../../services/play-counter.service';
 import { ShareService } from '../../services/share.service';
 import { TtsGender, TtsService } from '../../services/tts.service';
 
@@ -30,6 +31,7 @@ export class WalkieTalkieComponent {
   readonly toast = output<string>();
 
   readonly audioService = inject(AudioPlayerService);
+  readonly playCounter = inject(PlayCounterService);
   private readonly shareService = inject(ShareService);
   private readonly ttsService = inject(TtsService);
 
@@ -57,7 +59,10 @@ export class WalkieTalkieComponent {
     const result = this.audioService.play(sound, this.soundUrl(sound));
     if (result === 'error') {
       this.emitToast('Nepavyko paleisti garso');
+      return;
     }
+
+    this.playCounter.recordPlay();
   }
 
   setSpeakerGender(gender: SpeakerGender): void {
@@ -105,6 +110,7 @@ export class WalkieTalkieComponent {
 
     try {
       await this.ttsService.speak(text, this.speakerGender());
+      this.playCounter.recordPlay();
     } catch (error) {
       this.emitToast(error instanceof Error ? error.message : 'Nepavyko paleisti');
     } finally {
