@@ -107,12 +107,22 @@
     </div>
   </div>
 
-  <p class="global-play-count" aria-live="polite">
-    Viso paleista:
-    @if (playCounter.loading()) {
-      …
-    } @else {
-      {{ playCounter.totalPlays() ?? 0 }}
-    }
-  </p>
+  <div class="global-stats" aria-live="polite">
+    <p class="global-stat">
+      Paleista:
+      @if (playCounter.plays.loading()) {
+        …
+      } @else {
+        {{ playCounter.plays.total() ?? 0 }}
+      }
+    </p>
+    <p class="global-stat">
+      Išsiųsta:
+      @if (playCounter.shares.loading()) {
+        …
+      } @else {
+        {{ playCounter.shares.total() ?? 0 }}
+      }
+    </p>
+  </div>
 </div>

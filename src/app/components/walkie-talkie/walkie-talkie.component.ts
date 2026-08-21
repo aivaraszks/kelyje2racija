@@ -132,6 +132,7 @@ export class WalkieTalkieComponent {
 
     try {
       const result = await this.shareService.shareSound(sound, this.soundUrl(sound));
+      this.playCounter.recordShare();
       if (result === 'downloaded') {
         this.emitToast('Atsisiųsta – gali pridėti prie žinutės');
       }
@@ -174,6 +175,7 @@ export class WalkieTalkieComponent {
       const filename = `${this.slugify(text)}-${this.speakerGender()}.${this.fileExtension(blob.type)}`;
       const title = `${text} (${this.speakerGender()})`;
       const result = await this.shareService.shareBlob(blob, filename, title);
+      this.playCounter.recordShare();
       if (result === 'downloaded') {
         this.emitToast('Atsisiųsta – gali pridėti prie žinutės');
       }

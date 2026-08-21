@@ -8,19 +8,15 @@ interface CounterResponse {
   error?: string;
 }
 
-/** Globalus paleistų įrašų skaitiklis (bendras visiems vartotojams). */
-@Injectable({ providedIn: 'root' })
-export class PlayCounterService {
-  private readonly http = inject(HttpClient);
-  private readonly apiBase = 'https://countapi.mileshilliard.com/api/v1';
-  private readonly counterKey = 'kelyje2racija-global-plays';
-
-  readonly totalPlays = signal<number | null>(null);
+class RemoteCounter {
+  readonly total = signal<number | null>(null);
   readonly loading = signal(true);
 
-  constructor() {
-    void this.refresh();
-  }
+  constructor(
+    private readonly http: HttpClient,
+    private readonly apiBase: string,
+    private readonly counterKey: string,
+  ) {}
 
   async refresh(): Promise<void> {
     this.loading.set(true);
@@ -29,15 +25,15 @@ export class PlayCounterService {
       const data = await firstValueFrom(
         this.http.get<CounterResponse>(`${this.apiBase}/get/${this.counterKey}`),
       );
-      this.totalPlays.set(this.parseValue(data));
+      this.total.set(this.parseValue(data));
     } catch {
-      this.totalPlays.set(0);
+      this.total.set(0);
     } finally {
       this.loading.set(false);
     }
   }
 
-  recordPlay(): void {
+  record(): void {
     void this.incrementRemote();
   }
 
@@ -46,11 +42,11 @@ export class PlayCounterService {
       const data = await firstValueFrom(
         this.http.get<CounterResponse>(`${this.apiBase}/hit/${this.counterKey}`),
       );
-      this.totalPlays.set(this.parseValue(data));
+      this.total.set(this.parseValue(data));
     } catch {
-      const current = this.totalPlays();
+      const current = this.total();
       if (current !== null) {
-        this.totalPlays.set(current + 1);
+        this.total.set(current + 1);
       }
     }
   }
@@ -62,5 +58,37 @@ export class PlayCounterService {
 
     const parsed = Number(data.value);
     return Number.isFinite(parsed) ? parsed : 0;
+  }
+}
+
+/** Globalūs statistikos skaitikliai (bendri visiems vartotojams). */
+@Injectable({ providedIn: 'root' })
+export class PlayCounterService {
+  private readonly http = inject(HttpClient);
+  private readonly apiBase = 'https://countapi.mileshilliard.com/api/v1';
+
+  readonly plays = new RemoteCounter(
+    this.http,
+    this.apiBase,
+    'kelyje2racija-global-plays',
+  );
+
+  readonly shares = new RemoteCounter(
+    this.http,
+    this.apiBase,
+    'kelyje2racija-global-shares',
+  );
+
+  constructor() {
+    void this.plays.refresh();
+    void this.shares.refresh();
+  }
+
+  recordPlay(): void {
+    this.plays.record();
+  }
+
+  recordShare(): void {
+    this.shares.record();
   }
 }
