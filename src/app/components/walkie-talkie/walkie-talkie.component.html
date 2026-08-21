@@ -16,75 +16,79 @@
 
     <div class="walkie-overlay">
       <div class="walkie-screen">
-        @if (mode() === 'sounds') {
-          <div class="walkie-screen-scroll" tabindex="0">
-            @if (loading()) {
-              <p class="screen-msg">Kraunama…</p>
-            } @else if (error()) {
-              <p class="screen-msg screen-error">{{ error() }}</p>
-            } @else if (sounds().length === 0) {
-              <p class="screen-msg">Dar nėra garsų.</p>
-            } @else if (filteredSounds().length === 0) {
-              <p class="screen-msg">Nėra garsų šiai lyčiai.</p>
-            } @else {
-              <ul class="sound-list">
-                @for (sound of filteredSounds(); track sound.id) {
-                  <li>
-                    <button
-                      type="button"
-                      class="sound-item"
-                      [class.selected]="selectedId() === sound.id"
-                      [class.playing]="isPlaying(sound.id)"
-                      (click)="onSoundClick(sound)"
-                    >
-                      {{ sound.title }}
-                    </button>
-                  </li>
-                }
-              </ul>
-            }
-          </div>
-        } @else {
-          <div class="walkie-screen-create">
-            <textarea
-              class="custom-text"
-              rows="4"
-              maxlength="220"
-              placeholder="Įvesk frazę…"
-              [value]="customText()"
-              (input)="customText.set($any($event.target).value)"
-            ></textarea>
-          </div>
+        <div class="walkie-screen-body">
+          @if (mode() === 'sounds') {
+            <div class="walkie-screen-scroll" tabindex="0">
+              @if (loading()) {
+                <p class="screen-msg">Kraunama…</p>
+              } @else if (error()) {
+                <p class="screen-msg screen-error">{{ error() }}</p>
+              } @else if (sounds().length === 0) {
+                <p class="screen-msg">Dar nėra garsų.</p>
+              } @else if (filteredSounds().length === 0) {
+                <p class="screen-msg">Nėra garsų šiai lyčiai.</p>
+              } @else {
+                <ul class="sound-list">
+                  @for (sound of filteredSounds(); track sound.id) {
+                    <li>
+                      <button
+                        type="button"
+                        class="sound-item"
+                        [class.selected]="selectedId() === sound.id"
+                        [class.playing]="isPlaying(sound.id)"
+                        (click)="onSoundClick(sound)"
+                      >
+                        {{ sound.title }}
+                      </button>
+                    </li>
+                  }
+                </ul>
+              }
+            </div>
+          } @else {
+            <div class="walkie-screen-create">
+              <textarea
+                class="custom-text"
+                rows="4"
+                maxlength="220"
+                placeholder="Įvesk frazę…"
+                [value]="customText()"
+                (input)="customText.set($any($event.target).value)"
+              ></textarea>
+            </div>
 
-          <button
-            type="button"
-            class="screen-preview-btn"
-            [disabled]="ttsBusy()"
-            (click)="onPreviewTts()"
-          >
-            PALEISTI
-          </button>
-        }
+            <button
+              type="button"
+              class="screen-preview-btn"
+              [disabled]="ttsBusy()"
+              (click)="onPreviewTts()"
+            >
+              PALEISTI
+            </button>
+          }
+        </div>
 
-        <div class="gender-toggle" role="group" aria-label="Kalbėtojo lytis">
-          <button
-            type="button"
-            class="gender-btn"
-            [class.active]="speakerGender() === 'vyras'"
-            [attr.aria-pressed]="speakerGender() === 'vyras'"
-            (click)="setSpeakerGender('vyras')"
-          >
-            Vyras
-          </button>
-          <button
-            type="button"
-            class="gender-btn"
-            [class.active]="speakerGender() === 'moteris'"
-            [attr.aria-pressed]="speakerGender() === 'moteris'"
-            (click)="setSpeakerGender('moteris')"
-          >
-            Moteris
-          </button>
+        <div class="walkie-screen-footer">
+          <div class="gender-toggle" role="group" aria-label="Kalbėtojo lytis">
+            <button
+              type="button"
+              class="gender-btn"
+              [class.active]="speakerGender() === 'vyras'"
+              [attr.aria-pressed]="speakerGender() === 'vyras'"
+              (click)="setSpeakerGender('vyras')"
+            >
+              Vyras
+            </button>
+            <button
+              type="button"
+              class="gender-btn"
+              [class.active]="speakerGender() === 'moteris'"
+              [attr.aria-pressed]="speakerGender() === 'moteris'"
+              (click)="setSpeakerGender('moteris')"
+            >
+              Moteris
+            </button>
+          </div>
         </div>
       </div>
 
@@ -102,4 +106,13 @@
       </button>
     </div>
   </div>
+
+  <p class="global-play-count" aria-live="polite">
+    Viso paleista:
+    @if (playCounter.loading()) {
+      …
+    } @else {
+      {{ playCounter.totalPlays() ?? 0 }}
+    }
+  </p>
 </div>
