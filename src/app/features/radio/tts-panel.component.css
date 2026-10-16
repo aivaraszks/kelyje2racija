@@ -177,10 +177,3 @@
 .marker i:nth-child(3) {
   animation-delay: -0.4s;
 }
-
-/* iOS Safari zooms the page when a focused field's text is under 16px, so text fields keep 16px there. */
-@supports (-webkit-touch-callout: none) {
-  .kp textarea {
-    font-size: 16px;
-  }
-}

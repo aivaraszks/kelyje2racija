@@ -27,7 +27,7 @@
               } @else {
                 <span class="marker" aria-hidden="true"><i></i><i></i><i></i></span>
               }
-              <span>{{ label(sound) }}</span>
+              <span class="label" [attr.title]="label(sound)">{{ label(sound) }}</span>
               @if (playingId() === sound.id) {
                 <span class="sr-only">, grojama</span>
               }

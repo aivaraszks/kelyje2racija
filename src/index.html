@@ -8,6 +8,17 @@
       name="viewport"
       content="width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=resizes-content"
     />
+    <script>
+      // iOS Safari zooms into text fields under 16px on focus. maximum-scale stops that auto-zoom,
+      // and iOS still allows pinch-zoom, so it is only applied on iOS (Android would lose pinch-zoom).
+      if (
+        /iP(hone|ad|od)/.test(navigator.userAgent) ||
+        (/Macintosh/.test(navigator.userAgent) && navigator.maxTouchPoints > 1)
+      ) {
+        const vp = document.querySelector('meta[name="viewport"]');
+        vp.setAttribute('content', vp.getAttribute('content') + ', maximum-scale=1');
+      }
+    </script>
     <meta
       name="description"
       content="Racija iš žaidimo Kelyje 2: paleiskite balso įrašus ir nusiųskite juos draugams."
