@@ -1,0 +1,167 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" width="1200" height="630" role="img" aria-label="Racija – Kelyje 2 radijo frazės">
+  <title>Racija – Kelyje 2</title>
+  <!--
+    Open Graph image, 1200x630. Source of truth for public/og.png (export at 1200x630, e.g. with
+    `npx sharp-cli` or Inkscape; text uses Arial/Helvetica bold, so export on a machine that has it).
+    Palette = docs/design/design-system.md and components/pixel-scene.md. The subtitle copy is a proposal
+    (UX owns copy); the footer note is the approved text from docs/ux/racija-radio.md.
+  -->
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#27496b"/>
+      <stop offset=".3" stop-color="#3b6a8f"/>
+      <stop offset=".55" stop-color="#8fb9c4"/>
+      <stop offset=".8" stop-color="#c7d9c9"/>
+      <stop offset="1" stop-color="#f0dfb4"/>
+    </linearGradient>
+    <linearGradient id="meadow" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#7d9c5d"/>
+      <stop offset="1" stop-color="#4f6f3a"/>
+    </linearGradient>
+    <linearGradient id="dash" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#2a323a"/>
+      <stop offset="1" stop-color="#0f1316"/>
+    </linearGradient>
+    <linearGradient id="body" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#dde1e6"/>
+      <stop offset=".45" stop-color="#c8ccd2"/>
+      <stop offset="1" stop-color="#aeb4bc"/>
+    </linearGradient>
+    <linearGradient id="plate" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#2a2f36"/>
+      <stop offset="1" stop-color="#1b1f24"/>
+    </linearGradient>
+    <linearGradient id="key" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#eef0f3"/>
+      <stop offset="1" stop-color="#c8ccd2"/>
+    </linearGradient>
+    <linearGradient id="go" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#5ccb7b"/>
+      <stop offset="1" stop-color="#3fa75e"/>
+    </linearGradient>
+    <linearGradient id="glass" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#7c9aa6"/>
+      <stop offset="1" stop-color="#c7d9c9"/>
+    </linearGradient>
+    <linearGradient id="scrim" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#0c1014" stop-opacity=".78"/>
+      <stop offset=".6" stop-color="#0c1014" stop-opacity=".5"/>
+      <stop offset="1" stop-color="#0c1014" stop-opacity="0"/>
+    </linearGradient>
+    <pattern id="firs" width="30" height="30" patternUnits="userSpaceOnUse">
+      <path d="M15 2 L26 28 H4 Z" fill="#2f4f43"/>
+      <path d="M15 2 L26 28 H15 Z" fill="#27413a"/>
+    </pattern>
+    <pattern id="firs2" width="44" height="40" patternUnits="userSpaceOnUse" patternTransform="translate(14 0)">
+      <path d="M22 2 L38 38 H6 Z" fill="#27413a"/>
+      <path d="M22 2 L38 38 H22 Z" fill="#1f3a2d"/>
+    </pattern>
+    <pattern id="dots" width="10" height="10" patternUnits="userSpaceOnUse">
+      <circle cx="5" cy="5.6" r="2.6" fill="#ffffff" fill-opacity=".55"/>
+      <circle cx="5" cy="4.8" r="2.5" fill="#646b74"/>
+    </pattern>
+    <g id="pine">
+      <path d="M0 -260 L-30 -200 H30 Z" fill="#1f3a2d"/><path d="M0 -260 L30 -200 H0 Z" fill="#2e5440"/>
+      <path d="M0 -215 L-44 -140 H44 Z" fill="#1f3a2d"/><path d="M0 -215 L44 -140 H0 Z" fill="#2e5440"/>
+      <path d="M0 -160 L-58 -78 H58 Z" fill="#1f3a2d"/><path d="M0 -160 L58 -78 H0 Z" fill="#2e5440"/>
+      <path d="M0 -100 L-72 -10 H72 Z" fill="#1f3a2d"/><path d="M0 -100 L72 -10 H0 Z" fill="#2e5440"/>
+      <rect x="-7" y="-12" width="14" height="22" fill="#4a3526"/>
+    </g>
+    <filter id="shadow" x="-20%" y="-10%" width="140%" height="130%">
+      <feDropShadow dx="0" dy="18" stdDeviation="18" flood-color="#050a0f" flood-opacity=".6"/>
+    </filter>
+  </defs>
+
+  <!-- ===== scene ===== -->
+  <rect width="1200" height="640" fill="url(#sky)"/>
+  <circle cx="310" cy="300" r="120" fill="#f8e7b0" fill-opacity=".3"/>
+  <circle cx="310" cy="300" r="46" fill="#fff0bd"/>
+  <g fill="#f6eeda"><rect x="520" y="70" width="170" height="26" rx="13"/><rect x="552" y="48" width="96" height="40" rx="20"/>
+    <rect x="860" y="130" width="120" height="20" rx="10"/><rect x="884" y="112" width="64" height="30" rx="15"/>
+    <rect x="130" y="110" width="190" height="24" rx="12"/><rect x="170" y="90" width="100" height="36" rx="18"/></g>
+  <path d="M0 336 V272 C120 236 240 292 380 264 S620 232 760 272 S1000 242 1200 278 V344 Z" fill="#7c9aa6"/>
+  <path d="M0 346 V304 C150 278 300 322 460 298 S760 272 900 306 S1100 292 1200 302 V356 Z" fill="#5a7c74"/>
+  <rect x="0" y="322" width="1200" height="34" fill="url(#firs)"/>
+  <rect x="0" y="334" width="1200" height="30" fill="url(#firs2)"/>
+  <rect x="0" y="352" width="1200" height="84" fill="url(#meadow)"/>
+  <rect x="0" y="432" width="1200" height="56" fill="#4a4f55"/>
+  <rect x="0" y="432" width="1200" height="4" fill="#b5ae9a"/><rect x="0" y="484" width="1200" height="4" fill="#b5ae9a"/>
+  <line x1="0" y1="460" x2="1200" y2="460" stroke="#e9e3c8" stroke-width="4" stroke-dasharray="32 32"/>
+  <rect x="0" y="488" width="1200" height="150" fill="#8b8576"/>
+  <use href="#pine" x="196" y="560" transform="translate(0 0)"/>
+  <use href="#pine" x="1020" y="548"/>
+  <!-- cabin -->
+  <path d="M0 0 H1200 V26 Q1100 40 980 40 H220 Q100 40 0 26 Z" fill="#161b20"/>
+  <path d="M0 26 Q100 40 220 40 H980 Q1100 40 1200 26" fill="none" stroke="#2a323a" stroke-width="4"/>
+  <path d="M0 0 H128 L56 500 H0 Z" fill="#161b20"/><path d="M128 0 L56 500" stroke="#4a545e" stroke-width="4" fill="none"/>
+  <path d="M1200 0 H1072 L1144 500 H1200 Z" fill="#161b20"/><path d="M1072 0 L1144 500" stroke="#4a545e" stroke-width="4" fill="none"/>
+  <path d="M0 506 Q600 480 1200 506 V640 H0 Z" fill="url(#dash)"/>
+  <path d="M0 506 Q600 480 1200 506" fill="none" stroke="#4a545e" stroke-width="4"/>
+  <rect x="780" y="34" width="6" height="14" fill="#0e1114"/>
+  <rect x="716" y="48" width="134" height="40" rx="8" fill="#0e1114"/><rect x="722" y="53" width="122" height="30" rx="5" fill="url(#glass)"/>
+  <rect x="86" y="528" width="48" height="20" fill="#0f1316"/><rect x="92" y="534" width="7" height="7" fill="#e0a458"/><rect x="104" y="534" width="7" height="7" fill="#7fd6a0"/>
+  <rect width="1200" height="630" fill="#080c10" fill-opacity=".22"/>
+  <rect width="1200" height="630" fill="url(#scrim)"/>
+
+  <!-- ===== wordmark (same 5x7 pixel letters as the radio logo, 16 px per unit) ===== -->
+  <g transform="translate(156 168)">
+    <path d="M0 0h1v7h-1z M1 0h3v1h-3z M4 1h1v2h-1z M1 3h3v1h-3z M2 4h1v1h-1z M3 5h1v1h-1z M4 6h1v1h-1z M6 1h1v6h-1z M10 1h1v6h-1z M7 0h3v1h-3z M7 3h3v1h-3z M12 1h1v5h-1z M13 0h3v1h-3z M13 6h3v1h-3z M16 1h1v1h-1z M16 5h1v1h-1z M18 0h5v1h-5z M20 1h1v5h-1z M18 6h5v1h-5z M26 0h3v1h-3z M28 1h1v5h-1z M24 5h1v1h-1z M25 6h3v1h-3z M30 1h1v6h-1z M34 1h1v6h-1z M31 0h3v1h-3z M31 3h3v1h-3z"
+          transform="translate(8 10) scale(16)" fill="#050a0f" fill-opacity=".55" shape-rendering="crispEdges"/>
+    <path d="M0 0h1v7h-1z M1 0h3v1h-3z M4 1h1v2h-1z M1 3h3v1h-3z M2 4h1v1h-1z M3 5h1v1h-1z M4 6h1v1h-1z M6 1h1v6h-1z M10 1h1v6h-1z M7 0h3v1h-3z M7 3h3v1h-3z M12 1h1v5h-1z M13 0h3v1h-3z M13 6h3v1h-3z M16 1h1v1h-1z M16 5h1v1h-1z M18 0h5v1h-5z M20 1h1v5h-1z M18 6h5v1h-5z M26 0h3v1h-3z M28 1h1v5h-1z M24 5h1v1h-1z M25 6h3v1h-3z M30 1h1v6h-1z M34 1h1v6h-1z M31 0h3v1h-3z M31 3h3v1h-3z"
+          transform="scale(16)" fill="#f1f3f5" shape-rendering="crispEdges"/>
+  </g>
+  <g font-family="Arial, Helvetica, sans-serif" font-weight="700">
+    <rect x="156" y="318" width="470" height="62" rx="14" fill="#11161b" fill-opacity=".9"/>
+    <text x="180" y="360" font-size="34" fill="#f1f3f5">Kelyje 2 radijo frazės</text>
+    <rect x="156" y="398" width="396" height="44" rx="12" fill="#11161b" fill-opacity=".9"/>
+    <text x="176" y="428" font-size="22" font-weight="500" fill="#b7c4a5">Paspausk. Išklausyk. Išsiųsk.</text>
+    <rect x="156" y="548" width="500" height="44" rx="12" fill="#11161b" fill-opacity=".9"/>
+    <text x="176" y="577" font-size="20" font-weight="500" fill="#f1f3f5">Fanų projektas, nesusijęs su žaidimo kūrėjais</text>
+  </g>
+
+  <!-- ===== radio ===== -->
+  <g filter="url(#shadow)">
+    <rect x="790" y="58" width="340" height="514" rx="36" fill="url(#body)"/>
+  </g>
+  <rect x="790.5" y="58.5" width="339" height="513" rx="35.5" fill="none" stroke="#ffffff" stroke-opacity=".6"/>
+  <g fill="#8b929b" stroke="#646b74" stroke-opacity=".6"><circle cx="808" cy="76" r="5"/><circle cx="1112" cy="76" r="5"/><circle cx="808" cy="554" r="5"/><circle cx="1112" cy="554" r="5"/></g>
+  <!-- cap: logo plate, coil, jack -->
+  <rect x="812" y="84" width="150" height="46" rx="12" fill="url(#plate)"/>
+  <path d="M0 0h1v7h-1z M1 0h3v1h-3z M4 1h1v2h-1z M1 3h3v1h-3z M2 4h1v1h-1z M3 5h1v1h-1z M4 6h1v1h-1z M6 1h1v6h-1z M10 1h1v6h-1z M7 0h3v1h-3z M7 3h3v1h-3z M12 1h1v5h-1z M13 0h3v1h-3z M13 6h3v1h-3z M16 1h1v1h-1z M16 5h1v1h-1z M18 0h5v1h-5z M20 1h1v5h-1z M18 6h5v1h-5z M26 0h3v1h-3z M28 1h1v5h-1z M24 5h1v1h-1z M25 6h3v1h-3z M30 1h1v6h-1z M34 1h1v6h-1z M31 0h3v1h-3z M31 3h3v1h-3z"
+        transform="translate(822 96) scale(3.7)" fill="#dde1e6" shape-rendering="crispEdges"/>
+  <path d="M968 107 q4 -12 8 0 t8 0 t8 0 t8 0 t8 0 t8 0 t8 0 t8 0 t8 0 t8 0 t8 0 t8 0 t8 0 t8 0 t8 0" fill="none" stroke="#1b1f24" stroke-width="4" stroke-linecap="round"/>
+  <circle cx="1084" cy="107" r="14" fill="#8b929b" stroke="#2a2f36" stroke-width="3"/><circle cx="1084" cy="107" r="5" fill="#11161b"/>
+  <!-- LCD -->
+  <rect x="808" y="150" width="304" height="252" rx="20" fill="#1b1f24"/>
+  <rect x="814" y="156" width="292" height="240" rx="13" fill="#b7c4a5"/>
+  <g fill="#16200f">
+    <rect x="832" y="172" width="150" height="10"/>
+    <rect x="814" y="206" width="292" height="44"/>
+    <rect x="832" y="263" width="198" height="10"/><rect x="832" y="279" width="70" height="10"/>
+    <rect x="832" y="311" width="168" height="10"/>
+  </g>
+  <g fill="#b7c4a5">
+    <rect x="832" y="220" width="8" height="16"/>
+    <rect x="852" y="222" width="120" height="12"/>
+  </g>
+  <g fill="#16200f" fill-opacity=".14"><rect x="814" y="205" width="292" height="1"/><rect x="814" y="250" width="292" height="1"/><rect x="814" y="294" width="292" height="1"/></g>
+  <rect x="814" y="342" width="292" height="54" fill="#a3b292"/><rect x="814" y="342" width="292" height="2" fill="#16200f"/>
+  <rect x="826" y="352" width="124" height="34" rx="6" fill="none" stroke="#16200f" stroke-width="2"/>
+  <rect x="828" y="354" width="56" height="30" rx="4" fill="#16200f"/>
+  <rect x="838" y="365" width="36" height="8" fill="#b7c4a5"/><rect x="896" y="365" width="46" height="8" fill="#16200f"/>
+  <rect x="990" y="365" width="94" height="8" fill="#16200f"/>
+  <!-- keys -->
+  <rect x="820" y="426" width="84" height="44" rx="22" fill="url(#key)" stroke="#646b74" stroke-width="2"/>
+  <rect x="1016" y="426" width="84" height="44" rx="22" fill="url(#key)" stroke="#646b74" stroke-width="2"/>
+  <g font-family="Arial, Helvetica, sans-serif" font-weight="800" font-size="13" fill="#1b1f24" text-anchor="middle" letter-spacing=".5">
+    <text x="862" y="453">PAIEŠKA</text><text x="1058" y="453">SIŲSTI</text>
+  </g>
+  <circle cx="960" cy="452" r="48" fill="#11161b"/>
+  <circle cx="960" cy="452" r="41" fill="none" stroke="#4df07f" stroke-width="5"/>
+  <circle cx="960" cy="452" r="34" fill="url(#go)"/>
+  <path d="M955 440h4v4h4v4h4v4h-4v4h-4v4h-4z" transform="translate(-3 -6)" fill="#1b1f24" shape-rendering="crispEdges"/>
+  <text x="960" y="470" font-family="Arial, Helvetica, sans-serif" font-weight="800" font-size="13" fill="#1b1f24" text-anchor="middle" letter-spacing=".5">PRIIMTI</text>
+  <!-- grille -->
+  <rect x="820" y="518" width="280" height="38" rx="12" fill="#aeb4bc"/>
+  <rect x="824" y="522" width="272" height="30" rx="8" fill="url(#dots)"/>
+</svg>

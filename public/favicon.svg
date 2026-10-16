@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" role="img" aria-label="Racija">
+  <title>Racija</title>
+  <defs>
+    <linearGradient id="body" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#dde1e6"/>
+      <stop offset="1" stop-color="#aeb4bc"/>
+    </linearGradient>
+    <linearGradient id="go" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#5ccb7b"/>
+      <stop offset="1" stop-color="#3fa75e"/>
+    </linearGradient>
+  </defs>
+  <!-- silver radio body -->
+  <rect x="2" y="2" width="60" height="60" rx="14" fill="url(#body)"/>
+  <rect x="2.5" y="2.5" width="59" height="59" rx="13.5" fill="none" stroke="#454b53" stroke-opacity=".55"/>
+  <!-- LCD with three rows, the middle one selected (inverted) -->
+  <rect x="9" y="9" width="46" height="27" rx="5" fill="#1b1f24"/>
+  <rect x="11" y="11" width="42" height="23" rx="3.5" fill="#b7c4a5"/>
+  <rect x="14" y="14" width="24" height="3.5" fill="#16200f"/>
+  <rect x="11" y="19.5" width="42" height="6" fill="#16200f"/>
+  <rect x="14" y="21.25" width="3.5" height="2.5" fill="#b7c4a5"/>
+  <rect x="20" y="21.25" width="22" height="2.5" fill="#b7c4a5"/>
+  <rect x="14" y="28" width="16" height="3.5" fill="#16200f"/>
+  <!-- keys: two pills and the green PRIIMTI -->
+  <rect x="8" y="43" width="14" height="9" rx="4.5" fill="#eef0f3" stroke="#646b74" stroke-width="1.2"/>
+  <rect x="42" y="43" width="14" height="9" rx="4.5" fill="#eef0f3" stroke="#646b74" stroke-width="1.2"/>
+  <circle cx="32" cy="47.5" r="10.5" fill="#11161b"/>
+  <circle cx="32" cy="47.5" r="8.6" fill="none" stroke="#4df07f" stroke-width="1.8"/>
+  <circle cx="32" cy="47.5" r="6.4" fill="url(#go)"/>
+  <path d="M30.2 44.5h1.6v1.6h1.6v1.6h1.6v1.6h-1.6v1.6h-1.6v1.6h-1.6z" fill="#1b1f24" transform="translate(-0.6 -1.2)"/>
+</svg>

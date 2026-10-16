@@ -1,0 +1,101 @@
+<div class="page">
+  <main class="stage">
+    <section class="radio" role="group" aria-label="Racija">
+      <i class="screw tl" aria-hidden="true"></i>
+      <i class="screw tr" aria-hidden="true"></i>
+      <i class="screw bl" aria-hidden="true"></i>
+      <i class="screw br" aria-hidden="true"></i>
+
+      <div class="cap">
+        <h1 class="logo">
+          <app-radio-logo />
+          <span class="sr-only">RACIJA</span>
+        </h1>
+        <app-radio-cable />
+        <span class="jack" aria-hidden="true"></span>
+      </div>
+
+      <app-lcd-screen
+        [sounds]="sounds()"
+        [selectedId]="selectedId()"
+        [playingId]="playingId()"
+        [loadingId]="loadingId()"
+        [voice]="voice()"
+        [query]="query()"
+        [searchOpen]="searchOpen()"
+        (soundSelect)="onRow($event)"
+        (voiceChange)="onVoice($event)"
+        (queryChange)="onQuery($event)"
+        (searchClose)="closeSearch()"
+      />
+
+      <div class="keys-wrap">
+        <div class="keys">
+          <button
+            #searchButton
+            appRadioButton
+            variant="pill"
+            [attr.aria-expanded]="searchOpen()"
+            [attr.aria-controls]="searchId"
+            (click)="toggleSearch()"
+          >
+            PAIEŠKA
+          </button>
+          <button
+            appRadioButton
+            variant="round"
+            [lit]="playingId() !== null"
+            [attr.aria-disabled]="!selected() && playingId() === null"
+            (click)="onAccept()"
+          >
+            PRIIMTI<span class="sr-only">{{
+              playingId() !== null ? ', sustabdyti' : ', groti'
+            }}</span>
+          </button>
+          <button
+            #shareButton
+            appRadioButton
+            variant="pill"
+            [attr.aria-disabled]="!selected()"
+            [attr.aria-busy]="sharing() ? 'true' : null"
+            (click)="onShare()"
+          >
+            SIŲSTI
+          </button>
+        </div>
+      </div>
+
+      <app-radio-grille class="grille" />
+    </section>
+
+    <div class="furniture">
+      @if (!played()) {
+        <p class="chip hint hidden coarse:inline-flex">
+          <svg viewBox="0 0 12 10" aria-hidden="true">
+            <path d="M0 3h3l3-3v10L3 7H0z M8 2h1v6H8z M10 0h1v10h-1z" />
+          </svg>
+          Įjunkite garsą
+        </p>
+      }
+      <p class="chip">
+        <span class="whitespace-nowrap"
+          >Paleista: <b class="num">{{ playsText() }}</b></span
+        >
+        ·
+        <span class="whitespace-nowrap"
+          >Išsiųsta: <b class="num">{{ sharesText() }}</b></span
+        >
+      </p>
+    </div>
+  </main>
+
+  <footer class="chip note">Fanų projektas, nesusijęs su žaidimo kūrėjais</footer>
+</div>
+
+<div class="sr-only" role="status" aria-live="polite" aria-atomic="true">{{ live() }}</div>
+
+@if (toast(); as t) {
+  <div class="toast-wrap" aria-hidden="true">
+    <div class="toast" [class.err]="t.error">{{ t.text }}</div>
+  </div>
+}

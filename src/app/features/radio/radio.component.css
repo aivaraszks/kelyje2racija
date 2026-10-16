@@ -1,0 +1,254 @@
+:host {
+  display: block;
+  position: relative;
+  z-index: 10;
+}
+
+/* ---------- page: 100dvh column, safe-area aware ---------- */
+.page {
+  height: 100dvh;
+  min-height: min-content;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: max(0.75rem, env(safe-area-inset-top)) max(0.75rem, env(safe-area-inset-right))
+    max(0.75rem, env(safe-area-inset-bottom)) max(0.75rem, env(safe-area-inset-left));
+}
+.stage {
+  flex: 1 1 0;
+  min-height: 0;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+/* ---------- radio body ---------- */
+.radio {
+  position: relative;
+  flex: 1 1 0;
+  /* cap + 4-row LCD + keys + grille + gaps; the page scrolls below this */
+  min-height: 31rem;
+  width: min(100%, var(--container-radio));
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 12px 12px 14px;
+  border-radius: var(--radius-2xl);
+  box-shadow: var(--shadow-radio);
+  background:
+    repeating-linear-gradient(0deg, rgb(255 255 255 / 6%) 0 1px, rgb(0 0 0 / 3%) 1px 2px),
+    linear-gradient(
+      180deg,
+      var(--color-metal-200) 0%,
+      var(--color-metal-300) 45%,
+      var(--color-metal-400) 100%
+    );
+}
+.screw {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background:
+    linear-gradient(135deg, transparent 44%, var(--color-metal-600) 44% 56%, transparent 56%),
+    radial-gradient(circle at 35% 30%, var(--color-metal-50), var(--color-metal-500));
+  box-shadow:
+    0 1px 0 rgb(255 255 255 / 70%),
+    inset 0 0 0 1px rgb(0 0 0 / 25%);
+}
+.screw.tl {
+  left: 9px;
+  top: 9px;
+  transform: rotate(35deg);
+}
+.screw.tr {
+  right: 9px;
+  top: 9px;
+  transform: rotate(35deg);
+}
+.screw.bl {
+  left: 9px;
+  bottom: 9px;
+  transform: rotate(-20deg);
+}
+.screw.br {
+  right: 9px;
+  bottom: 9px;
+  transform: rotate(-20deg);
+}
+
+/* ---------- cap ---------- */
+.cap {
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  height: 3.25rem;
+  padding: 0 10px;
+}
+.logo {
+  flex: none;
+  margin: 0;
+  height: 100%;
+  padding: 0 14px;
+  display: grid;
+  place-items: center;
+  border-radius: var(--radius-lg);
+  background: linear-gradient(180deg, var(--color-metal-800), var(--color-metal-900));
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 18%),
+    inset 0 -2px 0 rgb(0 0 0 / 40%),
+    0 1px 0 rgb(255 255 255 / 60%);
+}
+.jack {
+  flex: none;
+  width: 1.75rem;
+  height: 1.75rem;
+  border-radius: 50%;
+  border: 3px solid var(--color-metal-800);
+  background:
+    radial-gradient(circle at 50% 50%, var(--color-metal-950) 0 28%, transparent 30%),
+    radial-gradient(
+      circle at 35% 30%,
+      var(--color-metal-100),
+      var(--color-metal-500) 65%,
+      var(--color-metal-700)
+    );
+  box-shadow:
+    0 1px 0 rgb(255 255 255 / 60%),
+    inset 0 -1px 2px rgb(0 0 0 / 35%);
+}
+
+/* ---------- keys ---------- */
+.keys-wrap {
+  flex: none;
+  container-type: inline-size;
+}
+.keys {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  align-items: center;
+  gap: 10px;
+  padding: 2px 4px 4px;
+}
+/* 200% zoom / very narrow: PRIIMTI moves to its own line above the two pills */
+@container (max-width: 17rem) {
+  .keys {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  }
+  .keys > :nth-child(2) {
+    grid-column: 1 / -1;
+    grid-row: 1;
+    justify-self: center;
+  }
+  .keys > :nth-child(1) {
+    grid-row: 2;
+  }
+  .keys > :nth-child(3) {
+    grid-row: 2;
+  }
+}
+
+/* ---------- page furniture ---------- */
+.furniture {
+  flex: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  text-align: center;
+}
+.chip {
+  margin: 0;
+  padding: 0.3rem 0.75rem;
+  border-radius: var(--radius-lg);
+  background: var(--color-chip-bg);
+  color: var(--color-chip-fg);
+  font: 500 var(--text-chip) / 1.4 var(--font-ui);
+  text-align: center;
+  box-shadow: var(--shadow-chip);
+}
+.chip .num {
+  font-weight: 600;
+  color: var(--color-chip-accent);
+  font-variant-numeric: tabular-nums;
+}
+.hint {
+  align-items: center;
+  gap: 8px;
+}
+.hint svg {
+  width: 14px;
+  height: 12px;
+  fill: var(--color-chip-accent);
+  shape-rendering: crispEdges;
+}
+.note {
+  flex: none;
+}
+
+/* ---------- toast (outside the radio, never takes focus) ---------- */
+.toast-wrap {
+  position: fixed;
+  inset-inline: 0;
+  bottom: calc(14px + env(safe-area-inset-bottom));
+  z-index: 50;
+  display: flex;
+  justify-content: center;
+  padding-inline: 16px;
+  pointer-events: none;
+}
+.toast {
+  max-width: 100%;
+  padding: 0.625rem 1rem;
+  border-radius: var(--radius-xl);
+  border: 1px solid rgb(255 255 255 / 14%);
+  background: var(--color-chip-bg);
+  color: var(--color-chip-fg);
+  box-shadow: var(--shadow-toast);
+  font: 600 var(--text-chip) / 1.4 var(--font-ui);
+  text-align: center;
+  animation: var(--animate-toast-in);
+}
+.toast.err {
+  background: var(--color-error-bg);
+  border-color: var(--color-error-line);
+  color: var(--color-white);
+}
+
+/* ---------- short viewports (landscape phone, keyboard open): cap and grille collapse ---------- */
+@media (max-height: 36rem) {
+  .cap,
+  .grille {
+    display: none;
+  }
+  .radio {
+    gap: 8px;
+    min-height: 24rem;
+  }
+}
+
+/* ---------- desktop: fixed-proportion radio centred in the window ---------- */
+@media (min-width: 64rem) {
+  .page {
+    justify-content: center;
+  }
+  .stage {
+    flex: none;
+    height: auto;
+  }
+  .radio {
+    flex: none;
+    height: max(31rem, min(100dvh - 118px, 820px));
+    padding: 16px 16px 18px;
+    gap: 14px;
+  }
+}
+@media (min-width: 64rem) and (max-height: 36rem) {
+  .radio {
+    height: max(24rem, min(100dvh - 118px, 820px));
+  }
+}

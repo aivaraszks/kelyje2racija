@@ -1,0 +1,247 @@
+/* The host is the bezel; .lcd is the screen. It is the only part of the radio that grows. */
+:host {
+  display: flex;
+  flex: 1 1 auto;
+  min-width: 0;
+  min-height: 15rem;
+  max-height: 70dvh;
+  padding: 6px;
+  border-radius: var(--radius-xl);
+  background: linear-gradient(180deg, var(--color-metal-800), var(--color-metal-900));
+  box-shadow: var(--shadow-lcd);
+}
+.lcd {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border-radius: var(--radius-lg);
+  background: var(--color-lcd-bg);
+  color: var(--color-lcd-ink);
+  font-family: var(--font-lcd);
+  font-weight: 800;
+  letter-spacing: var(--tracking-lcd);
+}
+/* scanlines + inner edge shadow, above the text */
+.lcd::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 5;
+  background:
+    repeating-linear-gradient(0deg, rgb(22 32 15 / 5%) 0 1px, transparent 1px 3px),
+    repeating-linear-gradient(90deg, rgb(22 32 15 / 4%) 0 1px, transparent 1px 3px);
+  box-shadow: inset 0 0 14px rgb(22 32 15 / 16%);
+}
+
+/* ---------- search ---------- */
+.search {
+  flex: none;
+  display: flex;
+  gap: 6px;
+  padding: 8px;
+  background: var(--color-lcd-bg-lo);
+  border-bottom: 2px solid var(--color-lcd-ink);
+}
+.search[hidden] {
+  display: none;
+}
+.search input {
+  flex: 1;
+  min-width: 0;
+  height: var(--size-hit);
+  padding: 0 0.625rem;
+  border: 2px solid var(--color-lcd-ink);
+  border-radius: var(--radius-md);
+  background: var(--color-lcd-bg);
+  color: var(--color-lcd-ink);
+  caret-color: var(--color-lcd-ink);
+  font: 800 var(--text-lcd) / 1.3 var(--font-lcd);
+  letter-spacing: var(--tracking-lcd);
+  appearance: none;
+  -webkit-appearance: none;
+}
+.search input::placeholder {
+  color: var(--color-lcd-ink-soft);
+  opacity: 1;
+}
+.search input::-webkit-search-cancel-button {
+  display: none;
+}
+.search input:focus-visible,
+.clear:focus-visible {
+  outline: 3px solid var(--color-lcd-ink);
+  outline-offset: 2px;
+}
+.clear {
+  flex: none;
+  width: var(--size-hit);
+  height: var(--size-hit);
+  display: grid;
+  place-items: center;
+  padding: 0;
+  border: 2px solid var(--color-lcd-ink);
+  border-radius: var(--radius-md);
+  background: var(--color-lcd-bg-lo);
+  color: var(--color-lcd-ink);
+  cursor: pointer;
+}
+.clear:hover {
+  background: var(--color-lcd-bg-hi);
+}
+.clear svg {
+  width: 14px;
+  height: 14px;
+  fill: currentColor;
+  shape-rendering: crispEdges;
+}
+
+/* ---------- list ---------- */
+.list {
+  flex: 1 1 0;
+  min-height: 0;
+  position: relative;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-lcd-ink) var(--color-lcd-bg-lo);
+}
+.row {
+  position: relative;
+  display: flex;
+  align-items: center;
+  min-height: var(--size-hit);
+  padding: 0.5rem 0.75rem 0.5rem 2.25rem;
+  font-size: var(--text-lcd);
+  line-height: 1.3;
+  overflow-wrap: anywhere;
+  cursor: pointer;
+  border-bottom: 1px solid rgb(22 32 15 / 14%);
+  transition: background-color var(--duration-fast) linear;
+  -webkit-tap-highlight-color: transparent;
+}
+.row:hover {
+  background: var(--color-lcd-bg-hi);
+}
+.row[aria-selected='true'],
+.row[aria-selected='true']:hover {
+  background: var(--color-lcd-ink);
+  color: var(--color-lcd-bg);
+}
+.row:focus-visible {
+  outline: 3px solid var(--color-lcd-ink);
+  outline-offset: -3px;
+}
+.row[aria-selected='true']:focus-visible {
+  outline-color: var(--color-lcd-bg);
+}
+.marker,
+.dots {
+  position: absolute;
+  left: 0.8rem;
+  top: 50%;
+  width: 14px;
+  height: 14px;
+  margin-top: -7px;
+  gap: 2px;
+}
+.marker {
+  display: none;
+  align-items: flex-end;
+}
+.row.playing .marker {
+  display: flex;
+}
+.marker i {
+  flex: 1;
+  height: 100%;
+  background: var(--color-lcd-bg);
+  transform-origin: 50% 100%;
+  animation: var(--animate-marker);
+}
+.marker i:nth-child(2) {
+  animation-delay: -0.2s;
+}
+.marker i:nth-child(3) {
+  animation-delay: -0.4s;
+}
+.dots {
+  display: flex;
+  align-items: center;
+  animation: var(--animate-dots);
+}
+.dots i {
+  flex: 1;
+  height: 4px;
+  background: currentColor;
+}
+.empty {
+  flex: 1;
+  display: grid;
+  place-items: center;
+  margin: 0;
+  padding: 1rem;
+  font-size: var(--text-lcd-meta);
+  text-align: center;
+}
+.empty span {
+  padding: 0.5rem 1rem;
+  border: 2px dashed var(--color-lcd-ink);
+  border-radius: var(--radius-md);
+}
+
+/* ---------- footer ---------- */
+.foot {
+  flex: none;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px 10px;
+  padding: 6px 8px;
+  background: var(--color-lcd-bg-lo);
+  border-top: 2px solid var(--color-lcd-ink);
+  font-size: var(--text-lcd-meta);
+  line-height: 1.25;
+}
+.seg {
+  display: flex;
+  border: 2px solid var(--color-lcd-ink);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+.seg button {
+  height: calc(var(--size-hit) - 4px);
+  min-width: var(--size-hit);
+  padding: 0 0.625rem;
+  border: 0;
+  background: var(--color-lcd-bg-lo);
+  color: var(--color-lcd-ink);
+  font: inherit;
+  letter-spacing: inherit;
+  cursor: pointer;
+}
+.seg button + button {
+  border-left: 2px solid var(--color-lcd-ink);
+}
+.seg button:hover {
+  background: var(--color-lcd-bg-hi);
+}
+.seg button[aria-pressed='true'],
+.seg button[aria-pressed='true']:hover {
+  background: var(--color-lcd-ink);
+  color: var(--color-lcd-bg);
+}
+.seg button:focus-visible {
+  outline: 3px solid var(--color-lcd-ink);
+  outline-offset: -5px;
+}
+.seg button[aria-pressed='true']:focus-visible {
+  outline-color: var(--color-lcd-bg);
+}
+.count {
+  white-space: nowrap;
+}

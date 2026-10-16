@@ -1,0 +1,13 @@
+allowBuilds:
+  '@parcel/watcher': true
+  esbuild: true
+  ffmpeg-static: true
+  lmdb: true
+  msgpackr-extract: true
+minimumReleaseAgeExclude:
+  - '@angular-devkit/architect@0.2202.3'
+  - '@angular-devkit/core@22.2.3'
+  - '@angular-devkit/schematics@22.2.3'
+  - '@angular/build@22.2.3'
+  - '@angular/cli@22.2.3'
+  - '@schematics/angular@22.2.3'

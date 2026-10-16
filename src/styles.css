@@ -1,0 +1,206 @@
+@import 'tailwindcss';
+
+/*
+ * Design tokens. Owned by the designer: docs/design/design-system.md is the
+ * source of truth (colour ratios, usage rules). Change both together.
+ */
+
+/* LCD font: Doto (SIL OFL 1.1, src/fonts/OFL-Doto.txt), self-hosted and bundled by the build. */
+@font-face {
+  font-family: 'Doto';
+  font-style: normal;
+  font-weight: 800;
+  font-display: swap;
+  src: url('./fonts/doto-latin-800-normal.woff2') format('woff2');
+  unicode-range:
+    U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329,
+    U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: 'Doto';
+  font-style: normal;
+  font-weight: 800;
+  font-display: swap;
+  src: url('./fonts/doto-latin-ext-800-normal.woff2') format('woff2');
+  unicode-range:
+    U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329,
+    U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F,
+    U+A720-A7FF;
+}
+
+@custom-variant short (@media (max-height: 36rem));
+@custom-variant coarse (@media (pointer: coarse));
+
+/* "static": emit every token as a CSS variable, because component .css files use var(--...) directly. */
+@theme static {
+  /* ---------- colour: drop Tailwind defaults, keep only our tokens ---------- */
+  --color-*: initial;
+  --color-white: #ffffff;
+
+  /* metal (radio body) */
+  --color-metal-50: #f7f8fa;
+  --color-metal-100: #eef0f3;
+  --color-metal-200: #dde1e6;
+  --color-metal-300: #c8ccd2;
+  --color-metal-400: #aeb4bc;
+  --color-metal-500: #8b929b;
+  --color-metal-600: #646b74;
+  --color-metal-700: #454b53;
+  --color-metal-800: #2a2f36;
+  --color-metal-900: #1b1f24;
+  --color-metal-950: #11161b;
+
+  /* LCD */
+  --color-lcd-bg: #b7c4a5;
+  --color-lcd-bg-hi: #c4d0b4;
+  --color-lcd-bg-lo: #a3b292;
+  --color-lcd-ink: #16200f;
+  --color-lcd-ink-soft: #2e3c28;
+
+  /* PRIIMTI green and LED */
+  --color-go-400: #5ccb7b;
+  --color-go-600: #3fa75e;
+  --color-led-on: #4df07f;
+  --color-led-off: #24512f;
+  --color-led-glow: rgb(77 240 127 / 55%);
+
+  /* page furniture over the scene */
+  --color-chip-bg: rgb(17 22 27 / 90%);
+  --color-chip-fg: #f1f3f5;
+  --color-chip-accent: #b7c4a5;
+  --color-error-bg: #5c1414;
+  --color-error-line: #ff8a80;
+  --color-focus: #0a3fa8;
+
+  /* ---------- typography ---------- */
+  --font-lcd: 'Doto', ui-monospace, 'Cascadia Mono', 'SFMono-Regular', Menlo, Consolas, monospace;
+  --font-ui: ui-sans-serif, system-ui, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+
+  --text-lcd: 1.125rem;
+  --text-lcd--line-height: 1.3;
+  --text-lcd-meta: 1rem;
+  --text-lcd-meta--line-height: 1.25;
+  --text-key: 0.8125rem;
+  --text-key--line-height: 1.1;
+  --text-chip: 0.875rem;
+  --text-chip--line-height: 1.4;
+
+  --tracking-key: 0.04em;
+  --tracking-lcd: 0.02em;
+
+  /* ---------- spacing, size ---------- */
+  --spacing: 0.25rem;
+  --size-hit: 2.75rem;
+  --container-radio: 30rem;
+
+  /* ---------- breakpoints (default sm/md/lg/xl remain) ---------- */
+  --breakpoint-xs: 22.5rem;
+
+  /* ---------- radii ---------- */
+  --radius-xs: 0.125rem;
+  --radius-sm: 0.25rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 0.75rem;
+  --radius-xl: 1.25rem;
+  --radius-2xl: 1.75rem;
+
+  /* ---------- shadows ---------- */
+  --shadow-radio:
+    inset 0 1px 0 rgb(255 255 255 / 70%), inset 0 -2px 0 rgb(0 0 0 / 25%),
+    0 18px 40px -8px rgb(5 10 15 / 55%), 0 4px 10px rgb(5 10 15 / 35%);
+  --shadow-lcd:
+    inset 0 2px 6px rgb(0 0 0 / 45%), 0 0 0 2px var(--color-metal-700),
+    0 3px 0 2px rgb(255 255 255 / 45%);
+  --shadow-key:
+    inset 0 1px 0 rgb(255 255 255 / 85%), inset 0 -2px 0 rgb(0 0 0 / 18%),
+    0 3px 0 var(--color-metal-600), 0 6px 8px rgb(5 10 15 / 35%);
+  --shadow-key-down: inset 0 2px 5px rgb(0 0 0 / 40%), 0 1px 0 var(--color-metal-600);
+  --shadow-led-on: 0 0 10px 2px var(--color-led-glow);
+  --shadow-chip: 0 2px 8px rgb(5 10 15 / 35%);
+  --shadow-toast: 0 6px 18px rgb(5 10 15 / 50%);
+
+  /* ---------- motion ---------- */
+  --duration-fast: 120ms;
+  --duration-base: 200ms;
+  --duration-slow: 400ms;
+  --ease-out: cubic-bezier(0.22, 0.8, 0.3, 1);
+
+  --animate-marker: marker 0.7s steps(4, end) infinite;
+  --animate-led: led 1.6s ease-in-out infinite;
+  --animate-busy: busy 1s ease-in-out infinite;
+  --animate-toast-in: toast-in 200ms var(--ease-out) both;
+  --animate-dots: dots 0.9s steps(3, end) infinite;
+
+  @keyframes marker {
+    0%,
+    100% {
+      transform: scaleY(0.35);
+    }
+    50% {
+      transform: scaleY(1);
+    }
+  }
+  @keyframes led {
+    0%,
+    100% {
+      box-shadow: 0 0 6px 1px var(--color-led-glow);
+    }
+    50% {
+      box-shadow: 0 0 14px 4px var(--color-led-glow);
+    }
+  }
+  /* The label is never faded (contrast); a ring pulses inside the key instead. */
+  @keyframes busy {
+    0%,
+    100% {
+      box-shadow:
+        inset 0 0 0 0 var(--color-metal-700),
+        var(--shadow-key-down);
+    }
+    50% {
+      box-shadow:
+        inset 0 0 0 3px var(--color-metal-700),
+        var(--shadow-key-down);
+    }
+  }
+  @keyframes toast-in {
+    from {
+      opacity: 0;
+      transform: translateY(8px);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+  @keyframes dots {
+    from {
+      clip-path: inset(0 100% 0 0);
+    }
+    to {
+      clip-path: inset(0 0 0 0);
+    }
+  }
+}
+
+@layer base {
+  html {
+    color-scheme: light;
+    font-family: var(--font-ui);
+  }
+
+  :focus-visible {
+    outline: 3px solid var(--color-focus);
+    outline-offset: 3px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation: none !important;
+      transition: none !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}

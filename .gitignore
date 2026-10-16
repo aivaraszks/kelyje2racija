@@ -1,1 +1,29 @@
 .claude/settings.local.json
+
+# Source WAVs (copied from kelyje); only generated MP3s are committed
+tools/sounds-src/
+tools/transcripts/
+
+# Angular
+/dist
+/tmp
+/out-tsc
+/bazel-out
+/node_modules
+npm-debug.log
+yarn-error.log
+.idea/
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+!.vscode/mcp.json
+.history/*
+/.angular/cache
+.sass-cache/
+/coverage
+testem.log
+__screenshots__/
+.DS_Store
+Thumbs.db
