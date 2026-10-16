@@ -5,56 +5,58 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Racija – vizualinis maketas</title>
 <!--
-  RACIJA visual preview. Self-contained: inline CSS, SVG and JS, no build.
-  The only external request is the LCD font (Doto / Pixelify Sans from Google Fonts);
-  offline it falls back to a monospace font. The tokens in :root mirror src/styles.css
-  (@theme) and docs/design/design-system.md. Everything inside .frame is the product
-  design; everything else (toolbar, swatches) is only preview chrome.
+  RACIJA visual preview (legacy-radio: bitmap shell). Self-contained: inline CSS, SVG and JS, no build.
+  The radio is the prepared legacy bitmap in three slices (top / stretched mid band / bottom) with an HTML overlay
+  (LCD surface, KURTI/GARSAI pill, SIŲSTI round key). The slices come from the SHELL constant in the script:
+  data URIs when the file is published standalone; if they are not embedded, the script falls back to the
+  relative files ../../../public/radio/shell-*.webp.
+  The only external request is the LCD font (Doto / Pixelify Sans from Google Fonts); offline it falls back to
+  a monospace font. The tokens in :root mirror src/styles.css (@theme) and docs/design/design-system.md.
+  Everything inside .frame is the product design; everything else (toolbar, swatches) is only preview chrome.
+  Sizing and geometry: docs/design/components/radio.md (sections 2 and 3).
 -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Doto:wght@800&family=Pixelify+Sans:wght@700&display=swap" rel="stylesheet">
 <style>
+@property --shell-w { syntax: '<length>'; inherits: true; initial-value: 300px; }
+@property --u { syntax: '<length>'; inherits: true; initial-value: 0.54px; }
+
 :root {
   --color-white: #ffffff;
-  --color-metal-50: #f7f8fa; --color-metal-100: #eef0f3; --color-metal-200: #dde1e6; --color-metal-300: #c8ccd2;
-  --color-metal-400: #aeb4bc; --color-metal-500: #8b929b; --color-metal-600: #646b74; --color-metal-700: #454b53;
-  --color-metal-800: #2a2f36; --color-metal-900: #1b1f24; --color-metal-950: #11161b;
+  --color-metal-950: #11161b;
   --color-lcd-bg: #b7c4a5; --color-lcd-bg-hi: #c4d0b4; --color-lcd-bg-lo: #a3b292;
   --color-lcd-ink: #16200f; --color-lcd-ink-soft: #2e3c28;
-  --color-go-400: #5ccb7b; --color-go-600: #3fa75e;
-  --color-led-on: #4df07f; --color-led-off: #24512f; --color-led-glow: rgb(77 240 127 / 55%);
+  --color-key-ink: #444444;
   --color-chip-bg: rgb(17 22 27 / 90%); --color-chip-fg: #f1f3f5; --color-chip-accent: #b7c4a5;
   --color-error-bg: #5c1414; --color-error-line: #ff8a80; --color-focus: #0a3fa8;
 
   --font-lcd: 'Doto', ui-monospace, 'Cascadia Mono', 'SFMono-Regular', Menlo, Consolas, monospace;
   --font-ui: ui-sans-serif, system-ui, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  --font-key: 'Arial Narrow', 'Roboto Condensed', 'Helvetica Neue', Arial, sans-serif;
   --lcd-weight: 800;
-  --text-lcd: 1.125rem; --text-lcd-meta: 1rem; --text-key: 0.8125rem; --text-chip: 0.875rem;
+  --text-lcd-meta: 1rem; --text-chip: 0.875rem;
   --tracking-key: 0.04em; --tracking-lcd: 0.02em;
-  --size-hit: 2.75rem;
-  --radius-xs: 0.125rem; --radius-sm: 0.25rem; --radius-md: 0.5rem; --radius-lg: 0.75rem; --radius-xl: 1.25rem; --radius-2xl: 1.75rem;
+  --size-lcd-row: 2rem;
+  --shell-w-min: 300px; --shell-w-max: 556px;
+  --radius-xs: 0.125rem; --radius-sm: 0.25rem; --radius-md: 0.5rem; --radius-lg: 0.75rem; --radius-xl: 1.25rem;
 
-  --shadow-radio: inset 0 1px 0 rgb(255 255 255 / 70%), inset 0 -2px 0 rgb(0 0 0 / 25%), 0 18px 40px -8px rgb(5 10 15 / 55%), 0 4px 10px rgb(5 10 15 / 35%);
-  --shadow-lcd: inset 0 2px 6px rgb(0 0 0 / 45%), 0 0 0 2px var(--color-metal-700), 0 3px 0 2px rgb(255 255 255 / 45%);
-  --shadow-key: inset 0 1px 0 rgb(255 255 255 / 85%), inset 0 -2px 0 rgb(0 0 0 / 18%), 0 3px 0 var(--color-metal-600), 0 6px 8px rgb(5 10 15 / 35%);
-  --shadow-key-down: inset 0 2px 5px rgb(0 0 0 / 40%), 0 1px 0 var(--color-metal-600);
-  --shadow-led-on: 0 0 10px 2px var(--color-led-glow);
   --shadow-chip: 0 2px 8px rgb(5 10 15 / 35%);
   --shadow-toast: 0 6px 18px rgb(5 10 15 / 50%);
+  --shadow-focus-key: 0 0 0 2px var(--color-white);
 
-  --duration-fast: 120ms; --duration-base: 200ms; --ease-out: cubic-bezier(0.22, 0.8, 0.3, 1);
+  --duration-fast: 120ms; --ease-out: cubic-bezier(0.22, 0.8, 0.3, 1);
   --animate-marker: marker 0.7s steps(4, end) infinite;
-  --animate-led: led 1.6s ease-in-out infinite;
-  --animate-busy: busy 1s ease-in-out infinite;
+  --animate-key-busy: key-busy 1s ease-in-out infinite;
+  --animate-bar: bar 0.8s steps(8, end) infinite;
   --animate-toast-in: toast-in 200ms var(--ease-out) both;
 }
 @keyframes marker { 0%, 100% { transform: scaleY(0.35); } 50% { transform: scaleY(1); } }
-@keyframes led { 0%, 100% { box-shadow: 0 0 6px 1px var(--color-led-glow); } 50% { box-shadow: 0 0 14px 4px var(--color-led-glow); } }
-@keyframes busy {
-  0%, 100% { box-shadow: inset 0 0 0 0 var(--color-metal-700), var(--shadow-key-down); }
-  50% { box-shadow: inset 0 0 0 3px var(--color-metal-700), var(--shadow-key-down); }
+@keyframes key-busy {
+  0%, 100% { box-shadow: inset 0 0 0 2px var(--color-key-ink); }
+  50% { box-shadow: inset 0 0 0 4px var(--color-key-ink); }
 }
+@keyframes bar { from { background-position: 0 0; } to { background-position: 16px 0; } }
 @keyframes toast-in { from { opacity: 0; transform: translate(-50%, 8px); } to { opacity: 1; transform: translate(-50%, 0); } }
 
 body.f-doto { --font-lcd: 'Doto', ui-monospace, Consolas, monospace; --lcd-weight: 800; }
@@ -88,7 +90,8 @@ body { margin: 0; background: #0c1014; color: #e4e8ec; font: 14px/1.45 var(--fon
 .sw i { flex: none; width: 34px; height: 34px; border-radius: 6px; border: 1px solid rgb(255 255 255 / 20%); }
 .sw b { display: block; font-size: 12px; color: #e4e8ec; }
 .sw span { color: #9aa6b2; }
-.glyph { display: inline-block; margin-top: 8px; padding: 14px 18px; border-radius: var(--radius-lg); background: var(--color-lcd-bg); color: var(--color-lcd-ink); font: var(--lcd-weight) 1.5rem/1.4 var(--font-lcd); letter-spacing: var(--tracking-lcd); box-shadow: var(--shadow-lcd); }
+.glyph { display: inline-block; margin-top: 8px; padding: 14px 18px; border-radius: var(--radius-lg); background: var(--color-lcd-bg); color: var(--color-lcd-ink); font: var(--lcd-weight) 1.5rem/1.4 var(--font-lcd); letter-spacing: var(--tracking-lcd); }
+.glyph.s1 { font-size: 1rem; line-height: 1.25; }
 
 /* ================= product: frame, scene ================= */
 .frame { position: relative; overflow: hidden; background: #000; isolation: isolate; font-family: var(--font-ui); }
@@ -96,107 +99,127 @@ body { margin: 0; background: #0c1014; color: #e4e8ec; font: 14px/1.45 var(--fon
 .dim { position: absolute; inset: 0; z-index: 1; pointer-events: none;
   background: radial-gradient(120% 90% at 50% 45%, transparent 40%, rgb(8 12 16 / 45%) 100%), rgb(8 12 16 / 22%); }
 .stage { position: absolute; inset: 0; z-index: 10; display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 12px; }
+.is-desk .stage { padding-top: 14px; justify-content: center; }
+/* desktop (app: min-width 64rem): the radio takes at most 75% of the viewport height so more scene shows */
+.is-desk .shell-stage { flex: 0 1 75%; max-height: 75%; }
 .sr { position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
 
-/* ================= product: radio body ================= */
-.radio { position: relative; flex: 1 1 0; min-height: 0; width: min(100%, 30rem); display: flex; flex-direction: column; gap: 12px;
-  padding: 12px 12px 14px; border-radius: var(--radius-2xl); box-shadow: var(--shadow-radio);
-  background:
-    repeating-linear-gradient(0deg, rgb(255 255 255 / 6%) 0 1px, rgb(0 0 0 / 3%) 1px 2px),
-    linear-gradient(180deg, var(--color-metal-200) 0%, var(--color-metal-300) 45%, var(--color-metal-400) 100%); }
-.is-desk .stage { justify-content: center; padding-top: 14px; }
-.is-desk .radio { flex: none; height: min(100% - 118px, 820px); padding: 16px 16px 18px; gap: 14px; }
-.screw { position: absolute; width: 10px; height: 10px; border-radius: 50%;
-  background: linear-gradient(135deg, transparent 44%, var(--color-metal-600) 44% 56%, transparent 56%), radial-gradient(circle at 35% 30%, var(--color-metal-50), var(--color-metal-500));
-  box-shadow: 0 1px 0 rgb(255 255 255 / 70%), inset 0 0 0 1px rgb(0 0 0 / 25%); }
-.screw.tl { left: 9px; top: 9px; } .screw.tr { right: 9px; top: 9px; } .screw.bl { left: 9px; bottom: 9px; } .screw.br { right: 9px; bottom: 9px; }
-.screw.tl, .screw.tr { transform: rotate(35deg); } .screw.bl, .screw.br { transform: rotate(-20deg); }
+/* ================= product: bitmap shell (radio.md sections 2 and 3) ================= */
+.shell-stage { flex: 1 1 0; min-height: 0; width: 100%; container-type: size; display: flex; justify-content: center; align-items: center; }
+.shell { --H: 1136; /* 1024 + 112 */
+  --shell-w: clamp(min(100cqw, var(--shell-w-min)), min(100cqw, 100cqh * 556 / var(--H)), var(--shell-w-max));
+  --u: calc(var(--shell-w) / 556);
+  position: relative; flex: none; display: flex; flex-direction: column; width: var(--shell-w);
+  height: clamp(calc(1024 * var(--u)), 100cqh, calc(1136 * var(--u))); }
+.slice { display: block; width: 100%; flex: none; pointer-events: none; user-select: none; -webkit-user-drag: none; }
+.slice-top { aspect-ratio: 556 / 272; height: auto; }
+.slice-bottom { aspect-ratio: 556 / 744; height: auto; }
+.slice-mid { flex: 1 1 0; min-height: calc(8 * var(--u)); max-height: calc(120 * var(--u)); margin-block: -0.5px; background: center / 100% 100% no-repeat; }
+/* LCD size switch (preview only): the real app is always "auto" */
+.lcd-10 .shell { --H: 1024; height: auto; }
+.lcd-10 .slice-mid { flex: none; height: calc(8 * var(--u)); }
+.lcd-14 .shell { --H: 1136; height: auto; }
+.lcd-14 .slice-mid { flex: none; height: calc(120 * var(--u)); }
 
-.cap { flex: none; display: flex; align-items: center; gap: 4px; height: 3.25rem; padding: 0 10px; }
-.logo { flex: none; margin: 0; height: 100%; padding: 0 14px; display: grid; place-items: center; border-radius: var(--radius-lg);
-  background: linear-gradient(180deg, var(--color-metal-800), var(--color-metal-900));
-  box-shadow: inset 0 1px 0 rgb(255 255 255 / 18%), inset 0 -2px 0 rgb(0 0 0 / 40%), 0 1px 0 rgb(255 255 255 / 60%); }
-.logo svg { display: block; height: 1.75rem; width: auto; fill: var(--color-metal-200); shape-rendering: crispEdges; }
-.cable { flex: 1; min-width: 0; height: 2rem; overflow: visible; }
-.cable path { fill: none; vector-effect: non-scaling-stroke; stroke-linecap: round; stroke-linejoin: round; }
-.jack { flex: none; width: 1.75rem; height: 1.75rem; border-radius: 50%; border: 3px solid var(--color-metal-800);
-  background: radial-gradient(circle at 50% 50%, var(--color-metal-950) 0 28%, transparent 30%), radial-gradient(circle at 35% 30%, var(--color-metal-100), var(--color-metal-500) 65%, var(--color-metal-700));
-  box-shadow: 0 1px 0 rgb(255 255 255 / 60%), inset 0 -1px 2px rgb(0 0 0 / 35%); }
+.logo-h1 { position: absolute; margin: 0; left: calc(var(--u) * 136); top: calc(var(--u) * 66); width: calc(var(--u) * 263); height: calc(var(--u) * 51); overflow: hidden; color: transparent; font-size: 1px; }
 
-/* ================= LCD ================= */
-.bezel { flex: 1 1 auto; min-height: 15rem; max-height: calc(var(--fh) * 0.7); display: flex; padding: 6px; border-radius: var(--radius-xl);
-  background: linear-gradient(180deg, var(--color-metal-800), var(--color-metal-900)); box-shadow: var(--shadow-lcd); }
-.lcd { position: relative; flex: 1; min-width: 0; display: flex; flex-direction: column; overflow: hidden; border-radius: var(--radius-lg);
-  background: var(--color-lcd-bg); color: var(--color-lcd-ink); font-family: var(--font-lcd); font-weight: var(--lcd-weight); letter-spacing: var(--tracking-lcd); }
+/* ================= LCD surface (radio.md section 4) ================= */
+.lcd { position: absolute; left: calc(var(--u) * 77); width: calc(var(--u) * 386); top: calc(var(--u) * 148); bottom: calc(var(--u) * 590);
+  container: lcd / size; display: flex; flex-direction: column; overflow: hidden; border-radius: calc(var(--u) * 4);
+  background: var(--color-lcd-bg); color: var(--color-lcd-ink); font-family: var(--font-lcd); font-weight: var(--lcd-weight); font-size: var(--text-lcd-meta); line-height: 1.25; letter-spacing: var(--tracking-lcd); }
 .lcd::after { content: ""; position: absolute; inset: 0; pointer-events: none; z-index: 5;
   background: repeating-linear-gradient(0deg, rgb(22 32 15 / 5%) 0 1px, transparent 1px 3px), repeating-linear-gradient(90deg, rgb(22 32 15 / 4%) 0 1px, transparent 1px 3px);
-  box-shadow: inset 0 0 14px rgb(22 32 15 / 16%); }
-.search { flex: none; display: flex; gap: 6px; padding: 8px; background: var(--color-lcd-bg-lo); border-bottom: 2px solid var(--color-lcd-ink); }
-.search[hidden], .empty[hidden], .list[hidden], .hint[hidden], .toast[hidden], .clear[hidden] { display: none; }
-.search input { flex: 1; min-width: 0; height: var(--size-hit); padding: 0 0.625rem; border: 2px solid var(--color-lcd-ink); border-radius: var(--radius-md);
-  background: var(--color-lcd-bg); color: var(--color-lcd-ink); caret-color: var(--color-lcd-ink); font: var(--lcd-weight) var(--text-lcd)/1.3 var(--font-lcd); letter-spacing: var(--tracking-lcd); appearance: none; -webkit-appearance: none; border-radius: var(--radius-md); }
-.search input::placeholder { color: var(--color-lcd-ink-soft); opacity: 1; }
-.search input::-webkit-search-cancel-button { display: none; }
-.search input:focus-visible { outline: 3px solid var(--color-lcd-ink); outline-offset: 2px; }
-.clear { flex: none; width: var(--size-hit); height: var(--size-hit); display: grid; place-items: center; padding: 0; border: 2px solid var(--color-lcd-ink); border-radius: var(--radius-md); background: var(--color-lcd-bg-lo); color: var(--color-lcd-ink); cursor: pointer; }
-.clear:hover { background: var(--color-lcd-bg-hi); }
-.clear:focus-visible { outline: 3px solid var(--color-lcd-ink); outline-offset: 2px; }
-.clear svg { width: 14px; height: 14px; fill: currentColor; shape-rendering: crispEdges; }
+  box-shadow: inset 0 0 14px rgb(22 32 15 / 16%), inset 0 calc(var(--u) * 2) calc(var(--u) * 3) rgb(0 0 0 / 25%); }
+.lcd button, .lcd input, .lcd textarea { font: inherit; letter-spacing: inherit; color: inherit; }
+.lcd [hidden] { display: none !important; }
+.lcd-main { flex: 1 1 0; min-height: 0; display: flex; flex-direction: column; }
 
 .list { flex: 1 1 0; min-height: 0; position: relative; overflow-y: auto; overscroll-behavior: contain; scrollbar-width: thin; scrollbar-color: var(--color-lcd-ink) var(--color-lcd-bg-lo); }
-.row { position: relative; display: flex; align-items: center; min-height: var(--size-hit); padding: 0.5rem 0.75rem 0.5rem 2.25rem;
-  font-size: var(--text-lcd); line-height: 1.3; overflow-wrap: anywhere; cursor: pointer; border-bottom: 1px solid rgb(22 32 15 / 14%);
+.row { position: relative; display: flex; align-items: center; min-height: var(--size-lcd-row); padding: 0.375rem 0.5rem 0.375rem 1.75rem;
+  overflow-wrap: anywhere; cursor: pointer; border-bottom: 1px solid rgb(22 32 15 / 14%);
   transition: background-color var(--duration-fast) linear; -webkit-tap-highlight-color: transparent; }
-.row:hover { background: var(--color-lcd-bg-hi); }
+@media (hover: hover) { .row:hover { background: var(--color-lcd-bg-hi); } }
 .row[aria-selected="true"], .row[aria-selected="true"]:hover { background: var(--color-lcd-ink); color: var(--color-lcd-bg); }
 .row:focus-visible { outline: 3px solid var(--color-lcd-ink); outline-offset: -3px; }
 .row[aria-selected="true"]:focus-visible { outline-color: var(--color-lcd-bg); }
-.marker { position: absolute; left: 0.8rem; top: 50%; width: 14px; height: 14px; margin-top: -7px; display: none; gap: 2px; align-items: flex-end; }
-.marker i { flex: 1; height: 100%; background: var(--color-lcd-bg); transform-origin: 50% 100%; animation: var(--animate-marker); }
+.marker { position: absolute; left: 0.5rem; top: 50%; width: 12px; height: 12px; margin-top: -6px; display: none; gap: 2px; align-items: flex-end; }
+.marker i { flex: 1; height: 100%; background: currentColor; transform-origin: 50% 100%; animation: var(--animate-marker); }
 .marker i:nth-child(2) { animation-delay: -0.2s; } .marker i:nth-child(3) { animation-delay: -0.4s; }
 .row.playing .marker { display: flex; }
-.empty { flex: 1; display: grid; place-items: center; padding: 1rem; font-size: var(--text-lcd-meta); text-align: center; margin: 0; }
-.empty span { padding: 0.5rem 1rem; border: 2px dashed var(--color-lcd-ink); border-radius: var(--radius-md); }
+.empty { flex: 1; display: grid; place-items: center; padding: 1rem; text-align: center; margin: 0; }
+.empty span { padding: 0.5rem 1rem; border: 2px dashed var(--color-lcd-ink); border-radius: var(--radius-sm); }
 
-.lcd-foot { flex: none; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 6px 10px; padding: 6px 8px;
-  background: var(--color-lcd-bg-lo); border-top: 2px solid var(--color-lcd-ink); font-size: var(--text-lcd-meta); line-height: 1.25; }
-.seg { display: flex; border: 2px solid var(--color-lcd-ink); border-radius: var(--radius-md); overflow: hidden; }
-.seg button { height: calc(var(--size-hit) - 4px); min-width: var(--size-hit); padding: 0 0.625rem; border: 0; background: var(--color-lcd-bg-lo); color: var(--color-lcd-ink); font: inherit; letter-spacing: inherit; cursor: pointer; }
-.seg button + button { border-left: 2px solid var(--color-lcd-ink); }
-.seg button:hover { background: var(--color-lcd-bg-hi); }
+/* bottom strip (radio.md 5.2) */
+.strip { flex: none; display: grid; grid-template-columns: minmax(0, 1fr); gap: 4px; padding: 4px; background: var(--color-lcd-bg-lo); border-top: 2px solid var(--color-lcd-ink); }
+@container lcd (min-width: 340px) { .strip:has(.sfield:not([hidden])) { grid-template-columns: minmax(0, 1fr) auto; } }
+.sfield { position: relative; min-width: 0; }
+.sfield input { display: block; width: 100%; height: var(--size-lcd-row); padding: 0 2rem 0 0.5rem; border: 2px solid var(--color-lcd-ink); border-radius: var(--radius-sm);
+  background: var(--color-lcd-bg); caret-color: var(--color-lcd-ink); appearance: none; -webkit-appearance: none; }
+.sfield input::placeholder { color: var(--color-lcd-ink-soft); opacity: 1; }
+.sfield input::-webkit-search-cancel-button { display: none; }
+.sfield input:focus-visible, .kp textarea:focus-visible, .lbtn:focus-visible { outline: 3px solid var(--color-lcd-ink); outline-offset: 1px; }
+.clear { position: absolute; right: 0; top: 0; width: var(--size-lcd-row); height: var(--size-lcd-row); display: grid; place-items: center; padding: 0; border: 0; background: transparent; cursor: pointer; }
+@media (hover: hover) { .clear:hover { background: var(--color-lcd-bg-hi); } }
+.clear:focus-visible { outline: 3px solid var(--color-lcd-ink); outline-offset: -5px; }
+.clear svg { width: 14px; height: 14px; fill: currentColor; shape-rendering: crispEdges; }
+.seg { display: grid; grid-template-columns: 1fr 1fr; }
+.seg button { height: var(--size-lcd-row); min-width: 5rem; padding: 0 0.5rem; border: 2px solid var(--color-lcd-ink); background: var(--color-lcd-bg-lo); cursor: pointer; }
+.seg button:first-child { border-radius: var(--radius-sm) 0 0 var(--radius-sm); }
+.seg button:last-child { margin-left: -2px; border-radius: 0 var(--radius-sm) var(--radius-sm) 0; }
+@media (hover: hover) { .seg button:hover { background: var(--color-lcd-bg-hi); } }
 .seg button[aria-pressed="true"], .seg button[aria-pressed="true"]:hover { background: var(--color-lcd-ink); color: var(--color-lcd-bg); }
 .seg button:focus-visible { outline: 3px solid var(--color-lcd-ink); outline-offset: -5px; }
 .seg button[aria-pressed="true"]:focus-visible { outline-color: var(--color-lcd-bg); }
-.count { white-space: nowrap; }
 
-/* ================= keys ================= */
-.keys { flex: none; display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); align-items: center; gap: 10px; padding: 2px 4px 4px; }
-.key { position: relative; border: 0; padding: 0; cursor: pointer; color: var(--color-metal-900); font: 800 var(--text-key)/1.1 var(--font-ui); letter-spacing: var(--tracking-key); text-transform: uppercase;
-  transition: transform var(--duration-fast) var(--ease-out), box-shadow var(--duration-fast) var(--ease-out); -webkit-tap-highlight-color: transparent; }
-.key:focus-visible { outline: 3px solid var(--color-focus); outline-offset: 3px; }
-.pill { height: var(--size-hit); padding: 0 0.5rem; border-radius: 9999px; box-shadow: var(--shadow-key);
-  background: linear-gradient(180deg, var(--color-metal-100), var(--color-metal-300)); }
-.pill:hover { background: linear-gradient(180deg, var(--color-metal-50), var(--color-metal-200)); }
-.pill:active, .pill[aria-expanded="true"] { transform: translateY(3px); box-shadow: var(--shadow-key-down); background: var(--color-metal-300); }
-.pill[aria-disabled="true"] { background: var(--color-metal-400); box-shadow: inset 0 1px 3px rgb(0 0 0 / 22%), 0 1px 0 rgb(255 255 255 / 40%); outline: 2px dashed var(--color-metal-600); outline-offset: -5px; cursor: default; }
-.pill[aria-disabled="true"]:focus-visible { outline: 3px solid var(--color-focus); outline-offset: 3px; }
-.pill[aria-busy="true"] { transform: translateY(3px); background: var(--color-metal-300); animation: var(--animate-busy); }
-.pill .t { display: block; text-align: center; white-space: nowrap; }
-.pill .t, .accept .t { padding-top: 1px; }
+/* KURTI panel (radio.md section 8) */
+.kp { flex: 1 1 0; min-height: 0; overflow-y: auto; overscroll-behavior: contain; display: flex; flex-direction: column; gap: 4px; padding: 4px 6px 6px;
+  scrollbar-width: thin; scrollbar-color: var(--color-lcd-ink) var(--color-lcd-bg); }
+.kp-head { display: grid; grid-template-columns: 1fr auto; grid-template-areas: "label count" "ta ta"; column-gap: 8px; }
+.kp-head label { grid-area: label; }
+.kp-head .kp-count { grid-area: count; text-align: right; }
+.kp textarea { grid-area: ta; display: block; width: 100%; height: calc(3 * 1.25rem + 0.5rem + 4px); resize: none; margin-top: 2px; padding: 0.25rem 0.5rem; border: 2px solid var(--color-lcd-ink); border-radius: var(--radius-sm);
+  background: var(--color-lcd-bg); caret-color: var(--color-lcd-ink); overflow-y: auto; }
+@container lcd (max-height: 260px) { .kp textarea { height: calc(2 * 1.25rem + 0.5rem + 4px); } }
+.kp textarea::placeholder { color: var(--color-lcd-ink-soft); opacity: 1; }
+.kp textarea[aria-invalid="true"] { border-style: dashed; border-width: 3px; }
+.lbtn { display: flex; align-items: center; justify-content: center; gap: 8px; flex: none; width: 100%; height: var(--size-lcd-row); padding: 0 0.5rem; border: 2px solid var(--color-lcd-ink); border-radius: var(--radius-sm);
+  background: var(--color-lcd-bg-lo); cursor: pointer; -webkit-tap-highlight-color: transparent; }
+@media (hover: hover) { .lbtn:hover { background: var(--color-lcd-bg-hi); } }
+.lbtn:active { background: var(--color-lcd-ink); color: var(--color-lcd-bg); }
+.lbtn[aria-disabled="true"] { border-style: dashed; cursor: default; background: var(--color-lcd-bg-lo); color: var(--color-lcd-ink); }
+.lbtn[aria-busy="true"] { animation: var(--animate-key-busy); box-shadow: inset 0 0 0 3px var(--color-key-ink); }
+.lbtn.retry { width: auto; align-self: flex-start; }
+.lbtn .marker { position: static; display: flex; margin: 0; }
+.kp-status { display: flex; flex-direction: column; gap: 4px; min-height: 2.5rem; }
+.kp-status p, .kp-credit { margin: 0; }
+.kp-status .err { display: flex; gap: 6px; align-items: flex-start; }
+.alert { flex: none; width: 14px; height: 14px; margin-top: 3px; fill: currentColor; shape-rendering: crispEdges; }
+.pbar { flex: none; height: 12px; border: 2px solid var(--color-lcd-ink); background: var(--color-lcd-bg); }
+.pbar i { display: block; height: 100%; background: var(--color-lcd-ink); }
+.pbar.ind i { width: 100%; background: repeating-linear-gradient(90deg, var(--color-lcd-ink) 0 4px, transparent 4px 8px); background-size: 16px 100%; animation: var(--animate-bar); }
+.kp-credit { color: var(--color-lcd-ink-soft); }
 
-.accept { width: 5.75rem; height: 5.75rem; border-radius: 50%; background: var(--color-metal-950);
-  box-shadow: 0 3px 0 var(--color-metal-700), 0 6px 8px rgb(5 10 15 / 35%), inset 0 1px 0 rgb(255 255 255 / 15%); }
-.accept:hover .face { filter: brightness(1.06); }
-.accept:active { transform: translateY(3px); box-shadow: 0 0 0 var(--color-metal-700), inset 0 2px 4px rgb(0 0 0 / 60%); }
-.accept .led { position: absolute; inset: 5px; border-radius: 50%; border: 4px solid var(--color-led-off); transition: border-color var(--duration-fast) linear; }
-.accept.on .led { border-color: var(--color-led-on); box-shadow: var(--shadow-led-on); animation: var(--animate-led); }
-.accept .face { position: absolute; inset: 9px; border-radius: 50%; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px;
-  background: linear-gradient(180deg, var(--color-go-400), var(--color-go-600)); box-shadow: inset 0 2px 0 rgb(255 255 255 / 45%), inset 0 -3px 0 rgb(0 0 0 / 18%); }
-.accept .ic { width: 0.75rem; height: 0.75rem; fill: var(--color-metal-900); shape-rendering: crispEdges; }
-.accept[aria-disabled="true"] .face { outline: 2px dashed var(--color-metal-900); outline-offset: -6px; }
+/* ================= keys over the blank bitmap faces (radio.md section 7) ================= */
+.skey { position: absolute; margin: 0; padding: 0; border: 0; background: transparent; cursor: pointer; isolation: isolate;
+  display: grid; place-items: center; white-space: nowrap; color: var(--color-key-ink);
+  font-family: var(--font-key); font-weight: 900; font-stretch: condensed; font-size: max(1rem, calc(var(--u) * 28)); line-height: 1; letter-spacing: 0.05em;
+  transition: transform var(--duration-fast) var(--ease-out); -webkit-tap-highlight-color: transparent; }
+.skey::before { content: ""; position: absolute; z-index: -1; pointer-events: none; background: transparent;
+  transition: background-color var(--duration-fast) var(--ease-out); }
+.skey:focus-visible { outline: 3px solid var(--color-focus); outline-offset: 2px; box-shadow: var(--shadow-focus-key); }
+@media (hover: hover) { .skey:not([aria-disabled="true"]):hover::before { background: rgb(255 255 255 / 25%); } }
+.skey:not([aria-disabled="true"]):active { transform: translateY(1px); }
+.skey:not([aria-disabled="true"]):active::before, .skey[aria-busy="true"]::before { background: rgb(0 0 0 / 12%); box-shadow: inset 0 calc(var(--u) * 3) calc(var(--u) * 4) rgb(0 0 0 / 28%); }
+.skey[aria-disabled="true"] { cursor: default; }
+.skey[aria-disabled="true"]::before { outline: 2px dashed var(--color-key-ink); outline-offset: calc(var(--u) * -6); }
+.skey[aria-busy="true"] { transform: translateY(1px); }
+.skey[aria-busy="true"]::before { box-shadow: inset 0 0 0 3px var(--color-key-ink); animation: var(--animate-key-busy); }
+.skey[data-steady]::before { box-shadow: inset 0 0 0 3px var(--color-key-ink); }
 
-.grille { flex: none; width: 100%; height: 2.75rem; border-radius: var(--radius-lg); background: linear-gradient(180deg, var(--color-metal-400), var(--color-metal-300)); box-shadow: inset 0 2px 5px rgb(0 0 0 / 30%), 0 1px 0 rgb(255 255 255 / 60%); }
-.is-desk .grille { height: 3.25rem; }
+.pill { left: calc(var(--u) * 79); bottom: calc(var(--u) * 501); width: calc(var(--u) * 198); height: calc(var(--u) * 66); border-radius: 9999px; }
+.pill::before { left: calc(var(--u) * 10); top: calc(var(--u) * 10); width: calc(var(--u) * 177); height: calc(var(--u) * 46); border-radius: 9999px; }
+.round { left: calc(var(--u) * 298); bottom: calc(var(--u) * 391); width: calc(var(--u) * 163); height: calc(var(--u) * 153); border-radius: 50%; padding-bottom: calc(var(--u) * 3); }
+.round::before { left: calc(var(--u) * 10); top: calc(var(--u) * 9); width: calc(var(--u) * 145); height: calc(var(--u) * 133); border-radius: 50%; }
 
 /* ================= page furniture, toast ================= */
 .furn { flex: none; display: flex; flex-direction: column; align-items: center; gap: 6px; text-align: center; }
@@ -205,7 +228,7 @@ body { margin: 0; background: #0c1014; color: #e4e8ec; font: 14px/1.45 var(--fon
 .chip.hint { display: none; align-items: center; gap: 8px; }
 .is-phone .chip.hint, .force-hint .chip.hint { display: inline-flex; }
 .chip.hint svg { width: 14px; height: 12px; fill: var(--color-chip-accent); shape-rendering: crispEdges; }
-.chip.hint[hidden] { display: none; }
+.chip.hint[hidden], .toast[hidden] { display: none; }
 .toast { position: absolute; left: 50%; bottom: 14px; z-index: 50; max-width: calc(100% - 32px); transform: translateX(-50%); padding: 0.625rem 1rem; text-align: center;
   border-radius: var(--radius-xl); border: 1px solid rgb(255 255 255 / 14%); background: var(--color-chip-bg); color: var(--color-chip-fg); box-shadow: var(--shadow-toast);
   font: 600 var(--text-chip)/1.4 var(--font-ui); animation: var(--animate-toast-in); }
@@ -225,12 +248,25 @@ body { margin: 0; background: #0c1014; color: #e4e8ec; font: 14px/1.45 var(--fon
     <button type="button" data-view="b" aria-pressed="false">412 × 915</button>
     <button type="button" data-view="c" aria-pressed="false">1440 × 900</button>
   </div>
-  <div class="grp" role="group" aria-label="LCD būsena"><span>LCD</span>
+  <div class="grp" role="group" aria-label="LCD dydis"><span>LCD dydis</span>
+    <button type="button" data-lcd="auto" aria-pressed="true">Auto (1,0–1,4×)</button>
+    <button type="button" data-lcd="lcd-10" aria-pressed="false">1,0×</button>
+    <button type="button" data-lcd="lcd-14" aria-pressed="false">1,4×</button>
+  </div>
+  <div class="grp" role="group" aria-label="Frazių režimas"><span>Frazės</span>
     <button type="button" data-preset="list" aria-pressed="true">Sąrašas</button>
     <button type="button" data-preset="selected" aria-pressed="false">Pasirinkta</button>
     <button type="button" data-preset="playing" aria-pressed="false">Groja</button>
     <button type="button" data-preset="search" aria-pressed="false">Paieška</button>
-    <button type="button" data-preset="empty" aria-pressed="false">Tuščia</button>
+    <button type="button" data-preset="empty" aria-pressed="false">Nieko nerasta</button>
+  </div>
+  <div class="grp" role="group" aria-label="KURTI režimas"><span>KURTI</span>
+    <button type="button" data-preset="k-empty" aria-pressed="false">Tuščia</button>
+    <button type="button" data-preset="k-download" aria-pressed="false">Atsisiunčia</button>
+    <button type="button" data-preset="k-ready" aria-pressed="false">Paruošta</button>
+    <button type="button" data-preset="k-generating" aria-pressed="false">Kuriama</button>
+    <button type="button" data-preset="k-again" aria-pressed="false">Dar kartą</button>
+    <button type="button" data-preset="k-error" aria-pressed="false">Klaida</button>
   </div>
   <div class="grp" role="group" aria-label="LCD šriftas"><span>Šriftas</span>
     <button type="button" data-font="f-doto" aria-pressed="true">Doto</button>
@@ -249,12 +285,13 @@ body { margin: 0; background: #0c1014; color: #e4e8ec; font: 14px/1.45 var(--fon
 
 <section class="panel" aria-labelledby="h-glyph">
   <h2 id="h-glyph">LCD šrifto lietuviškų raidžių patikra</h2>
-  <p>Kiekviena raidė turi būti nupiešta taškais (ne atsarginio šrifto glifu). Jei kuri nors iškrenta, pakeiskite šriftą į Pixelify Sans.</p>
+  <p>Kiekviena raidė turi būti nupiešta taškais (ne atsarginio šrifto glifu). Jei kuri nors iškrenta, pakeiskite šriftą į Pixelify Sans. LCD tekstas visur 1 rem (16 px), svoris 800.</p>
   <div class="glyph" id="glyph">ąčęėįšųūž ĄČĘĖĮŠŲŪŽ</div>
   <div class="glyph" style="margin-left:8px">Atleisk, nepatempsiu. Tučtuojau sustabdykite automobilį!</div>
+  <div class="glyph s1" style="margin-left:8px">1 rem: Kuriama kalba… Atsisiunčiama: 23 iš 71 MB</div>
   <h2>Spalvos (žymenys iš <code>src/styles.css</code>)</h2>
   <div class="sw-grid" id="swatches"></div>
-  <p>Kontrasto santykiai (WCAG 2.x): LCD tekstas 9,18:1; pasirinkta eilutė 9,18:1; mygtukų užrašai 10,27:1 (blogiausias taškas 9,44:1); PRIIMTI žalias fonas 5,44:1; juostelių tekstas ant dažniausiai šviesaus fono 12,45:1; klaidos pranešimas 13,4:1. Pilna lentelė: <code>docs/design/design-system.md</code>, 2.5 skyrius.</p>
+  <p>Kontrasto santykiai (WCAG 2.x): LCD tekstas 9,18:1; pasirinkta eilutė 9,18:1; LCD mygtukai 7,49:1; kredito eilutė 6,38:1; klavišų užrašai (KURTI, GARSAI, SIŲSTI) ant tuščio bitmap veido #DDDDDD 7,17:1, paspausto 5,50:1; fokusas dviejų spalvų žiedas (baltas 9,17:1 su mėlynu, bent 3:1 ant bet kokio fono); juostelių tekstas 12,45:1; klaidos pranešimas 13,4:1. Pilna lentelė: <code>docs/design/design-system.md</code>, 2.5 skyrius; matmenys: <code>docs/design/components/radio.md</code>.</p>
 </section>
 
 <script>
@@ -264,11 +301,19 @@ const $ = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => [...r.querySelectorAll(s)];
 
 /* ================================================================
+   0. SHELL slices. The three strings below are replaced by data URIs when the
+   preview is published standalone; otherwise the relative files are used.
+   ================================================================ */
+const SHELL = { top: '__TOP__', mid: '__MID__', bottom: '__BOTTOM__' };
+const REL = { top: '../../../public/radio/shell-top.webp', mid: '../../../public/radio/shell-mid.webp', bottom: '../../../public/radio/shell-bottom.webp' };
+const shellSrc = k => (/^data:/.test(SHELL[k]) ? SHELL[k] : REL[k]);
+
+/* ================================================================
    1. DATA: texts from docs/ux/phrases.md ("New text" column)
    ================================================================ */
 const PHRASES = [
   ['Atleisk, nepatempsiu.'], ['Banditai lipa ant kulnų, pagelbėk, viršininke!'], ['Be šansų!'], ['Brangoka, viršininke.'],
-  ['Gal susitarsim, viršininke?'], ['Gerai, kitą kartą.'], ['Iki kito karto.'], ['Iki pasimatymo.'], ['Imk šitą.'], ['Ryšio pabaiga.'],
+  ['Gal susitarsim, viršininke?'], ['Gerai, kitą kartą.'], ['Iki kito karto.'], ['Iki pasimatymo.'], ['Imu šitą.'], ['Ryšio pabaiga.'],
   ['Ir neprašyk.'], ['Kas nutiko?'], ['Klausau!'], ['Klok babkes!'], ['Ko reikia?'], ['Labai daug nori.'], ['Mes krovinį susitarsim.'],
   ['Mokėk, didvyri!'], ['Mokėk!'], ['Nesiimsiu.'], ['Noriu pakeisti ratus.'], ['Noriu užsakyti mašiną.'], ['OK.'],
   ['Pamiršk', 2], ['Pinigus į priekį!'], ['Problemos su mašina. Padėsi?'], ['Rinkis!', 2], ['Stabtelk, drauguži, atsiskaitysim.'],
@@ -284,7 +329,7 @@ PHRASES.forEach(([text, n]) => {
 });
 // "Pamiršk" had a full stop; numbered variants show "Pamiršk (1)". "Rinkis!" -> "Rinkis (1)".
 const norm = s => s.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
-const fmt = n => String(n).replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+const fmt = n => String(n).replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
 
 /* ================================================================
    2. PIXEL SCENE (prototype of shared/pixel-scene, plan D13)
@@ -305,7 +350,8 @@ const PAL = {
   fresh: { d: '#2f8a4a', l: '#4fbf6b', h: '#8fe0a0' },
   car: { r: '#c0463c', b: '#9fd0e0', k: '#1c1f23' },
   sign: { b: '#2b5fa8', w: '#f1f3f5', g: '#8b929b' },
-  glassTop: '#7c9aa6', glassBot: '#c7d9c9'
+  glassTop: '#7c9aa6', glassBot: '#c7d9c9',
+  chrome: '#6f7b86'
 };
 const BAYER = [[0, 8, 2, 10], [12, 4, 14, 6], [3, 11, 1, 9], [15, 7, 13, 5]];
 const hash = (a, b) => { let x = Math.imul((a * 374761393 + b * 668265263) | 0, 1274126177); x ^= x >>> 13; x = Math.imul(x, 1103515245); return ((x ^ (x >>> 16)) >>> 0) / 4294967295; };
@@ -347,6 +393,159 @@ function pine(c, cx, baseY, h, t, ph, amp, pal) {
   }
 }
 
+/* ---- truck cabin interior (driver's seat, left-hand drive) ----
+   drawCabin(c, W, H)            static layer, drawn once into an offscreen canvas; returns metrics `m`
+   drawCabinDetails(c, W, H, t, m) animated bits, drawn every frame
+   Everything is sized from H (pillar, mirrors, visor, dashboard) or min(W,H) (wheel, dials). */
+function drawCabin(c, W, H) {
+  const C = PAL.cab, U = Math.min(W, H);
+  const px = (x, y, col) => { c.fillStyle = col; c.fillRect(x, y, 1, 1); };
+  const rect = (x, y, w, h, col) => { c.fillStyle = col; c.fillRect(x, y, w, h); };
+  const dth = (x, y, a, b, t) => (BAYER[y & 3][x & 3] < t * 16 ? b : a);
+  const line = (x0, y0, x1, y1, w, col) => {
+    const n = Math.max(Math.abs(x1 - x0), Math.abs(y1 - y0), 1);
+    for (let i = 0; i <= n; i++) rect(Math.round(x0 + (x1 - x0) * i / n - w / 2), Math.round(y0 + (y1 - y0) * i / n - w / 2), w, w, col);
+  };
+  const dTop = Math.round(H * .80), dashTop = Math.round(H * .77);
+  const visor = x => Math.round(H * .05 + H * .015 * Math.sin(Math.PI * x / W));
+  const pw0 = Math.max(8, Math.round(Math.min(H * .09, W * .16)));          // left A-pillar width at the roof
+  const pwL = y => Math.max(4, Math.round(pw0 * (1 - .45 * Math.min(1, y / dashTop))));
+  const pwR = y => Math.max(3, Math.round(pwL(y) * .55));                    // right pillar is thinner
+
+  /* 1. sun-visor / roof band */
+  for (let x = 0; x < W; x++) {
+    const v = visor(x);
+    for (let y = 0; y < v; y++) px(x, y, dth(x, y, C[0], C[1], .3));
+    px(x, v, C[3]); px(x, v + 1, C[2]);
+  }
+  rect(Math.round(W * .5) - 5, 2, 10, 2, C[3]);                               // interior lamp strip
+
+  /* 2. A-pillars (slanted, lit inner edge) */
+  for (let y = 0; y < dashTop + 6; y++) {
+    const pl = pwL(y), pr = pwR(y);
+    for (let x = 0; x < pl; x++) px(x, y, x === pl - 1 ? C[4] : x === pl - 2 ? C[3] : dth(x, y, C[0], C[1], x / pl));
+    for (let x = 0; x < pr; x++) px(W - 1 - x, y, x === pr - 1 ? C[4] : x === pr - 2 ? C[3] : dth(x, y, C[0], C[1], x / pr));
+  }
+
+  /* 3. side mirrors on arms, with a dithered sky + road reflection */
+  const mirror = (x, y, w, h, hz) => {
+    for (let yy = 0; yy < h; yy++) for (let xx = 0; xx < w; xx++) {
+      if ((xx === 0 || xx === w - 1) && (yy === 0 || yy === h - 1)) continue;
+      px(x + xx, y + yy, yy === 0 ? C[3] : xx === 0 ? C[2] : C[0]);
+    }
+    const gw = w - 2, gh = h - 2, roadTop = Math.round(gh * (hz + .2));
+    for (let gy = 0; gy < gh; gy++) for (let gx = 0; gx < gw; gx++) {
+      if ((gx === 0 || gx === gw - 1) && (gy === 0 || gy === gh - 1)) continue;
+      const X = x + 1 + gx, Y = y + 1 + gy, f = gy / gh;
+      let col;
+      if (f < hz) col = dth(X, Y, PAL.sky[2], PAL.sky[4], f / hz);
+      else if (f < hz + .06) col = PAL.hillMid[1];
+      else if (f < hz + .2) col = dth(X, Y, PAL.meadow[2], PAL.meadow[3], (f - hz - .06) / .14);
+      else {
+        const rr = gy - roadTop;
+        col = gy === roadTop ? PAL.curb : (((rr >> 1) & 1) === 0 && gx === Math.round(gw * .3 + rr * .4)) ? PAL.line : hash(X, Y) < .2 ? PAL.asphalt[1] : PAL.asphalt[0];
+      }
+      px(X, Y, col);
+    }
+  };
+  const mh1 = Math.min(Math.round(H * .17), Math.round(W * .35)), mw = Math.round(mh1 * .46);
+  const my1 = Math.round(H * .10), mh2 = Math.round(mh1 * .5), my2 = my1 + mh1 + 3;
+  const mx = pwL(my1 + (mh1 >> 1)) + 3;
+  [my1 + 4, my1 + mh1 - 6, my2 + 3, my2 + mh2 - 5].forEach(ay => { const x0 = pwL(ay) - 1; rect(x0, ay, mx + 1 - x0, 2, C[0]); px(x0, ay, C[3]); });
+  mirror(mx, my1, mw, mh1, .5);          // main mirror
+  mirror(mx, my2, mw, mh2, .42);         // wide-angle mirror below it
+
+  /* 4. dashboard: bowed top, shaded downwards */
+  for (let x = 0; x < W; x++) {
+    const top = Math.round(dashTop - H * .012 * Math.sin(Math.PI * x / W));
+    for (let y = top; y < H; y++) {
+      const d = y - top, t = d / Math.max(1, H - top);
+      px(x, y, d === 0 ? C[4] : d <= 2 ? C[3] : t < .35 ? dth(x, y, C[2], C[1], t / .35) : dth(x, y, C[1], C[0], (t - .35) / .65));
+    }
+  }
+
+  /* 5. gauge cluster (hood, two dials, small display), left of centre */
+  const R = Math.round(U * .27), ry = Math.round(R * .78);
+  const wx = Math.round(W * .30), wy = dashTop + Math.round(ry * .62);
+  const gr = Math.max(5, Math.round(R * .22)), dist = Math.round(R * .45), dcy = dashTop + 4 + gr;
+  const hw = dist + gr + 4, hTop = dashTop - 3, hBot = dcy + gr + 3;
+  for (let y = hTop; y <= hBot; y++) {
+    const r = y - hTop, inset = r === 0 ? 3 : r === 1 ? 1 : 0;
+    for (let x = wx - hw + inset; x <= wx + hw - inset; x++) px(x, y, r === 0 ? C[3] : (x < wx - hw + 2 || x > wx + hw - 2) ? C[1] : C[0]);
+  }
+  const dial = (cx, cy, f, ncol) => {
+    for (let dy = -gr; dy <= gr; dy++) for (let dx = -gr; dx <= gr; dx++) {
+      const d = Math.hypot(dx, dy);
+      if (d <= gr + .3) px(cx + dx, cy + dy, d > gr - 1.1 ? C[3] : dth(cx + dx, cy + dy, C[1], C[2], .25));
+    }
+    for (let k = 0; k <= 8; k++) {
+      const a = (135 + 270 * k / 8) * Math.PI / 180;
+      px(Math.round(cx + Math.cos(a) * (gr - 2)), Math.round(cy + Math.sin(a) * (gr - 2)), k >= 7 ? PAL.car.r : C[4]);
+    }
+    const a = (135 + 270 * f) * Math.PI / 180;
+    for (let s = 1; s <= gr - 2; s++) px(Math.round(cx + Math.cos(a) * s), Math.round(cy + Math.sin(a) * s), ncol);
+    px(cx, cy, C[4]);
+  };
+  dial(wx - dist, dcy, .45, PAL.line);
+  dial(wx + dist, dcy, .6, PAL.amber);
+  const dw = Math.min(14, Math.max(6, 2 * (dist - gr) - 5)), dx0 = wx - (dw >> 1), dy0 = dcy - 3;
+  rect(dx0, dy0, dw, 5, C[3]); rect(dx0 + 1, dy0 + 1, dw - 2, 3, C[0]);
+  for (let i = 0; i < dw - 3; i++) if (i % 3 !== 2) px(dx0 + 2 + i, dy0 + 2, PAL.lit);
+
+  /* 6. steering wheel (rim, three spokes, hub with badge), in front of the gauges */
+  const rt = Math.max(3, Math.round(R * .12)), rin = R - rt, ryin = ry - rt;
+  for (let y = wy - ry; y <= Math.min(H - 1, wy + ry); y++) for (let x = wx - R; x <= wx + R; x++) {
+    const ux = x + .5 - wx, uy = y + .5 - wy;
+    const o = (ux / R) ** 2 + (uy / ry) ** 2, i = (ux / rin) ** 2 + (uy / ryin) ** 2;
+    if (o > 1 || i < 1) continue;
+    const lit = ux + uy < 0;
+    px(x, y, o > (1 - 1.5 / R) ** 2 ? (lit ? C[4] : C[2]) : i < (1 + 1.6 / rin) ** 2 ? C[2] : dth(x, y, C[0], C[1], lit ? .55 : .15));
+  }
+  const sw = Math.max(3, Math.round(R * .1)), sy = wy + Math.round(ry * .22);
+  [[wx - rin + 1, sy], [wx + rin - 1, sy], [wx, wy + ryin]].forEach(([ex, ey]) => { line(wx, wy - 1, ex, ey - 1, sw, C[3]); line(wx, wy, ex, ey, sw, C[1]); });
+  const hr = Math.max(5, Math.round(R * .24));
+  for (let dy = -hr; dy <= hr; dy++) for (let dx = -hr; dx <= hr; dx++) {
+    const d = Math.hypot(dx, dy);
+    if (d <= hr + .3) px(wx + dx, wy + dy, d > hr - 1.2 ? (dx + dy < 0 ? C[4] : C[2]) : dth(wx + dx, wy + dy, C[1], C[2], .4));
+  }
+  const bs = hr >= 12 ? 5 : 3;
+  rect(wx - (bs >> 1), wy - 1, bs, 3, PAL.chrome); px(wx, wy, C[2]);
+
+  /* 7. centre console, bottom right: display, LEDs, buttons, knobs, vent slots */
+  const cw = Math.min(60, Math.max(26, Math.round(W * .24))), ch = 26;
+  const cxs = W - cw - Math.max(6, Math.round(W * .05)), cys = dashTop + Math.round((H - dashTop) * .3);
+  rect(cxs, cys, cw, ch, C[0]); rect(cxs, cys, cw, 1, C[3]); rect(cxs, cys + 1, 1, ch - 1, C[1]); rect(cxs + cw - 1, cys + 1, 1, ch - 1, C[1]);
+  rect(cxs + 2, cys + 2, cw - 4, 4, C[3]); rect(cxs + 3, cys + 3, cw - 6, 2, C[1]);
+  for (let i = 0; i < cw - 9; i++) if (i % 4 !== 3) px(cxs + 4 + i, cys + 3, PAL.amber);
+  rect(cxs + 3, cys + 6, 2, 2, PAL.lit); rect(cxs + cw - 5, cys + 6, 2, 2, C[2]);
+  const bw = Math.min(6, Math.floor((cw - 9) / 4)), bx0 = cxs + ((cw - (4 * bw + 3)) >> 1);
+  for (let k = 0; k < 4; k++) { rect(bx0 + k * (bw + 1), cys + 10, bw, 3, C[2]); rect(bx0 + k * (bw + 1), cys + 10, bw, 1, C[4]); }
+  [.28, .72].forEach(f => {
+    const kx = cxs + Math.round(cw * f), ky = cys + 18;
+    for (let dy = -3; dy <= 3; dy++) for (let dx = -3; dx <= 3; dx++) { const d = Math.hypot(dx, dy); if (d <= 3.2) px(kx + dx, ky + dy, d > 2.1 ? C[3] : C[1]); }
+    px(kx, ky - 2, C[4]);
+  });
+  rect(cxs + 4, cys + 23, cw - 8, 1, C[1]); rect(cxs + 4, cys + 25, cw - 8, 1, C[1]);
+
+  const fx = Math.round(W * .64);
+  return { fx, fy: visor(fx) + 2, cx: wx - 3, cy: dy0 - 4, lx: cxs + cw - 5, ly: cys + 6 };
+}
+function drawCabinDetails(c, W, H, t, m) {
+  const C = PAL.cab;
+  // air freshener hanging from the visor (pendulum)
+  const sw = Math.round(Math.sin(t * 1.9) * 2), len = 9;
+  c.fillStyle = '#c8ccd2';
+  for (let i = 0; i < len; i++) c.fillRect(m.fx + Math.round(sw * i / len), m.fy + i, 1, 1);
+  pine(c, m.fx + sw, m.fy + len + 8, 8, 0, 0, 0, PAL.fresh);
+  // cluster warning lights: amber blinks 1 s on / 1 s off (on in the static frame), green steady
+  c.fillStyle = (t === 0 || Math.floor(t) % 2 === 0) ? PAL.amber : C[2];
+  c.fillRect(m.cx, m.cy, 2, 2);
+  c.fillStyle = PAL.lit; c.fillRect(m.cx + 5, m.cy, 2, 2);
+  // console LED, opposite phase (off in the static frame)
+  c.fillStyle = (t > 0 && Math.floor(t) % 2 === 1) ? PAL.car.r : C[2];
+  c.fillRect(m.lx, m.ly, 2, 2);
+}
+
 function makeScene(canvas, fw, fh, p) {
   const W = Math.ceil(fw / p), H = Math.ceil(fh / p);
   canvas.width = W; canvas.height = H;
@@ -357,7 +556,6 @@ function makeScene(canvas, fw, fh, p) {
   const dith = (x, y, a, b, t) => (BAYER[y & 3][x & 3] < t * 16 ? b : a);
   const hs = Math.max(1, H / 200);
   const hy = Math.round(H * .47), my0 = hy + Math.round(H * .025), rTop = Math.round(H * .60), rBot = Math.round(H * .69), dTop = Math.round(H * .80);
-  const hT = x => Math.round(H * .04 + H * .06 * Math.pow(Math.abs(x - W / 2) / (W / 2), 3));
 
   /* --- sky, sun --- */
   { const c = skyL.getContext('2d'); const S = PAL.sky;
@@ -400,34 +598,7 @@ function makeScene(canvas, fw, fh, p) {
   }
 
   /* --- cabin frame overlay (static) --- */
-  { const c = cabL.getContext('2d'); const C = PAL.cab;
-    for (let x = 0; x < W; x++) { const t = hT(x); for (let y = 0; y < t; y++) px(c, x, y, dith(x, y, C[0], C[1], .3)); px(c, x, t, C[3]); px(c, x, t + 1, C[2]); }
-    for (let y = 0; y < dTop + 6; y++) {
-      const pl = Math.round(W * (.105 - .06 * Math.min(1, y / dTop)));
-      for (let x = 0; x < pl; x++) {
-        const col = x === pl - 1 ? C[4] : x === pl - 2 ? C[3] : dith(x, y, C[0], C[1], x / pl);
-        px(c, x, y, col); px(c, W - 1 - x, y, col);
-      }
-    }
-    for (let x = 0; x < W; x++) {
-      const top = Math.round(dTop - H * .012 * Math.sin(Math.PI * x / W));
-      for (let y = top; y < H; y++) {
-        const d = y - top, t = d / Math.max(1, H - top);
-        px(c, x, y, d === 0 ? C[4] : d <= 2 ? C[3] : t < .35 ? dith(x, y, C[2], C[1], t / .35) : dith(x, y, C[1], C[0], (t - .35) / .65));
-      }
-    }
-    // instrument cluster + vents
-    const cx0 = Math.round(W * .1), cy0 = dTop + 3;
-    c.fillStyle = C[0]; c.fillRect(cx0, cy0, 16, 6); c.fillStyle = C[3]; c.fillRect(cx0, cy0, 16, 1);
-    [.22, .78].forEach(f => { const vx = Math.round(W * f); for (let k = 0; k < 3; k++) { c.fillStyle = C[0]; c.fillRect(vx, dTop + 4 + k * 2, 9, 1); } });
-    // rear-view mirror
-    const mw = Math.max(18, Math.round(W * .09)), mh = Math.round(mw * .36) + 2, mx = Math.round(W * .6), my = hT(mx) + 3;
-    c.fillStyle = C[0]; c.fillRect(mx + (mw >> 1) - 1, hT(mx) - 1, 2, 5);
-    c.fillRect(mx + 1, my, mw - 2, mh); c.fillRect(mx, my + 1, mw, mh - 2);
-    for (let y = my + 1; y < my + mh - 1; y++) for (let x = mx + 1; x < mx + mw - 1; x++) px(c, x, y, dith(x, y, PAL.glassTop, PAL.glassBot, (y - my) / mh));
-    c.fillStyle = C[4]; c.fillRect(mx + 2, my + 1, 3, 1);
-    cabL._m = { fx: mx + 3, fy: my + mh, cx: cx0 + 3, cy: cy0 + 3 };
-  }
+  cabL._m = drawCabin(cabL.getContext('2d'), W, H);
 
   const lane = rBot - 6;
   const forestN = Math.ceil(W / 5);
@@ -456,14 +627,7 @@ function makeScene(canvas, fw, fh, p) {
       pine(ctx, x, n.base - 3, h, t, n.ph, n.amp, PAL.needle);
     });
     ctx.drawImage(cabL, 0, 0);
-    // dynamic cabin bits: air freshener and the amber gauge dot
-    const m = cabL._m, sw = Math.round(Math.sin(t * 1.9) * 2), len = 9;
-    ctx.fillStyle = '#c8ccd2';
-    for (let i = 0; i < len; i++) ctx.fillRect(m.fx + Math.round(sw * i / len), m.fy + i, 1, 1);
-    pine(ctx, m.fx + sw, m.fy + len + 8, 8, 0, 0, 0, PAL.fresh);
-    ctx.fillStyle = (t === 0 || Math.floor(t) % 2 === 0) ? PAL.amber : PAL.cab[2];
-    ctx.fillRect(m.cx, m.cy, 2, 2);
-    ctx.fillStyle = PAL.lit; ctx.fillRect(m.cx + 5, m.cy, 2, 2);
+    drawCabinDetails(ctx, W, H, t, cabL._m);
   }
   return { render, W, H };
 }
@@ -492,53 +656,47 @@ $('#rm').addEventListener('change', applyMotion);
 /* ================================================================
    3. RADIO markup + behaviour (prototype only; the app is Angular)
    ================================================================ */
-const LOGO_D = 'M0 0h1v7h-1z M1 0h3v1h-3z M4 1h1v2h-1z M1 3h3v1h-3z M2 4h1v1h-1z M3 5h1v1h-1z M4 6h1v1h-1z M6 1h1v6h-1z M10 1h1v6h-1z M7 0h3v1h-3z M7 3h3v1h-3z M12 1h1v5h-1z M13 0h3v1h-3z M13 6h3v1h-3z M16 1h1v1h-1z M16 5h1v1h-1z M18 0h5v1h-5z M20 1h1v5h-1z M18 6h5v1h-5z M26 0h3v1h-3z M28 1h1v5h-1z M24 5h1v1h-1z M25 6h3v1h-3z M30 1h1v6h-1z M34 1h1v6h-1z M31 0h3v1h-3z M31 3h3v1h-3z';
-const ICON = {
-  play: '<svg class="ic" viewBox="0 0 8 10" aria-hidden="true"><path d="M1 0h2v2h2v2h2v2H5v2H3v2H1z"/></svg>',
-  stop: '<svg class="ic" viewBox="0 0 10 10" aria-hidden="true"><path d="M1 1h8v8H1z"/></svg>'
-};
-function cablePath() {
-  const w = 160, n = 9, steps = n * 24; let d = '';
-  for (let i = 0; i <= steps; i++) { const t = i / steps, a = t * n * 2 * Math.PI; d += (i ? 'L' : 'M') + (t * w + 5 * Math.cos(a)).toFixed(1) + ' ' + (16 + 10 * Math.sin(a)).toFixed(1); }
-  return d;
-}
-const CABLE = cablePath();
+const ALERT = '<svg class="alert" viewBox="0 0 7 7" aria-hidden="true"><path fill-rule="evenodd" d="M3 0h1v1h1v2h1v2h1v2H0V5h1V3h1V1h1z M3 2h1v2H3z M3 5h1v1H3z"/></svg>';
+const MARKER = '<span class="marker" aria-hidden="true"><i></i><i></i><i></i></span>';
+const TTS_TEXT = 'Labas, kaip sekasi?';
 
 function frameHTML(n) {
   return `
   <canvas class="scene" aria-hidden="true"></canvas>
   <div class="dim" aria-hidden="true"></div>
   <div class="stage">
-    <div style="display:contents">
-    <section class="radio" role="group" aria-label="Racija">
-      <i class="screw tl"></i><i class="screw tr"></i><i class="screw bl"></i><i class="screw br"></i>
-      <div class="cap">
-        <h1 class="logo" aria-label="RACIJA" style="margin:0"><svg viewBox="0 0 35 7" aria-hidden="true"><path d="${LOGO_D}"/></svg></h1>
-        <svg class="cable" viewBox="0 0 160 32" preserveAspectRatio="none" aria-hidden="true">
-          <path d="${CABLE}" style="stroke:var(--color-metal-900);stroke-width:4"/>
-          <path d="${CABLE}" style="stroke:var(--color-metal-500);stroke-width:1.2" transform="translate(0 -1)"/>
-        </svg>
-        <span class="jack" aria-hidden="true"></span>
-      </div>
-      <div class="bezel"><div class="lcd">
-        <div class="search" hidden>
-          <input type="search" aria-label="Ieškoti įrašų" placeholder="Ieškoti…" autocomplete="off" autocapitalize="off" spellcheck="false" enterkeyhint="search">
-          <button class="clear" type="button" aria-label="Išvalyti paiešką" hidden><svg viewBox="0 0 7 7" aria-hidden="true"><path d="M0 0h2v1h1v1h1V1h1V0h2v2H6v1H5v1h1v1h1v2H5V6H4V5H3v1H2v1H0V5h1V4h1V3H1V2H0z"/></svg></button>
+    <div class="shell-stage">
+      <section class="shell" role="group" aria-label="Racija">
+        <img class="slice slice-top" src="${shellSrc('top')}" alt="" width="556" height="272" draggable="false">
+        <div class="slice slice-mid" style="background-image:url('${shellSrc('mid')}')"></div>
+        <img class="slice slice-bottom" src="${shellSrc('bottom')}" alt="" width="556" height="744" draggable="false">
+        <h1 class="logo-h1">RACIJA</h1>
+        <div class="lcd">
+          <div class="lcd-main">
+            <div class="list" role="listbox" aria-label="Frazių sąrašas"></div>
+            <p class="empty" hidden><span>Nieko nerasta</span></p>
+            <div class="kp" hidden>
+              <div class="kp-head">
+                <label for="ta${n}">Jūsų frazė</label>
+                <textarea id="ta${n}" maxlength="220" placeholder="Įveskite frazę…" autocapitalize="sentences" spellcheck="false" enterkeyhint="done" aria-describedby="kc${n}"></textarea>
+                <span class="kp-count" id="kc${n}"></span>
+              </div>
+              <button type="button" class="lbtn play" aria-disabled="true">PALEISTI</button>
+              <div class="kp-status" aria-live="off"></div>
+              <p class="kp-credit">Balsas: Coqui TTS (lt/cv/vits)</p>
+            </div>
+          </div>
+          <div class="strip">
+            <div class="sfield">
+              <input type="search" aria-label="Ieškoti įrašų" placeholder="Ieškoti…" autocomplete="off" autocapitalize="off" spellcheck="false" enterkeyhint="search">
+              <button class="clear" type="button" aria-label="Išvalyti paiešką" hidden><svg viewBox="0 0 7 7" aria-hidden="true"><path d="M0 0h2v1h1v1h1V1h1V0h2v2H6v1H5v1h1v1h1v2H5V6H4V5H3v1H2v1H0V5h1V4h1V3H1V2H0z"/></svg></button>
+            </div>
+            <div class="seg" role="group" aria-label="Balsas"><button type="button" aria-pressed="true" data-v="vyras">Vyras</button><button type="button" aria-pressed="false" data-v="moteris">Moteris</button></div>
+          </div>
         </div>
-        <div class="list" role="listbox" aria-label="Frazių sąrašas"></div>
-        <p class="empty" hidden><span>Nieko nerasta</span></p>
-        <div class="lcd-foot">
-          <div class="seg" role="group" aria-label="Balsas"><button type="button" aria-pressed="true" data-v="vyras">Vyras</button><button type="button" aria-pressed="false" data-v="moteris">Moteris</button></div>
-          <span class="count"></span>
-        </div>
-      </div></div>
-      <div class="keys">
-        <button type="button" class="key pill k-search" aria-expanded="false"><span class="t">PAIEŠKA</span></button>
-        <button type="button" class="key accept k-accept" aria-disabled="true"><span class="led"></span><span class="face"><span class="ico"></span><span class="t">PRIIMTI</span><span class="sr">, groti</span></span></button>
-        <button type="button" class="key pill k-share" aria-disabled="true"><span class="t">SIŲSTI</span></button>
-      </div>
-      <svg class="grille" aria-hidden="true"><defs><pattern id="gd${n}" width="7" height="7" patternUnits="userSpaceOnUse"><circle cx="3.5" cy="3.8" r="1.8" fill="#fff" fill-opacity=".55"/><circle cx="3.5" cy="3.2" r="1.7" style="fill:var(--color-metal-600)"/></pattern></defs><rect x="0" y="0" width="100%" height="100%" rx="12" fill="url(#gd${n})"/></svg>
-    </section>
+        <button type="button" class="skey pill"><span class="lab">KURTI</span></button>
+        <button type="button" class="skey round" aria-disabled="true"><span class="lab">SIŲSTI</span></button>
+      </section>
     </div>
     <div class="furn">
       <p class="chip hint"><svg viewBox="0 0 12 10" aria-hidden="true"><path d="M0 3h3l3-3v10L3 7H0z M8 2h1v6H8z M10 0h1v10h-1z"/></svg>Įjunkite garsą</p>
@@ -551,17 +709,38 @@ function frameHTML(n) {
 
 function Radio(fr, kind) {
   const q = s => $(s, fr);
-  const el = { list: q('.list'), empty: q('.empty'), search: q('.search'), input: q('.search input'), clear: q('.clear'), count: q('.count'),
-    segs: $$('.seg button', fr), bSearch: q('.k-search'), bAccept: q('.k-accept'), bShare: q('.k-share'), ico: q('.k-accept .ico'), sr: q('.k-accept .sr'),
+  const el = { list: q('.list'), empty: q('.empty'), kp: q('.kp'), ta: q('.kp textarea'), cnt: q('.kp-count'), playBtn: q('.kp .play'), status: q('.kp-status'),
+    sfield: q('.sfield'), input: q('.sfield input'), clear: q('.clear'), segs: $$('.seg button', fr),
+    pill: q('.pill'), pillLab: q('.pill .lab'), round: q('.round'),
     plays: q('.n-plays'), shares: q('.n-shares'), hint: q('.hint'), toast: q('.toast') };
-  const S = { voice: 'vyras', query: '', open: false, sel: null, playing: null, sticky: false, plays: 1234, shares: 56, played: false, busy: false };
-  let timer = 0, toastTimer = 0;
+  const S = { mode: 'sounds', voice: 'vyras', query: '', sel: null, playing: null, sticky: false, plays: 1234, shares: 56, played: false, busy: false,
+    text: '', tts: 'download', loaded: 2, cached: false };
+  let timer = 0, toastTimer = 0, shareTimer = 0;
+  const voiceReady = () => ['ready', 'generating', 'playing', 'again'].includes(S.tts);
 
   function visible() { const nq = norm(S.query.trim()); return ITEMS.filter(i => !nq || norm(i.label).includes(nq)); }
   function ensure(r) { const L = el.list; if (r.offsetTop < L.scrollTop) L.scrollTop = r.offsetTop; else if (r.offsetTop + r.offsetHeight > L.scrollTop + L.clientHeight) L.scrollTop = r.offsetTop + r.offsetHeight - L.clientHeight; }
 
+  function statusHTML() {
+    switch (S.tts) {
+      case 'download': {
+        const pct = Math.round(S.loaded / 71 * 100);
+        return `<p>Atsisiunčiamas balsas (apie 71 MB). Tai tik pirmą kartą.</p>
+          <div class="pbar" role="progressbar" aria-label="Balso atsisiuntimas" aria-valuemin="0" aria-valuemax="71" aria-valuenow="${S.loaded}" aria-valuetext="${S.loaded} iš 71 MB"><i style="width:${pct}%"></i></div>
+          <p>Atsisiunčiama: ${S.loaded} iš 71 MB</p>`;
+      }
+      case 'preparing': return '<p>Ruošiamas balsas…</p><div class="pbar ind" role="progressbar" aria-label="Ruošiamas balsas"><i></i></div>';
+      case 'generating': return '<p>Kuriama kalba…</p><div class="pbar ind" role="progressbar" aria-label="Kuriama kalba"><i></i></div>';
+      case 'playing': return '<p>Grojama.</p>';
+      case 'again': return '<p>Paruošta. Spauskite SIŲSTI dar kartą.</p>';
+      case 'error': return `<p class="err">${ALERT}<span>Nepavyko atsisiųsti balso. Patikrinkite ryšį.</span></p><button type="button" class="lbtn retry">Bandyti dar kartą</button>`;
+      default: return S.text.trim() ? '<p>Balsas paruoštas.</p>' : '<p>Įveskite frazę ir spauskite PALEISTI.</p>';
+    }
+  }
+
   function render() {
     const act = document.activeElement, keepKey = act && act.classList && act.classList.contains('row') && fr.contains(act) ? act.dataset.k : null;
+    const create = S.mode === 'create';
     const items = visible();
     if (S.sel && !items.some(i => i.key === S.sel) && S.playing !== S.sel) S.sel = null;          // UX U8
     const tabKey = (items.find(i => i.key === S.sel) || items[0] || {}).key;
@@ -569,16 +748,29 @@ function Radio(fr, kind) {
       const sel = i.key === S.sel, pl = i.key === S.playing;
       return `<div class="row${pl ? ' playing' : ''}" role="option" aria-selected="${sel}" tabindex="${i.key === tabKey ? 0 : -1}" data-k="${i.key.replace(/"/g, '&quot;')}"><span class="marker" aria-hidden="true"><i></i><i></i><i></i></span><span>${i.label}</span>${pl ? '<span class="sr">, grojama</span>' : ''}</div>`;
     }).join('');
-    el.list.hidden = !items.length; el.empty.hidden = !!items.length;
-    el.count.textContent = 'Įrašų: ' + items.length;
+    el.list.hidden = create || !items.length; el.empty.hidden = create || !!items.length; el.kp.hidden = !create; el.sfield.hidden = create;
     el.segs.forEach(b => b.setAttribute('aria-pressed', String(b.dataset.v === S.voice)));
-    el.search.hidden = !S.open; el.bSearch.setAttribute('aria-expanded', String(S.open)); el.clear.hidden = !S.query;
+    el.clear.hidden = !S.query;
     if (el.input.value !== S.query) el.input.value = S.query;
-    const on = !!S.playing;
-    el.bAccept.classList.toggle('on', on);
-    el.bAccept.setAttribute('aria-disabled', String(!S.sel && !on));
-    el.ico.innerHTML = on ? ICON.stop : ICON.play; el.sr.textContent = on ? ', sustabdyti' : ', groti';
-    el.bShare.setAttribute('aria-disabled', String(!S.sel)); el.bShare.toggleAttribute('aria-busy', S.busy); if (S.busy) el.bShare.setAttribute('aria-busy', 'true');
+
+    // KURTI panel
+    if (el.ta.value !== S.text) el.ta.value = S.text;
+    const len = S.text.length;
+    el.cnt.textContent = len + ' / 220' + (len >= 220 ? ' Pasiekta riba.' : '');
+    el.status.innerHTML = statusHTML();
+    const canAct = !!S.text.trim() && voiceReady();
+    el.playBtn.setAttribute('aria-disabled', String(!canAct));
+    el.playBtn.toggleAttribute('aria-busy', S.tts === 'generating'); if (S.tts === 'generating') el.playBtn.setAttribute('aria-busy', 'true');
+    el.playBtn.innerHTML = (S.tts === 'playing' ? MARKER : '') + 'PALEISTI' + (S.tts === 'playing' ? '<span class="sr">, grojama</span>' : '');
+
+    // keys
+    el.pillLab.textContent = create ? 'GARSAI' : 'KURTI';
+    const shareOk = create ? canAct : !!S.sel;
+    const busy = S.busy || (create && S.tts === 'generating');
+    el.round.setAttribute('aria-disabled', String(!shareOk));
+    el.round.toggleAttribute('aria-busy', busy); if (busy) el.round.setAttribute('aria-busy', 'true');
+    el.round.toggleAttribute('data-steady', create && S.tts === 'again');
+
     el.plays.textContent = fmt(S.plays); el.shares.textContent = fmt(S.shares);
     el.hint.hidden = S.played;
     if (keepKey) { const r = $$('.row', el.list).find(x => x.dataset.k === keepKey); if (r) r.focus({ preventScroll: true }); }
@@ -589,13 +781,13 @@ function Radio(fr, kind) {
     el.toast.className = 'toast' + (err ? ' err' : ''); el.toast.textContent = msg; el.toast.hidden = false;
     if (!hold) toastTimer = setTimeout(() => { el.toast.hidden = true; }, err ? 10000 : 6000);
   }
-  function stop() { clearTimeout(timer); S.playing = null; S.sticky = false; render(); }
+  function stop() { clearTimeout(timer); S.playing = null; S.sticky = false; if (S.tts === 'playing') S.tts = 'ready'; render(); }
   function play(key, sticky) {
     clearTimeout(timer); S.sel = key; S.playing = key; S.plays++; S.played = true; S.sticky = !!sticky; render();
     if (!sticky) timer = setTimeout(() => { S.playing = null; render(); }, 1800);       // simulated clip length
   }
-  function setOpen(v, focus) { S.open = v; if (!v) S.query = ''; render(); if (focus) (v ? el.input : el.bSearch).focus(); }
 
+  // ---- phrase mode
   el.list.addEventListener('click', e => { const r = e.target.closest('.row'); if (r) play(r.dataset.k); });
   el.list.addEventListener('keydown', e => {
     const rows = $$('.row', el.list), i = rows.indexOf(document.activeElement);
@@ -603,39 +795,86 @@ function Radio(fr, kind) {
     const k = e.key;
     if (k === 'ArrowDown') { e.preventDefault(); go(i + 1); } else if (k === 'ArrowUp') { e.preventDefault(); go(i - 1); }
     else if (k === 'Home') { e.preventDefault(); go(0); } else if (k === 'End') { e.preventDefault(); go(rows.length); }
-    else if (k === 'PageDown') { e.preventDefault(); go(i + 5); } else if (k === 'PageUp') { e.preventDefault(); go(i - 5); }
+    else if (k === 'PageDown') { e.preventDefault(); go(i + 4); } else if (k === 'PageUp') { e.preventDefault(); go(i - 4); }
     else if ((k === 'Enter' || k === ' ') && i >= 0) { e.preventDefault(); if (!e.repeat) play(rows[i].dataset.k); }
   });
-  el.segs.forEach(b => b.addEventListener('click', () => { if (S.voice !== b.dataset.v) { clearTimeout(timer); S.playing = null; S.voice = b.dataset.v; } render(); }));
-  el.bSearch.addEventListener('click', () => setOpen(!S.open, true));
+  el.segs.forEach(b => b.addEventListener('click', () => {
+    if (S.voice !== b.dataset.v) { clearTimeout(timer); S.playing = null; S.voice = b.dataset.v; S.cached = false; if (S.tts === 'again' || S.tts === 'playing') S.tts = 'ready'; }
+    render();
+  }));
   el.input.addEventListener('input', () => { S.query = el.input.value; render(); el.list.scrollTop = 0; });
   el.input.addEventListener('keydown', e => {
-    if (e.key === 'Escape') setOpen(false, true);
+    if (e.key === 'Escape') { if (S.query) { S.query = ''; render(); } }
     else if (e.key === 'Enter') { e.preventDefault(); const r = $('.row', el.list); if (r) r.focus(); }
   });
   el.clear.addEventListener('click', () => { S.query = ''; render(); el.input.focus(); });
-  el.bAccept.addEventListener('click', () => {
-    if (S.playing) stop(); else if (S.sel) play(S.sel); else toast('Pirmiausia pasirinkite frazę.');
+
+  // ---- mode switch (UX 5.12)
+  el.pill.addEventListener('click', e => {
+    const kbd = e.detail === 0;
+    clearTimeout(timer); S.playing = null; S.sticky = false; if (S.tts === 'playing') S.tts = 'ready';
+    S.mode = S.mode === 'sounds' ? 'create' : 'sounds'; render();
+    if (kbd) { if (S.mode === 'create') el.ta.focus(); else { const r = $('.row[tabindex="0"]', el.list); (r || el.input).focus(); } }
   });
-  el.bShare.addEventListener('click', () => {
-    if (S.busy) return;
-    if (!S.sel) return toast('Pirmiausia pasirinkite frazę.');
-    S.busy = true; render();
-    setTimeout(() => { S.busy = false; S.shares++; render(); toast(kind === 'desk' ? 'Atsisiųsta – pridėkite failą prie žinutės.' : 'Išsiųsta.'); }, 900);
+
+  // ---- KURTI mode
+  el.ta.addEventListener('input', () => {
+    S.text = el.ta.value; S.cached = false; if (S.tts === 'again' || S.tts === 'playing') S.tts = 'ready'; render();
+  });
+  function reasonToast() {
+    if (!S.text.trim()) return toast('Įveskite tekstą.');
+    if (S.tts === 'download') return toast('Balsas dar atsisiunčiamas. Palaukite.');
+    if (S.tts === 'preparing') return toast('Balsas dar ruošiamas. Palaukite.');
+    toast('Nepavyko atsisiųsti balso. Patikrinkite ryšį.', true);
+  }
+  function startPlay() { S.tts = 'playing'; S.cached = true; render(); timer = setTimeout(() => { S.tts = 'ready'; render(); }, 1800); }
+  el.playBtn.addEventListener('click', () => {
+    if (el.playBtn.getAttribute('aria-disabled') === 'true') return reasonToast();
+    if (S.tts === 'generating') return;
+    clearTimeout(timer); S.plays++; S.played = true;
+    if (S.cached) startPlay(); else { S.tts = 'generating'; render(); timer = setTimeout(startPlay, 900); }
+  });
+  el.status.addEventListener('click', e => { if (e.target.closest('.retry')) { S.tts = 'download'; S.loaded = 0; render(); el.playBtn.focus(); } });
+
+  // ---- SIŲSTI (both modes)
+  el.round.addEventListener('click', () => {
+    if (S.busy || S.tts === 'generating') return;
+    if (S.mode === 'sounds') {
+      if (!S.sel) return toast('Pirmiausia pasirinkite frazę.');
+      S.busy = true; render();
+      shareTimer = setTimeout(() => { S.busy = false; S.shares++; render(); toast(kind === 'desk' ? 'Atsisiųsta – pridėkite failą prie žinutės.' : 'Išsiųsta.'); }, 900);
+      return;
+    }
+    if (el.round.getAttribute('aria-disabled') === 'true') return reasonToast();
+    if (S.cached) {
+      S.busy = true; render();
+      shareTimer = setTimeout(() => { S.busy = false; S.shares++; if (S.tts === 'again') S.tts = 'ready'; render(); toast(kind === 'desk' ? 'Atsisiųsta – pridėkite failą prie žinutės.' : 'Išsiųsta.'); }, 900);
+    } else {
+      S.tts = 'generating'; render();
+      timer = setTimeout(() => { S.cached = true; S.tts = 'again'; render(); toast('Paruošta. Spauskite SIŲSTI dar kartą.'); }, 900);
+    }
   });
 
   const key = t => ITEMS.find(i => i.label === t || i.key === t).key;
+  const P = (o) => Object.assign({ mode: 'sounds', query: '', sel: null, playing: null, text: '', tts: 'ready', loaded: 0, cached: false }, o);
   const PRESETS = {
-    list: () => ({ open: false, query: '', sel: null, playing: null }),
-    selected: () => ({ open: false, query: '', sel: key('Gal susitarsim, viršininke?'), playing: null }),
-    playing: () => ({ open: false, query: '', sel: key('Banditai lipa ant kulnų, pagelbėk, viršininke!'), playing: key('Banditai lipa ant kulnų, pagelbėk, viršininke!') }),
-    search: () => ({ open: true, query: 'kit', sel: key('Iki kito karto.'), playing: null }),
-    empty: () => ({ open: true, query: 'zzz', sel: null, playing: null })
+    list: () => P({}),
+    selected: () => P({ sel: key('Gal susitarsim, viršininke?') }),
+    playing: () => P({ sel: key('Banditai lipa ant kulnų, pagelbėk, viršininke!'), playing: key('Banditai lipa ant kulnų, pagelbėk, viršininke!') }),
+    search: () => P({ query: 'kit', sel: key('Iki kito karto.') }),
+    empty: () => P({ query: 'zzz' }),
+    'k-empty': () => P({ mode: 'create', tts: 'download', loaded: 2 }),
+    'k-download': () => P({ mode: 'create', text: TTS_TEXT, tts: 'download', loaded: 23 }),
+    'k-ready': () => P({ mode: 'create', text: TTS_TEXT, tts: 'ready' }),
+    'k-generating': () => P({ mode: 'create', text: TTS_TEXT, tts: 'generating' }),
+    'k-again': () => P({ mode: 'create', text: TTS_TEXT, tts: 'again', cached: true }),
+    'k-error': () => P({ mode: 'create', text: TTS_TEXT, tts: 'error' })
   };
   return {
     preset(name) {
-      clearTimeout(timer); const p = PRESETS[name]();
-      Object.assign(S, { open: p.open, query: p.query, sel: p.sel, playing: p.playing, sticky: !!p.playing, busy: false, voice: 'vyras' });
+      clearTimeout(timer); clearTimeout(shareTimer); const p = PRESETS[name]();
+      Object.assign(S, { mode: p.mode, query: p.query, sel: p.sel, playing: p.playing, sticky: !!p.playing, busy: false, voice: 'vyras',
+        text: p.text, tts: p.tts, loaded: p.loaded, cached: p.cached });
       S.played = !!p.playing; render(); el.list.scrollTop = 0; const s = $('.row[aria-selected="true"]', el.list); if (s) ensure(s);
     },
     toast, hint(v) { fr.classList.toggle('force-hint', v); el.hint.hidden = false; S.played = false; render(); },
@@ -652,7 +891,7 @@ const FRAMES = [
   { id: 'c', w: 1440, h: 900, kind: 'desk', p: 4.5 }
 ];
 const stage = $('#stage');
-let view = 'all', preset = 'list', radios = [], wraps = [];
+let view = 'all', preset = 'list', lcdSize = 'auto', radios = [], wraps = [];
 
 function build() {
   stage.innerHTML = ''; scenes.length = 0; radios = []; wraps = [];
@@ -665,12 +904,12 @@ function build() {
       n++;
       const wrap = document.createElement('div'); wrap.className = 'fw';
       const scaler = document.createElement('div'); scaler.className = 'scaler';
-      const fr = document.createElement('div'); fr.className = 'frame ' + (f.kind === 'phone' ? 'is-phone' : 'is-desk');
-      fr.style.cssText = `width:${f.w}px;height:${f.h}px;--fh:${f.h}px`;
+      const fr = document.createElement('div'); fr.className = 'frame ' + (f.kind === 'phone' ? 'is-phone' : 'is-desk') + (lcdSize === 'auto' ? '' : ' ' + lcdSize);
+      fr.style.cssText = `width:${f.w}px;height:${f.h}px`;
       fr.innerHTML = frameHTML(n);
       const cap = document.createElement('div'); cap.className = 'cap-note';
       scaler.appendChild(fr); wrap.append(scaler, cap); row.appendChild(wrap);
-      wraps.push({ f, wrap, scaler, cap, row });
+      wraps.push({ f, wrap, scaler, cap, row, fr });
       const sc = makeScene($('.scene', fr), f.w, f.h, f.p); scenes.push(sc);
       const rd = Radio(fr, f.kind === 'phone' ? 'phone' : 'desk'); radios.push(rd);
       fr.dataset.scene = sc.W + '×' + sc.H;
@@ -679,6 +918,16 @@ function build() {
   });
   radios.forEach(r => r.preset(preset));
   layout(); applyMotion();
+}
+function captions() {
+  wraps.forEach(w => {
+    const shell = $('.shell', w.fr), lcd = $('.lcd', w.fr), list = $('.list', w.fr);
+    const u = shell.offsetWidth / 556;
+    const factor = lcd.offsetHeight / u / 286;
+    const rows = list.hidden ? '' : ` · sąrašas ${(list.clientHeight / 32).toFixed(1).replace('.', ',')} eil.`;
+    const k = w.k || 1;
+    w.cap.textContent = `${w.f.w} × ${w.f.h} · mastelis ${Math.round(k * 100)} % · korpusas ${Math.round(shell.offsetWidth)} px (u = ${u.toFixed(3).replace('.', ',')}) · LCD ${Math.round(lcd.offsetWidth)} × ${Math.round(lcd.offsetHeight)} px = ${factor.toFixed(2).replace('.', ',')}×${rows}`;
+  });
 }
 function layout() {
   const availW = Math.max(300, stage.clientWidth - 32), toolbarH = $('.bar').offsetHeight;
@@ -690,18 +939,28 @@ function layout() {
     if (view !== 'all') k = Math.min(k, (window.innerHeight - toolbarH - 70) / ws[0].f.h);
     k = Math.max(.25, k);
     ws.forEach(w => {
+      w.k = k;
       w.wrap.style.width = Math.round(w.f.w * k) + 'px'; w.wrap.style.height = Math.round(w.f.h * k) + 'px';
       w.scaler.style.transform = `scale(${k})`;
-      const sc = $('.frame', w.scaler).dataset.scene;
-      w.cap.textContent = `${w.f.w} × ${w.f.h} · mastelis ${Math.round(k * 100)} % · scena ${sc} px`;
     });
   });
   stage.style.paddingBottom = '48px';
+  captions();
 }
 addEventListener('resize', layout);
+// the slices may still be decoding when the first caption is computed
+addEventListener('load', captions);
 
 $$('[data-view]').forEach(b => b.addEventListener('click', () => { view = b.dataset.view; $$('[data-view]').forEach(x => x.setAttribute('aria-pressed', String(x === b))); build(); }));
-$$('[data-preset]').forEach(b => b.addEventListener('click', () => { preset = b.dataset.preset; $$('[data-preset]').forEach(x => x.setAttribute('aria-pressed', String(x === b))); radios.forEach(r => r.preset(preset)); }));
+$$('[data-preset]').forEach(b => b.addEventListener('click', () => {
+  preset = b.dataset.preset; $$('[data-preset]').forEach(x => x.setAttribute('aria-pressed', String(x === b)));
+  radios.forEach(r => r.preset(preset)); captions();
+}));
+$$('[data-lcd]').forEach(b => b.addEventListener('click', () => {
+  lcdSize = b.dataset.lcd === 'auto' ? 'auto' : b.dataset.lcd; $$('[data-lcd]').forEach(x => x.setAttribute('aria-pressed', String(x === b)));
+  wraps.forEach(w => { w.fr.classList.remove('lcd-10', 'lcd-14'); if (lcdSize !== 'auto') w.fr.classList.add(lcdSize); });
+  captions();
+}));
 $$('[data-font]').forEach(b => b.addEventListener('click', () => {
   document.body.classList.remove('f-doto', 'f-pixel', 'f-mono'); document.body.classList.add(b.dataset.font);
   $$('[data-font]').forEach(x => x.setAttribute('aria-pressed', String(x === b)));
@@ -715,15 +974,13 @@ $$('[data-demo]').forEach(b => b.addEventListener('click', () => {
 
 /* swatches */
 const SW = [
-  ['metal-200', '--color-metal-200', '#DDE1E6', 'korpuso viršus, logotipas'], ['metal-300', '--color-metal-300', '#C8CCD2', 'korpusas, paspaustas klavišas'],
-  ['metal-400', '--color-metal-400', '#AEB4BC', 'korpuso apačia, aria-disabled'], ['metal-600', '--color-metal-600', '#646B74', 'klavišo kraštas, grotelės'],
-  ['metal-900', '--color-metal-900', '#1B1F24', 'užrašai ant metalo (10,27:1)'], ['metal-950', '--color-metal-950', '#11161B', 'LED rėmelis, juostelės'],
-  ['lcd-bg', '--color-lcd-bg', '#B7C4A5', 'LCD fonas'], ['lcd-bg-hi', '--color-lcd-bg-hi', '#C4D0B4', 'užvedus pelę (10,45:1)'], ['lcd-bg-lo', '--color-lcd-bg-lo', '#A3B292', 'paieška, apatinė juosta (7,49:1)'],
-  ['lcd-ink', '--color-lcd-ink', '#16200F', 'LCD tekstas (9,18:1)'], ['lcd-ink-soft', '--color-lcd-ink-soft', '#2E3C28', 'užuomina (6,38:1)'],
-  ['go-400', '--color-go-400', '#5CCB7B', 'PRIIMTI viršus'], ['go-600', '--color-go-600', '#3FA75E', 'PRIIMTI apačia (5,44:1)'],
-  ['led-on', '--color-led-on', '#4DF07F', 'LED įjungtas (12,2:1)'], ['led-off', '--color-led-off', '#24512F', 'LED išjungtas'],
+  ['lcd-bg', '--color-lcd-bg', '#B7C4A5', 'LCD fonas, laukų fonas'], ['lcd-bg-hi', '--color-lcd-bg-hi', '#C4D0B4', 'užvedus pelę (10,45:1)'], ['lcd-bg-lo', '--color-lcd-bg-lo', '#A3B292', 'apatinė juosta, mygtukai (7,49:1)'],
+  ['lcd-ink', '--color-lcd-ink', '#16200F', 'LCD tekstas (9,18:1), eilutės, juostos'], ['lcd-ink-soft', '--color-lcd-ink-soft', '#2E3C28', 'užuomina, kreditas (6,38:1)'],
+  ['key-ink', '--color-key-ink', '#444444', 'klavišų užrašai ant #DDDDDD (7,17:1; paspausta 5,50:1)'],
+  ['focus', '--color-focus', '#0A3FA8', 'fokuso žiedo išorė; vidus baltas (9,17:1)'],
+  ['metal-950', '--color-metal-950', '#11161B', 'theme-color, juostelės'],
   ['chip-fg', '--color-chip-fg', '#F1F3F5', 'tekstas ant juostelės (12,45:1)'], ['chip-accent', '--color-chip-accent', '#B7C4A5', 'skaičiai (7,55:1)'],
-  ['error-bg', '--color-error-bg', '#5C1414', 'klaidos pranešimas (13,4:1)'], ['focus', '--color-focus', '#0A3FA8', 'fokusas (5,69:1 / 4,39:1)']
+  ['error-bg', '--color-error-bg', '#5C1414', 'klaidos pranešimas (13,4:1)']
 ];
 $('#swatches').innerHTML = SW.map(([n, v, hex, use]) => `<div class="sw"><i style="background:var(${v})"></i><div><b>${n} <span>${hex}</span></b><span>${use}</span></div></div>`).join('');
 

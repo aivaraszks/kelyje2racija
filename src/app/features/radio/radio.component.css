@@ -11,7 +11,6 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 8px;
   padding: max(0.75rem, env(safe-area-inset-top)) max(0.75rem, env(safe-area-inset-right))
     max(0.75rem, env(safe-area-inset-bottom)) max(0.75rem, env(safe-area-inset-left));
 }
@@ -25,131 +24,176 @@
   gap: 8px;
 }
 
-/* ---------- radio body ---------- */
-.radio {
-  position: relative;
+/* ---------- bitmap shell (docs/design/components/radio.md 2-3) ---------- */
+/* The box between the top of the page and the page furniture. Never shorter than the 1.0x shell. */
+.shell-stage {
   flex: 1 1 0;
-  /* cap + 4-row LCD + keys + grille + gaps; the page scrolls below this */
-  min-height: 31rem;
-  width: min(100%, var(--container-radio));
+  min-height: calc(var(--shell-w-min) * 1024 / 556);
+  width: 100%;
+  container-type: size;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.shell {
+  --H: 1136; /* 1024 + 112: height of the tallest shell in u */
+  --shell-w: clamp(
+    min(100cqw, var(--shell-w-min)),
+    min(100cqw, 100cqh * 556 / var(--H)),
+    var(--shell-w-max)
+  );
+  --u: calc(var(--shell-w) / 556);
+  position: relative;
+  flex: none;
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  padding: 12px 12px 14px;
-  border-radius: var(--radius-2xl);
-  box-shadow: var(--shadow-radio);
-  background:
-    repeating-linear-gradient(0deg, rgb(255 255 255 / 6%) 0 1px, rgb(0 0 0 / 3%) 1px 2px),
-    linear-gradient(
-      180deg,
-      var(--color-metal-200) 0%,
-      var(--color-metal-300) 45%,
-      var(--color-metal-400) 100%
-    );
+  width: var(--shell-w);
+  height: clamp(calc(1024 * var(--u)), 100cqh, calc(1136 * var(--u)));
 }
-.screw {
-  position: absolute;
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-  background:
-    linear-gradient(135deg, transparent 44%, var(--color-metal-600) 44% 56%, transparent 56%),
-    radial-gradient(circle at 35% 30%, var(--color-metal-50), var(--color-metal-500));
-  box-shadow:
-    0 1px 0 rgb(255 255 255 / 70%),
-    inset 0 0 0 1px rgb(0 0 0 / 25%);
+.slice {
+  display: block;
+  width: 100%;
+  flex: none;
+  pointer-events: none;
+  user-select: none;
+  -webkit-user-drag: none;
 }
-.screw.tl {
-  left: 9px;
-  top: 9px;
-  transform: rotate(35deg);
+.slice-top {
+  aspect-ratio: 556 / 272;
+  height: auto;
 }
-.screw.tr {
-  right: 9px;
-  top: 9px;
-  transform: rotate(35deg);
+.slice-bottom {
+  aspect-ratio: 556 / 744;
+  height: auto;
 }
-.screw.bl {
-  left: 9px;
-  bottom: 9px;
-  transform: rotate(-20deg);
+.slice-mid {
+  flex: 1 1 0;
+  min-height: calc(8 * var(--u));
+  max-height: calc(120 * var(--u));
+  margin-block: -0.5px;
+  background: center / 100% 100% no-repeat;
 }
-.screw.br {
-  right: 9px;
-  bottom: 9px;
-  transform: rotate(-20deg);
+/* Desktop: the radio takes at most 75% of the viewport height so more of the scene shows. */
+@media (min-width: 64rem) {
+  .page {
+    justify-content: center;
+  }
+  .stage {
+    flex: 1 1 0;
+    justify-content: center;
+  }
+  .shell-stage {
+    flex: 0 1 75%;
+    max-height: 75%;
+  }
 }
 
-/* ---------- cap ---------- */
-.cap {
-  flex: none;
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  height: 3.25rem;
-  padding: 0 10px;
-}
-.logo {
-  flex: none;
+/* Visually hidden h1 over the bitmap logo. */
+.logo-h1 {
+  position: absolute;
   margin: 0;
-  height: 100%;
-  padding: 0 14px;
+  left: calc(var(--u) * 136);
+  top: calc(var(--u) * 66);
+  width: calc(var(--u) * 263);
+  height: calc(var(--u) * 51);
+  overflow: hidden;
+  color: transparent;
+  font-size: 1px;
+}
+
+/* ---------- keys over the blank bitmap faces (radio.md 7) ---------- */
+.skey {
+  position: absolute;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  isolation: isolate;
   display: grid;
   place-items: center;
-  border-radius: var(--radius-lg);
-  background: linear-gradient(180deg, var(--color-metal-800), var(--color-metal-900));
-  box-shadow:
-    inset 0 1px 0 rgb(255 255 255 / 18%),
-    inset 0 -2px 0 rgb(0 0 0 / 40%),
-    0 1px 0 rgb(255 255 255 / 60%);
+  white-space: nowrap;
+  color: var(--color-key-ink);
+  font-family: var(--font-key);
+  font-weight: 900;
+  font-stretch: condensed;
+  font-size: max(1rem, calc(var(--u) * 28));
+  line-height: 1;
+  letter-spacing: 0.05em;
+  transition: transform var(--duration-fast) var(--ease-out);
+  -webkit-tap-highlight-color: transparent;
 }
-.jack {
-  flex: none;
-  width: 1.75rem;
-  height: 1.75rem;
+.skey::before {
+  content: '';
+  position: absolute;
+  z-index: -1;
+  pointer-events: none;
+  background: transparent;
+  transition: background-color var(--duration-fast) var(--ease-out);
+}
+.skey:focus-visible {
+  outline: 3px solid var(--color-focus);
+  outline-offset: 2px;
+  box-shadow: var(--shadow-focus-key);
+}
+@media (hover: hover) {
+  .skey:not([aria-disabled='true']):hover::before {
+    background: rgb(255 255 255 / 25%);
+  }
+}
+.skey:not([aria-disabled='true']):active {
+  transform: translateY(1px);
+}
+.skey:not([aria-disabled='true']):active::before,
+.skey[aria-busy='true']::before {
+  background: rgb(0 0 0 / 12%);
+  box-shadow: inset 0 calc(var(--u) * 3) calc(var(--u) * 4) rgb(0 0 0 / 28%);
+}
+.skey[aria-disabled='true'] {
+  cursor: default;
+}
+.skey[aria-disabled='true']::before {
+  outline: 2px dashed var(--color-key-ink);
+  outline-offset: calc(var(--u) * -6);
+}
+.skey[aria-busy='true'] {
+  transform: translateY(1px);
+}
+.skey[aria-busy='true']::before {
+  box-shadow: inset 0 0 0 3px var(--color-key-ink);
+  animation: var(--animate-key-busy);
+}
+.skey[data-steady]::before {
+  box-shadow: inset 0 0 0 3px var(--color-key-ink);
+}
+.pill {
+  left: calc(var(--u) * 79);
+  bottom: calc(var(--u) * 501);
+  width: calc(var(--u) * 198);
+  height: calc(var(--u) * 66);
+  border-radius: 9999px;
+}
+.pill::before {
+  left: calc(var(--u) * 10);
+  top: calc(var(--u) * 10);
+  width: calc(var(--u) * 177);
+  height: calc(var(--u) * 46);
+  border-radius: 9999px;
+}
+.round {
+  left: calc(var(--u) * 298);
+  bottom: calc(var(--u) * 391);
+  width: calc(var(--u) * 163);
+  height: calc(var(--u) * 153);
   border-radius: 50%;
-  border: 3px solid var(--color-metal-800);
-  background:
-    radial-gradient(circle at 50% 50%, var(--color-metal-950) 0 28%, transparent 30%),
-    radial-gradient(
-      circle at 35% 30%,
-      var(--color-metal-100),
-      var(--color-metal-500) 65%,
-      var(--color-metal-700)
-    );
-  box-shadow:
-    0 1px 0 rgb(255 255 255 / 60%),
-    inset 0 -1px 2px rgb(0 0 0 / 35%);
+  padding-bottom: calc(var(--u) * 3);
 }
-
-/* ---------- keys ---------- */
-.keys-wrap {
-  flex: none;
-  container-type: inline-size;
-}
-.keys {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
-  align-items: center;
-  gap: 10px;
-  padding: 2px 4px 4px;
-}
-/* 200% zoom / very narrow: PRIIMTI moves to its own line above the two pills */
-@container (max-width: 17rem) {
-  .keys {
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-  }
-  .keys > :nth-child(2) {
-    grid-column: 1 / -1;
-    grid-row: 1;
-    justify-self: center;
-  }
-  .keys > :nth-child(1) {
-    grid-row: 2;
-  }
-  .keys > :nth-child(3) {
-    grid-row: 2;
-  }
+.round::before {
+  left: calc(var(--u) * 10);
+  top: calc(var(--u) * 9);
+  width: calc(var(--u) * 145);
+  height: calc(var(--u) * 133);
+  border-radius: 50%;
 }
 
 /* ---------- page furniture ---------- */
@@ -186,9 +230,6 @@
   fill: var(--color-chip-accent);
   shape-rendering: crispEdges;
 }
-.note {
-  flex: none;
-}
 
 /* ---------- toast (outside the radio, never takes focus) ---------- */
 .toast-wrap {
@@ -217,38 +258,4 @@
   background: var(--color-error-bg);
   border-color: var(--color-error-line);
   color: var(--color-white);
-}
-
-/* ---------- short viewports (landscape phone, keyboard open): cap and grille collapse ---------- */
-@media (max-height: 36rem) {
-  .cap,
-  .grille {
-    display: none;
-  }
-  .radio {
-    gap: 8px;
-    min-height: 24rem;
-  }
-}
-
-/* ---------- desktop: fixed-proportion radio centred in the window ---------- */
-@media (min-width: 64rem) {
-  .page {
-    justify-content: center;
-  }
-  .stage {
-    flex: none;
-    height: auto;
-  }
-  .radio {
-    flex: none;
-    height: max(31rem, min(100dvh - 118px, 820px));
-    padding: 16px 16px 18px;
-    gap: 14px;
-  }
-}
-@media (min-width: 64rem) and (max-height: 36rem) {
-  .radio {
-    height: max(24rem, min(100dvh - 118px, 820px));
-  }
 }

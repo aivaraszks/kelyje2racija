@@ -4,6 +4,7 @@ import axe from 'axe-core';
 import { AudioPlayerService, PlayerStatus } from '../../core/audio/audio-player.service';
 import { CounterService } from '../../core/counter/counter.service';
 import { ShareService } from '../../core/share/share.service';
+import { TtsErrorReason, TtsService, TtsState } from '../../core/tts/tts.service';
 import { Radio } from './radio.component';
 
 /**
@@ -25,8 +26,14 @@ async function violations(root: HTMLElement) {
 describe('Radio accessibility (axe-core)', () => {
   const playingId = signal<string | null>(null);
   const status = signal<PlayerStatus>('idle');
+  const ttsState = signal<TtsState>('ready');
+  const ttsError = signal<TtsErrorReason | null>(null);
+  const ttsProgress = signal({ phase: 'model' as const, loaded: 0, total: 71_032_571 });
 
   beforeEach(() => {
+    ttsState.set('ready');
+    ttsError.set(null);
+    ttsProgress.set({ phase: 'model', loaded: 0, total: 71_032_571 });
     playingId.set(null);
     status.set('idle');
     localStorage.clear();
@@ -46,6 +53,23 @@ describe('Radio accessibility (axe-core)', () => {
               playingId.set(null);
               status.set('idle');
             },
+            unlock: () => undefined,
+            playBlob: (id: string) => {
+              playingId.set(id);
+              status.set('playing');
+              return Promise.resolve(true);
+            },
+          },
+        },
+        {
+          provide: TtsService,
+          useValue: {
+            state: ttsState,
+            error: ttsError,
+            progress: ttsProgress,
+            prepare: () => Promise.resolve(),
+            peek: () => null,
+            synthesize: () => Promise.resolve(new Blob(['wav'])),
           },
         },
         {
@@ -53,6 +77,7 @@ describe('Radio accessibility (axe-core)', () => {
           useValue: {
             prefetch: () => Promise.resolve(null),
             share: () => Promise.resolve('shared'),
+            shareFile: () => Promise.resolve('shared'),
           },
         },
         {
@@ -108,11 +133,9 @@ describe('Radio accessibility (axe-core)', () => {
     expect(await violations(root)).toEqual([]);
   });
 
-  it('search open with "Nieko nerasta" has no violations', async () => {
+  it('search with "Nieko nerasta" has no violations', async () => {
     const fixture = await render();
     const root = fixture.nativeElement as HTMLElement;
-    root.querySelector<HTMLButtonElement>('.keys button')!.click();
-    fixture.detectChanges();
     const input = root.querySelector('input')!;
     input.value = 'qqqq';
     input.dispatchEvent(new Event('input'));
@@ -121,15 +144,93 @@ describe('Radio accessibility (axe-core)', () => {
     expect(await violations(root)).toEqual([]);
   });
 
-  it('search open with results, and a toast, have no violations', async () => {
+  it('search with results and a toast have no violations', async () => {
     const fixture = await render();
     const root = fixture.nativeElement as HTMLElement;
-    const [search, accept] = Array.from(root.querySelectorAll<HTMLButtonElement>('.keys button'));
-    search.click();
+    const input = root.querySelector('input')!;
+    input.value = 'sansu';
+    input.dispatchEvent(new Event('input'));
     fixture.detectChanges();
-    accept.click(); // nothing selected -> toast
+    const [, share] = Array.from(root.querySelectorAll<HTMLButtonElement>('.skey'));
+    share.click(); // nothing selected -> toast
     fixture.detectChanges();
     expect(root.querySelector('.toast')).not.toBeNull();
     expect(await violations(root)).toEqual([]);
+  });
+
+  describe('KURTI (create) mode', () => {
+    async function openCreate() {
+      const fixture = await render();
+      const root = fixture.nativeElement as HTMLElement;
+      const [pill] = Array.from(root.querySelectorAll<HTMLButtonElement>('.skey'));
+      pill.click();
+      fixture.detectChanges();
+      expect(pill.textContent?.trim()).toBe('GARSAI');
+      expect(root.querySelector('[role=listbox]')).toBeNull();
+      const type = (value: string) => {
+        const area = root.querySelector<HTMLTextAreaElement>('textarea')!;
+        area.value = value;
+        area.dispatchEvent(new Event('input'));
+        fixture.detectChanges();
+      };
+      return { fixture, root, type };
+    }
+
+    it('empty text, voice ready: no violations', async () => {
+      const { root } = await openCreate();
+      expect(await violations(root)).toEqual([]);
+    });
+
+    it('typed text and ready: no violations', async () => {
+      const { root, type } = await openCreate();
+      type('Labas, kaip sekasi?');
+      expect(await violations(root)).toEqual([]);
+    });
+
+    it('downloading with a progress bar: no violations', async () => {
+      ttsState.set('downloading');
+      ttsProgress.set({ phase: 'model', loaded: 23_000_000, total: 71_032_571 });
+      const { root, type, fixture } = await openCreate();
+      type('Labas');
+      fixture.detectChanges();
+      expect(root.querySelector('[role=progressbar][aria-valuenow="23"]')).not.toBeNull();
+      expect(await violations(root)).toEqual([]);
+    });
+
+    it('preparing and generating (indeterminate bars): no violations', async () => {
+      const { root, type, fixture } = await openCreate();
+      type('Labas');
+      for (const state of ['preparing', 'generating'] as const) {
+        ttsState.set(state);
+        fixture.detectChanges();
+        expect(root.querySelector('[role=progressbar]')).not.toBeNull();
+        expect(await violations(root)).toEqual([]);
+      }
+    });
+
+    it.each(['download', 'offline', 'create', 'unsupported'] as const)(
+      '%s error with the alert icon (and retry): no violations',
+      async (reason) => {
+        ttsState.set('error');
+        ttsError.set(reason);
+        const { root, type } = await openCreate();
+        type('Labas');
+        expect(root.querySelector('.kp-status .alert')).not.toBeNull();
+        expect(await violations(root)).toEqual([]);
+      },
+    );
+
+    it('"press SIŲSTI again" (steady ring) and a toast: no violations', async () => {
+      const { root, type, fixture } = await openCreate();
+      type('Labas');
+      const [, share] = Array.from(root.querySelectorAll<HTMLButtonElement>('.skey'));
+      share.click();
+      await fixture.whenStable();
+      await new Promise((resolve) => setTimeout(resolve, 0));
+      fixture.detectChanges();
+      expect(share.hasAttribute('data-steady')).toBe(true);
+      expect(root.querySelector('.toast')).not.toBeNull();
+      expect(await violations(root)).toEqual([]);
+    });
   });
 });

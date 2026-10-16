@@ -1,71 +1,81 @@
 <div class="lcd">
-  <div class="search" [id]="searchId" [hidden]="!searchOpen()">
-    <input
-      #searchField
-      type="search"
-      aria-label="Ieškoti įrašų"
-      placeholder="Ieškoti…"
-      autocomplete="off"
-      autocapitalize="off"
-      spellcheck="false"
-      enterkeyhint="search"
-      [value]="query()"
-      (input)="onInput($event)"
-      (keydown)="onSearchKeydown($event)"
-    />
-    @if (query()) {
-      <button
-        class="clear"
-        type="button"
-        aria-label="Išvalyti paiešką"
-        (click)="onClear()"
-        (keydown.escape)="searchClose.emit()"
-      >
-        <svg viewBox="0 0 7 7" aria-hidden="true">
-          <path d="M0 0h2v1h1v1h1V1h1V0h2v2H6v1H5v1h1v1h1v2H5V6H4V5H3v1H2v1H0V5h1V4h1V3H1V2H0z" />
-        </svg>
-      </button>
+  <div class="lcd-main">
+    @if (mode() === 'sounds') {
+      @if (sounds().length) {
+        <div
+          #list
+          class="list"
+          role="listbox"
+          aria-label="Frazių sąrašas"
+          aria-orientation="vertical"
+          (keydown)="onListKeydown($event)"
+        >
+          @for (sound of sounds(); track sound.id) {
+            <div
+              #row
+              class="row"
+              role="option"
+              [class.playing]="playingId() === sound.id"
+              [attr.aria-selected]="selectedId() === sound.id"
+              [attr.aria-busy]="loadingId() === sound.id ? 'true' : null"
+              [attr.tabindex]="tabId() === sound.id ? 0 : -1"
+              (click)="soundSelect.emit(sound)"
+              (focus)="onFocusRow(sound.id)"
+            >
+              @if (loadingId() === sound.id) {
+                <span class="dots" aria-hidden="true"><i></i><i></i><i></i></span>
+              } @else {
+                <span class="marker" aria-hidden="true"><i></i><i></i><i></i></span>
+              }
+              <span>{{ label(sound) }}</span>
+              @if (playingId() === sound.id) {
+                <span class="sr-only">, grojama</span>
+              }
+            </div>
+          }
+        </div>
+      } @else {
+        <p class="empty"><span>Nieko nerasta</span></p>
+      }
+    } @else {
+      <!-- KURTI mode: the TTS panel is projected here. -->
+      <div class="kurti-slot"><ng-content select="[kurti]" /></div>
     }
   </div>
 
-  @if (sounds().length) {
-    <div
-      #list
-      class="list"
-      role="listbox"
-      aria-label="Frazių sąrašas"
-      aria-orientation="vertical"
-      (keydown)="onListKeydown($event)"
-    >
-      @for (sound of sounds(); track sound.id) {
-        <div
-          #row
-          class="row"
-          role="option"
-          [class.playing]="playingId() === sound.id"
-          [attr.aria-selected]="selectedId() === sound.id"
-          [attr.aria-busy]="loadingId() === sound.id ? 'true' : null"
-          [attr.tabindex]="tabId() === sound.id ? 0 : -1"
-          (click)="soundSelect.emit(sound)"
-          (focus)="onFocusRow(sound.id)"
-        >
-          @if (loadingId() === sound.id) {
-            <span class="dots" aria-hidden="true"><i></i><i></i><i></i></span>
-          } @else {
-            <span class="marker" aria-hidden="true"><i></i><i></i><i></i></span>
-          }
-          <span>{{ label(sound) }}</span>
-          @if (playingId() === sound.id) {
-            <span class="sr-only">, grojama</span>
-          }
-        </div>
-      }
-    </div>
-  } @else {
-    <p class="empty"><span>Nieko nerasta</span></p>
-  }
-
-  <div class="foot">
+  <div class="strip" [class.has-search]="mode() === 'sounds'">
+    @if (mode() === 'sounds') {
+      <div class="sfield">
+        <input
+          #searchField
+          type="search"
+          aria-label="Ieškoti įrašų"
+          placeholder="Ieškoti…"
+          autocomplete="off"
+          autocapitalize="off"
+          spellcheck="false"
+          enterkeyhint="search"
+          [value]="query()"
+          (input)="onInput($event)"
+          (keydown)="onSearchKeydown($event)"
+        />
+        @if (query()) {
+          <button
+            class="clear"
+            type="button"
+            aria-label="Išvalyti paiešką"
+            (click)="onClear()"
+            (keydown)="onClearKeydown($event)"
+          >
+            <svg viewBox="0 0 7 7" aria-hidden="true">
+              <path
+                d="M0 0h2v1h1v1h1V1h1V0h2v2H6v1H5v1h1v1h1v2H5V6H4V5H3v1H2v1H0V5h1V4h1V3H1V2H0z"
+              />
+            </svg>
+          </button>
+        }
+      </div>
+    }
     <div class="seg" role="group" aria-label="Balsas">
       <button
         type="button"
@@ -82,6 +92,5 @@
         Moteris
       </button>
     </div>
-    <span class="count">Įrašų: {{ sounds().length }}</span>
   </div>
 </div>

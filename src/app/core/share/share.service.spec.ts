@@ -125,4 +125,35 @@ describe('ShareService', () => {
     );
     await expect(service.share(sound)).resolves.toBe('shared');
   });
+
+  describe('shareFile', () => {
+    const wav = () => new File(['wav'], 'racija-labas.wav', { type: 'audio/wav' });
+
+    it('shares the given file with the title, synchronously', () => {
+      const share = vi.fn(() => Promise.resolve());
+      setNavigator(share, () => true);
+      void service.shareFile(wav(), 'Labas');
+      expect(share).toHaveBeenCalledTimes(1);
+      const data = (share.mock.calls[0] as unknown as [ShareData])[0];
+      expect(data.title).toBe('Labas');
+      expect(data.files![0].name).toBe('racija-labas.wav');
+      expect(data.files![0].type).toBe('audio/wav');
+    });
+
+    it('downloads the file when file sharing is unsupported', async () => {
+      setNavigator(undefined, undefined);
+      vi.stubGlobal('URL', { createObjectURL: () => 'blob:x', revokeObjectURL: vi.fn() });
+      const click = vi.spyOn(HTMLAnchorElement.prototype, 'click').mockImplementation(() => {});
+      await expect(service.shareFile(wav(), 'Labas')).resolves.toBe('downloaded');
+      expect(click).toHaveBeenCalled();
+    });
+
+    it('maps share errors to outcomes', async () => {
+      setNavigator(
+        () => Promise.reject(new DOMException('x', 'NotAllowedError')),
+        () => true,
+      );
+      await expect(service.shareFile(wav(), 'Labas')).resolves.toBe('not-allowed');
+    });
+  });
 });

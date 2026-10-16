@@ -17,9 +17,11 @@ import { CounterService } from '../../core/counter/counter.service';
 import { ShareOutcome, ShareService } from '../../core/share/share.service';
 import { SoundCatalogService } from '../../core/sounds/sound-catalog.service';
 import { SoundEntry, Voice, soundLabel } from '../../core/sounds/sound-catalog';
-import { LcdScreen, SEARCH_ID } from './lcd-screen.component';
-import { RadioButton } from './radio-button.component';
-import { RadioCable, RadioGrille, RadioLogo } from './radio-graphics.components';
+import { TtsError, TtsErrorReason, TtsService } from '../../core/tts/tts.service';
+import { speechFile } from '../../core/tts/pcm';
+import { NgOptimizedImage } from '@angular/common';
+import { LcdScreen, RadioMode } from './lcd-screen.component';
+import { TTS_COPY, TtsPanel, TtsProblem } from './tts-panel.component';
 
 interface Toast {
   readonly text: string;
@@ -31,6 +33,10 @@ const TOAST_ERROR_MS = 10_000;
 const SEARCH_ANNOUNCE_MS = 500;
 const LOADING_MARKER_MS = 300;
 const LIVE_DELAY_MS = 30;
+const GENERATING_ANNOUNCE_MS = 400;
+const OPEN_ANNOUNCE_MS = 400;
+const TITLE_MAX = 60;
+const SPEECH_ID = 'tts';
 
 export const MSG = {
   selectFirst: 'Pirmiausia pasirinkite frazę.',
@@ -40,9 +46,29 @@ export const MSG = {
   shareError: 'Nepavyko išsiųsti. Bandykite dar kartą.',
   fetchError: 'Nepavyko įkelti garso. Patikrinkite ryšį.',
   playError: 'Nepavyko paleisti garso.',
-  stopped: 'Sustabdyta.',
   noResults: 'Nieko nerasta.',
+  enterText: 'Įveskite tekstą.',
+  modeCreate: 'Kūrimo režimas.',
+  ttsDownloading: 'Pradedamas balso atsisiuntimas, apie 71 MB.',
+  ttsReady: 'Balsas paruoštas.',
+  ttsGenerating: 'Kuriama kalba.',
+  ttsDownloadWait: 'Balsas dar atsisiunčiamas. Palaukite.',
+  ttsPreparingWait: 'Balsas dar ruošiamas. Palaukite.',
+  ttsAgain: 'Paruošta. Spauskite SIŲSTI dar kartą.',
+  ttsTooLong: 'Daugiausia 220 simbolių.',
+  ttsUnsupported: 'Ši naršyklė nepalaiko kalbos kūrimo.',
 } as const;
+
+const TTS_ERROR_TEXT: Record<TtsErrorReason, string> = {
+  unsupported: MSG.ttsUnsupported,
+  offline: TTS_COPY.offline,
+  download: TTS_COPY.downloadError,
+  create: TTS_COPY.createError,
+  generate: TTS_COPY.generateError,
+  empty: MSG.enterText,
+  'too-long': TTS_COPY.tooLong,
+  'no-chars': TTS_COPY.noChars,
+};
 
 /** Number with a non-breaking space as the thousands separator: "1 234". */
 export function formatCount(value: number): string {
@@ -53,7 +79,7 @@ export function formatCount(value: number): string {
 @Component({
   selector: 'app-radio',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [LcdScreen, RadioButton, RadioLogo, RadioCable, RadioGrille],
+  imports: [LcdScreen, TtsPanel, NgOptimizedImage],
   templateUrl: './radio.component.html',
   styleUrl: './radio.component.css',
 })
@@ -62,17 +88,15 @@ export class Radio {
   private readonly player = inject(AudioPlayerService);
   private readonly sharer = inject(ShareService);
   private readonly counters = inject(CounterService);
+  private readonly tts = inject(TtsService);
   private readonly injector = inject(Injector);
 
   private readonly lcd = viewChild.required(LcdScreen);
-  private readonly searchButton = viewChild.required('searchButton', {
-    read: ElementRef,
-  });
+  private readonly panel = viewChild(TtsPanel);
   private readonly shareButton = viewChild.required('shareButton', {
     read: ElementRef,
   });
 
-  protected readonly searchId = SEARCH_ID;
   protected readonly sounds = this.catalog.visibleSounds;
   protected readonly voice = this.catalog.voice;
   protected readonly query = this.catalog.query;
@@ -83,8 +107,20 @@ export class Radio {
     const id = this.selectedId();
     return id === null ? undefined : this.catalog.byId(id);
   });
-  protected readonly searchOpen = signal(false);
+  protected readonly mode = signal<RadioMode>('sounds');
   protected readonly sharing = signal(false);
+
+  // KURTI mode
+  protected readonly text = signal('');
+  /** Speech for the current text and voice is generated; the next SIŲSTI tap shares it. */
+  protected readonly again = signal(false);
+  protected readonly problem = signal<TtsProblem | null>(null);
+  protected readonly generating = computed(() => this.tts.state() === 'generating');
+  protected readonly speaking = computed(() => this.playingId() === SPEECH_ID);
+  protected readonly canAct = computed(() => {
+    const state = this.tts.state();
+    return this.text().trim() !== '' && (state === 'ready' || state === 'generating');
+  });
   protected readonly played = signal(false);
   protected readonly toast = signal<Toast | null>(null);
   protected readonly live = signal('');
@@ -105,12 +141,19 @@ export class Radio {
   private toastTimer: ReturnType<typeof setTimeout> | undefined;
   private liveTimer: ReturnType<typeof setTimeout> | undefined;
   private searchTimer: ReturnType<typeof setTimeout> | undefined;
+  private openTimer: ReturnType<typeof setTimeout> | undefined;
+  /** Bumped by every new intent (tap, edit, voice, mode); a late result for an old one is dropped. */
+  private intent = 0;
+  private openPending = false;
+  private ttsOpened = false;
+  private previousTts: string = this.tts.state();
 
   constructor() {
     inject(DestroyRef).onDestroy(() => {
       clearTimeout(this.toastTimer);
       clearTimeout(this.liveTimer);
       clearTimeout(this.searchTimer);
+      clearTimeout(this.openTimer);
     });
 
     void this.counters.refresh().then(() => this.countersLoaded.set(true));
@@ -125,6 +168,13 @@ export class Radio {
           this.slowLoading.set(false);
         });
       }
+    });
+
+    // Voice progress is announced once per step, never per percent.
+    effect(() => {
+      const state = this.tts.state();
+      const error = this.tts.error();
+      untracked(() => this.onTtsChange(state, error));
     });
 
     // Playback failures (play() rejected or a media error).
@@ -146,36 +196,78 @@ export class Radio {
 
   // ---------- keys ----------
 
-  protected onAccept(): void {
-    if (this.player.playingId() !== null) {
-      this.player.stop();
-      this.announce(MSG.stopped);
-      return;
+  /**
+   * Pill: KURTI <-> GARSAI (UX 5.12). Keyboard / screen-reader activation (`detail === 0`) moves
+   * focus into the new content; pointer and touch keep it on the pill (no surprise keyboard).
+   */
+  protected onMode(event: MouseEvent): void {
+    const viaKeyboard = event.detail === 0;
+    this.player.stop();
+    this.intent++;
+    if (this.mode() === 'sounds') {
+      this.mode.set('create');
+      this.openCreate();
+      if (viaKeyboard) {
+        afterNextRender(() => this.focusCreateTarget(), { injector: this.injector });
+      }
+    } else {
+      this.mode.set('sounds');
+      this.openPending = false;
+      clearTimeout(this.openTimer);
+      this.announce(`Frazių sąrašas. Įrašų: ${this.sounds().length}.`);
+      if (viaKeyboard) {
+        afterNextRender(() => this.lcd().focusList(), { injector: this.injector });
+      }
     }
-    const sound = this.selected();
-    if (!sound) {
-      this.notify(MSG.selectFirst);
-      return;
-    }
-    this.startPlayback(sound);
-    this.announce(`Grojama: ${soundLabel(sound)}`);
   }
 
-  protected toggleSearch(): void {
-    if (this.searchOpen()) {
-      this.closeSearch();
+  /** SIŲSTI: shares the selected clip, or (KURTI mode) the generated speech. */
+  protected onSend(): void {
+    if (this.mode() === 'sounds') {
+      void this.onShare();
       return;
     }
-    this.searchOpen.set(true);
-    afterNextRender(() => this.lcd().focusSearch(), { injector: this.injector });
+    if (this.sharing() || this.generating()) return;
+    if (!this.canAct()) {
+      this.notifyBlocked();
+      return;
+    }
+    const text = this.text();
+    const voice = this.voice();
+    // Cached speech: share right here, inside the tap (iOS needs the gesture).
+    const blob = this.tts.peek(text, voice);
+    if (blob) {
+      void this.shareSpeech(blob, text);
+      return;
+    }
+    const intent = ++this.intent;
+    void this.generate(text, voice, intent).then((made) => {
+      if (made && this.isCurrent(intent)) {
+        this.again.set(true);
+        this.notify(MSG.ttsAgain);
+      }
+    });
   }
 
-  protected closeSearch(): void {
-    this.searchOpen.set(false);
-    clearTimeout(this.searchTimer);
-    this.catalog.query.set('');
-    this.syncSelection();
-    this.searchButton().nativeElement.focus();
+  /** PALEISTI: unlocks the audio element in the tap, then plays (generating first if needed). */
+  protected onPlayText(): void {
+    if (this.generating()) return;
+    if (!this.canAct()) {
+      this.notifyBlocked();
+      return;
+    }
+    this.player.unlock();
+    const text = this.text();
+    const voice = this.voice();
+    const intent = ++this.intent;
+    const cached = this.tts.peek(text, voice);
+    if (cached) {
+      this.playSpeech(cached);
+      return;
+    }
+    void this.generate(text, voice, intent).then((made) => {
+      if (made && this.isCurrent(intent)) this.playSpeech(made);
+    });
   }
 
   /** Called inside the tap, so the cached blob lets `navigator.share()` run in the gesture. */
@@ -202,9 +294,19 @@ export class Radio {
 
   // ---------- LCD events ----------
 
+  protected onText(text: string): void {
+    this.text.set(text);
+    this.resetSpeech();
+  }
+
+  protected onTextOverflow(): void {
+    this.announce(MSG.ttsTooLong);
+  }
+
   protected onVoice(voice: Voice): void {
     if (voice === this.voice()) return;
     this.player.stop();
+    this.resetSpeech();
     const current = this.selected();
     this.catalog.setVoice(voice);
     const next = current ? this.catalog.counterpart(current, voice) : undefined;
@@ -212,9 +314,8 @@ export class Radio {
     this.syncSelection();
     const kept = this.selected();
     if (kept) void this.sharer.prefetch(kept);
-    this.announce(
-      `Balsas: ${voice === 'vyras' ? 'Vyras' : 'Moteris'}. Įrašų: ${this.sounds().length}.`,
-    );
+    const name = `Balsas: ${voice === 'vyras' ? 'Vyras' : 'Moteris'}.`;
+    this.announce(this.mode() === 'create' ? name : `${name} Įrašų: ${this.sounds().length}.`);
   }
 
   protected onQuery(query: string): void {
@@ -228,6 +329,122 @@ export class Radio {
   }
 
   // ---------- helpers ----------
+
+  /** Keyboard users entering KURTI land in the textarea of the TTS panel. */
+  private focusCreateTarget(): void {
+    this.panel()?.focusText();
+  }
+
+  // ---------- KURTI helpers ----------
+
+  /** Entering KURTI: start (or join) the voice download and announce the mode with its size note. */
+  private openCreate(): void {
+    this.ttsOpened = true;
+    void this.tts.prepare();
+    clearTimeout(this.openTimer);
+    const state = this.tts.state();
+    // idle / error: the answer (download, cached, failure) arrives a moment later.
+    this.openPending = state === 'idle' || state === 'error';
+    if (this.openPending) {
+      this.openTimer = setTimeout(() => this.say(''), OPEN_ANNOUNCE_MS);
+    } else {
+      this.announce(MSG.modeCreate);
+    }
+  }
+
+  /** Announces `text`, prefixed with the mode message when the open announcement is still due. */
+  private say(text: string): void {
+    const prefix = this.openPending ? MSG.modeCreate : '';
+    this.openPending = false;
+    clearTimeout(this.openTimer);
+    this.announce([prefix, text].filter(Boolean).join(' '));
+  }
+
+  private onTtsChange(state: string, error: TtsErrorReason | null): void {
+    const previous = this.previousTts;
+    this.previousTts = state;
+    if (!this.ttsOpened) return;
+    if (state === 'downloading' && previous !== 'downloading') {
+      this.say(MSG.ttsDownloading);
+    } else if (state === 'ready' && previous !== 'ready' && previous !== 'generating') {
+      this.say(MSG.ttsReady);
+    } else if (state === 'error' && error) {
+      this.say(TTS_ERROR_TEXT[error]);
+    }
+  }
+
+  /** Text, voice or mode changed: speech made for the old values is no longer "ready to send". */
+  private resetSpeech(): void {
+    this.intent++;
+    this.again.set(false);
+    this.problem.set(null);
+  }
+
+  private isCurrent(intent: number): boolean {
+    return this.mode() === 'create' && this.intent === intent;
+  }
+
+  /** Never rejects. Resolves null after reporting the reason. */
+  private async generate(text: string, voice: Voice, intent: number): Promise<Blob | null> {
+    this.problem.set(null);
+    const slow = setTimeout(() => {
+      if (this.isCurrent(intent)) this.announce(MSG.ttsGenerating);
+    }, GENERATING_ANNOUNCE_MS);
+    try {
+      return await this.tts.synthesize(text, voice);
+    } catch (error) {
+      if (this.isCurrent(intent)) this.reportSynthError(error);
+      return null;
+    } finally {
+      clearTimeout(slow);
+    }
+  }
+
+  private reportSynthError(error: unknown): void {
+    const reason = error instanceof TtsError ? error.reason : 'generate';
+    if (reason === 'no-chars' || reason === 'generate') this.problem.set(reason);
+    this.notify(TTS_ERROR_TEXT[reason], reason !== 'empty');
+  }
+
+  /** A tap on a disabled PALEISTI / SIŲSTI says why (UX 5.13). */
+  private notifyBlocked(): void {
+    if (!this.text().trim()) {
+      this.notify(MSG.enterText);
+      return;
+    }
+    switch (this.tts.state()) {
+      case 'downloading':
+        this.notify(MSG.ttsDownloadWait);
+        break;
+      case 'error':
+        this.notify(TTS_ERROR_TEXT[this.tts.error() ?? 'download'], true);
+        break;
+      default:
+        this.notify(MSG.ttsPreparingWait);
+    }
+  }
+
+  private playSpeech(blob: Blob): void {
+    void this.player.playBlob(SPEECH_ID, blob).then((started) => {
+      if (started) {
+        this.played.set(true);
+        void this.counters.recordPlay();
+      }
+    });
+  }
+
+  private async shareSpeech(blob: Blob, text: string): Promise<void> {
+    this.sharing.set(true);
+    let outcome: ShareOutcome;
+    try {
+      const title = text.replace(/\s+/g, ' ').trim().slice(0, TITLE_MAX);
+      outcome = await this.sharer.shareFile(speechFile(text, blob), title);
+    } finally {
+      this.sharing.set(false);
+    }
+    if (outcome === 'shared' || outcome === 'downloaded') this.again.set(false);
+    this.handleShareOutcome(outcome);
+  }
 
   private startPlayback(sound: SoundEntry): void {
     void this.player.play(sound).then((started) => {

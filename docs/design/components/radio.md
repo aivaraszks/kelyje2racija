@@ -1,156 +1,269 @@
-# Component spec: radio
+# Component spec: radio (bitmap shell)
 
-Tokens: `docs/design/design-system.md` (names below are the `@theme` names; Tailwind utilities in brackets). Behaviour and copy: `docs/ux/racija-radio.md`. Plan: D4, D5. Working reference: `docs/design/preview/racija-preview.html` (its CSS under "product" is the visual source; copy values, not structure).
+Plan: `docs/plans/legacy-radio.md` (L1-L6, L10; approved 2026-10-16; supersedes D4, D5 of `racija-radio.md`). Behaviour and copy: `docs/ux/racija-radio.md` (U11-U15, 5.11-5.13). Tokens: `docs/design/design-system.md` (names below are the `@theme` names). Working reference: `docs/design/preview/racija-preview.html` (its "product" CSS is the visual source; copy values, not structure). The old CSS/SVG radio (cap, cable, grille, PRIIMTI, LED, screws, brushed body) is gone: the body is the legacy bitmap.
 
-Angular mapping (plan task 9): `radio.component` (body, cap, button row, grille), `lcd-screen.component` (search row, list, footer), `radio-button.component` (variants `pill` and `round`), SVG partials for logo, grille and cable.
+Angular mapping (plan tasks 7-8): `radio.component` (shell slices, hidden `h1`, the two key buttons, page furniture), `lcd-screen.component` (phrase list, bottom strip), `tts-panel.component` (KURTI panel). `radio-button.component` and the SVG graphics are deleted.
+
+Units: **`u` is `--u` = shell width / 556** (one source pixel of the bitmap). Every overlay rectangle below is in source pixels, written `N u` = `calc(var(--u) * N)`.
 
 ## 1. Anatomy
 
-A flexible CSS body with vector details. Top to bottom, in one flex column (`display:flex; flex-direction:column`):
+One positioned box (the "shell") with the bitmap in three slices and four overlays on top.
 
-| # | Part | Height | Notes |
-| - | ---- | ------ | ----- |
-| 1 | **Cap** | `3.25rem` fixed | Logo plate (left), coiled cable (flex 1), jack (right). Decorative except the `h1` name. Hidden below `short`. |
-| 2 | **LCD bezel + screen** | `flex: 1 1 auto`, min `15rem`, max `70dvh` | The only part that grows. Contains search row, list, footer. |
-| 3 | **Button row** | auto (about 6.5rem, set by the 5.75rem round key) | PAIEŠKA, PRIIMTI, SIŲSTI. Fixed. |
-| 4 | **Speaker grille** | `2.75rem` (`3.25rem` on desktop) | SVG dot pattern, decorative. Hidden below `short`. |
+| Layer | What | Notes |
+| ----- | ---- | ----- |
+| 1 | `shell-top.webp` (556 x 272) | Logo, top of the bezel, the upper 114 px of the LCD opening. `<img ngSrc priority>` |
+| 1 | `shell-mid.webp` (556 x 8), stretched | The stretch band. A `div` with `background-size: 100% 100%`. Only straight vertical edges and the flat LCD, so stretching is invisible |
+| 1 | `shell-bottom.webp` (556 x 744) | Lower LCD, pill face, round key, grille, cable. `<img ngSrc>` |
+| 2 | `h1` "RACIJA" | Visually hidden text placed over the bitmap logo (x 136, y 66, 263 x 51). Not `display: none` |
+| 3 | **LCD surface** | Opaque HTML surface over the bitmap's grey screen (section 4) |
+| 4 | **Pill key** (KURTI / GARSAI) | `<button>` over the blank pill (section 7) |
+| 4 | **Round key** (SIŲSTI) | `<button>` over the blank ellipse key (section 7) |
 
-Radio body: `rounded-2xl`, `shadow-radio`, padding `3` (12px) / `4` (16px) from `sm`, gap `3`. Background: brushed streaks (`repeating-linear-gradient(0deg, white 6% 1px, black 3% 1px)`) over the vertical gradient `metal-200 0%, metal-300 45%, metal-400 100%`. Four screws (10px circles, `metal-50` to `metal-500` radial, a slot line in `metal-600`) sit in the corners, 9px from the edges, each at a different rotation. **The body has no `overflow: hidden`** so focus rings are never clipped.
+The bitmap carries no text on the keys: the labels are HTML. The green ring around the round key is part of the bitmap and stays static. The shell has **no `overflow: hidden`**, so focus rings are never clipped.
 
-Width: `min(100% - 24px, var(--container-radio))` (`max-w-radio`), centred, plus `env(safe-area-inset-*)`.
+## 2. Slices and sizing (L2)
 
-## 2. How the LCD grows (D4)
+The shell is a flex column: top, mid (`flex: 1`), bottom. Slice cut lines in source px: top y 0-272, mid y 272-280, bottom y 280-1024 (see "L2 cut lines" below).
 
-The page is a flex column of `100dvh`: the radio, then the page furniture (hint, counters, footer note), then nothing else.
+```css
+@property --shell-w { syntax: '<length>'; inherits: true; initial-value: 300px; }
+@property --u       { syntax: '<length>'; inherits: true; initial-value: 0.54px; }
 
+.shell-stage {                    /* the box between the top of the page and the page furniture */
+  flex: 1 1 0; min-height: 0; width: 100%;
+  container-type: size;
+  display: flex; justify-content: center; align-items: center;
+}
+.shell {
+  --H: 1136;                      /* 1024 + 112: height of the tallest shell in u */
+  --shell-w: clamp(min(100cqw, var(--shell-w-min)), min(100cqw, 100cqh * 556 / var(--H)), var(--shell-w-max));
+  --u: calc(var(--shell-w) / 556);
+  position: relative; display: flex; flex-direction: column; flex: none;
+  width: var(--shell-w);
+  height: clamp(calc(1024 * var(--u)), 100cqh, calc(1136 * var(--u)));
+}
+.shell .slice        { display: block; width: 100%; flex: none; pointer-events: none; user-select: none; }
+.shell .slice-top    { aspect-ratio: 556 / 272; height: auto; }
+.shell .slice-mid    { flex: 1 1 0; min-height: calc(8 * var(--u)); max-height: calc(120 * var(--u));
+                       margin-block: -0.5px; background: center / 100% 100% no-repeat; }
+.shell .slice-bottom { aspect-ratio: 556 / 744; height: auto; }
 ```
-page            height: 100dvh; display:flex; flex-direction:column; align-items:center; gap: 2 (8px); padding: 3 + safe-area
- radio          flex: 1 1 0; min-height: 0         (phones: fills what the furniture leaves)
-   cap          flex: none
-   lcd bezel    flex: 1 1 auto; min-height: 15rem; max-height: 70dvh
-   buttons      flex: none
-   grille       flex: none
- furniture      flex: none
-```
 
-- **Phones (< `lg`)**: the radio takes the full remaining height, so the LCD gets everything left after cap + buttons + grille (about 320px = 5 to 6 rows at 360x740; about 495px = 10 rows at 412x915).
-- **Desktop (`lg` and up)**: the radio is `flex: none; height: min(100dvh - 110px, 820px)` and the stage is vertically centred. At 1440x900 the radio is about 480x756 and the LCD about 450px tall (9 to 10 rows).
-- **Minimum**: 4 rows plus footer = `15rem` (240px). If cap + buttons + grille + 240px do not fit (landscape phone, keyboard open), `short` hides cap and grille first; if it still does not fit, the page scrolls (`min-height: min-content` on the page) and the LCD stays at its minimum. The LCD never drops under 4 rows and never overlaps the buttons.
-- **Maximum**: `70dvh`, so on very tall windows the buttons stay close under the screen.
-- **Search open**: the search row takes `3.75rem` from the list area, not from the radio, so nothing else moves. With the on-screen keyboard (`interactive-widget=resizes-content`) `short` collapses cap and grille so at least 3 rows and the field stay visible.
-- Because it is CSS and SVG only, nothing blurs at any size or zoom.
+- **Register `--u` and `--shell-w` with `@property`.** `.lcd` is itself a size container; without registration a descendant that reads `var(--u)` would re-resolve `cqw` against the LCD. Registered properties are computed once, on the `.shell`, so every descendant sees the same px length. (Supported in all current browsers.)
+- `--shell-w-min: 300px` and `--shell-w-max: 556px` are tokens in `src/styles.css`. The shell is never wider than 556 CSS px (never shown above 1:1) and never narrower than 300 px unless the viewport is: below that the page scrolls.
+- **Height is the limit (desktop, tall phones):** `100cqh * 556 / 1136` wins, the shell fills the stage and the mid band sits at its maximum, so the LCD is at **1.4x**. **Width is the limit (narrow phones):** the shell is `100cqw` wide and the spare height goes to the band, between 1.0x and 1.4x.
+- `margin-block: -0.5px` on the mid band overlaps the neighbours by half a pixel so no hairline shows at fractional heights. The slices are near-identical at the seam.
+- **LCD height** = `286u` at 1.0x (mid = 8u) to `398u` at 1.4x (mid = 120u). Factor = LCD height / 286u. The cap is the single constant `120` (= 8 + 112, 112 = 0.4 x the legacy 281 px LCD); tune it at checkpoint A.
+- Slices are static assets in `public/radio/`; no `srcset`, no 2x. `image-rendering: auto` (smooth). The bitmap is soft on 3x phones; accepted by the user.
 
-## 3. Cap
+### Sizes at the three review viewports (computed, +/- 2 px; furniture height assumed 96 px with the hint, 62 px without)
 
-- **Logo plate**: `rounded-lg`, gradient `metal-800` to `metal-900`, inset highlight `rgb(255 255 255 / 18%)`, 1px lower lip `rgb(255 255 255 / 60%)`. Wordmark: SVG `viewBox="0 0 35 7"`, drawn at `1.75rem` tall (exactly 4px per unit, `shape-rendering: crispEdges`), `fill: metal-200` (12.6:1 on the plate). Path (copy as is):
+| Viewport | Stage (cqw x cqh) | Shell width / `u` | Shell height | Mid band | LCD (w x h) | List area (LCD - 78 px strip) |
+| -------- | ----------------- | ----------------- | ------------ | -------- | ----------- | ----------------------------- |
+| 360 x 740 | 336 x 612 | 300 px (min clamp) / 0.540 | 612 | 64 px = 118u | 208 x 214 px, **1.38x** | 136 px = 4.2 rows of 32 px |
+| 412 x 915 | 388 x 787 | 385 px / 0.693 | 787 | 83 px = 120u (max) | 268 x 276 px, **1.39x** | 198 px = 6.2 rows |
+| 1440 x 900 | 1416 x 804 | 394 px / 0.708 | 804 | 85 px = 120u (max) | 273 x 282 px, **1.39x** | 204 px = 6.4 rows |
 
-  `M0 0h1v7h-1z M1 0h3v1h-3z M4 1h1v2h-1z M1 3h3v1h-3z M2 4h1v1h-1z M3 5h1v1h-1z M4 6h1v1h-1z M6 1h1v6h-1z M10 1h1v6h-1z M7 0h3v1h-3z M7 3h3v1h-3z M12 1h1v5h-1z M13 0h3v1h-3z M13 6h3v1h-3z M16 1h1v1h-1z M16 5h1v1h-1z M18 0h5v1h-5z M20 1h1v5h-1z M18 6h5v1h-5z M26 0h3v1h-3z M28 1h1v5h-1z M24 5h1v1h-1z M25 6h3v1h-3z M30 1h1v6h-1z M34 1h1v6h-1z M31 0h3v1h-3z M31 3h3v1h-3z`
+At 1440 x 900 the shell is height-limited to about 394 px wide, so it is smaller than the old 480 px CSS radio. This follows from the plan's rule (never above 1:1 and the whole radio plus furniture inside `100dvh`), not from a bug.
 
-  (R, A, C, I, J, A on a 5x7 grid, 1 unit gap.) The SVG is `aria-hidden`; the accessible name "RACIJA" is on the parent `h1`.
-- **Cable**: `viewBox="0 0 160 32"`, `preserveAspectRatio="none"`, 9 coils: a polyline of `x = t*160 + 5*cos(a)`, `y = 16 + 10*sin(a)` with `a = t * 9 * 2pi`, 216 steps. Two strokes with `vector-effect: non-scaling-stroke`: `metal-900` 4px, then `metal-500` 1.2px shifted up 1px as a highlight. Reference generator: `cablePath()` in the preview. Decorative, `aria-hidden`.
-- **Jack**: `1.75rem` circle, 3px `metal-800` border, radial gradient `metal-100` to `metal-500` to `metal-700`, dark `metal-950` hole in the middle.
+## 3. Overlay anchors (L3)
 
-## 4. LCD
+Source px on the 556 x 1024 canvas, from "Shell geometry" below. Elements above the band are anchored from the top; elements below it from the **bottom** edge of the shell (`bottom: (1024 - y_exclusive) u`), which is exact for any stretch because the bottom slice starts at y 280.
 
-### 4.1 Bezel and screen
+| Overlay | left | width | height | anchor |
+| ------- | ---- | ----- | ------ | ------ |
+| `h1` over the logo | 136 u | 263 u | 51 u | `top: 66u` |
+| LCD surface | 77 u | 386 u | grows (286u to 398u) | `top: 148u; bottom: 590u` (y 148-433 inclusive covers the whole opening incl. its inner shadow) |
+| Pill button (rim box) | 79 u | 198 u | 66 u | `bottom: 501u` (rim y 457-522) |
+| Pill face (pseudo) | 10 u in | 177 u | 46 u | `top: 10u` inside the button, full radius |
+| Round button (ring bbox) | 298 u | 163 u | 153 u | `bottom: 391u` (ring y 480-632), `border-radius: 50%` (an ellipse) |
+| Round face (pseudo) | 10 u in | 145 u | 133 u | `top: 9u` inside the button, `border-radius: 50%` |
 
-- **Bezel**: padding 6px, `rounded-xl`, gradient `metal-800` to `metal-900`, `shadow-lcd` (recessed, light lower lip).
-- **Screen**: `rounded-lg`, `bg-lcd-bg`, `text-lcd-ink`, `font-lcd` weight 800, `tracking-lcd`, `overflow: hidden`. Overlay (`::after`, `pointer-events:none`, above the text): scanlines 5% ink every 3px vertically, 4% ink every 3px horizontally, inset edge shadow `0 0 14px` at 16% ink. Contrast stays at least 5.5:1 (design-system 2.2).
+The button boxes are the rim and the green ring (the hit areas, about 107 x 36 px and 88 x 83 px at the 300 px shell). The "face" pseudo-elements draw the press feedback exactly over the bitmap faces.
 
-### 4.2 Rows
+## 4. LCD surface (L3)
 
-Row: `min-height: var(--size-hit)`, padding `0.5rem 0.75rem 0.5rem 2.25rem` (the left 2.25rem holds the marker), `text-lcd`, line-height 1.3, `overflow-wrap: anywhere` (long text wraps up to 3 lines, never truncates), 1px bottom divider `rgb(22 32 15 / 14%)` (decorative).
+The bitmap's grey screen (`rgb(125 135 124)`, about 4.5:1 with dark ink) is covered by an **opaque** HTML surface, so text contrast never depends on the bitmap.
+
+- Rectangle: x 77-462, y 148-433 (section 3), `border-radius: 4u` (measured corner radius of the flat area is about 4 px). It covers the dark inner shadow of the bezel opening and 0-2 px of the bezel edge, so there is no grey seam.
+- Surface: `bg-lcd-bg`, `text-lcd-ink`, `font-lcd` 800, `tracking-lcd`, `overflow: hidden`, `container: lcd / size` (for the strip and textarea container queries).
+- `::after` overlay (`pointer-events: none`, above content, `z-index: 5`): scanlines 5% ink every 3 px vertically and 4% every 3 px horizontally (unchanged), plus two inset shadows: `inset 0 0 14px rgb(22 32 15 / 16%)` (the vignette, unchanged: worst case about `#93A084`, still at least 5.5:1) and the **recess** `inset 0 calc(2 * var(--u)) calc(3 * var(--u)) rgb(0 0 0 / 25%)`, which blends the top edge into the bitmap's own inner shadow. The recess reaches about 3u (1.6 px at the 300 px shell); no text sits closer than 4 px to the edge (content padding is at least 4 px), so it does not touch contrast.
+- No LCD bezel, no `shadow-lcd`: the bitmap draws the bezel.
+
+## 5. LCD content sizes (L6, U15)
+
+Doto 800, **1rem (`text-lcd-meta`, line-height 1.25)** for rows, textarea, search field, toggle, buttons, status and counter. Never below 1rem (dot-matrix legibility). 16 px also stops iOS from zooming the inputs. `--size-lcd-row: 2rem` (32 px) is the minimum height of every LCD row and control. Text uses `rem`, not `cqw`, so browser zoom and text zoom scale it.
+
+### 5.1 Phrase rows
+
+Row: `min-height: var(--size-lcd-row)`, padding `0.375rem 0.5rem 0.375rem 1.75rem` (one line of 20 px + 12 px = 32 px; the left 1.75rem holds the marker), `overflow-wrap: anywhere` (long text wraps to as many lines as needed, never truncates), 1px bottom divider `rgb(22 32 15 / 14%)` (decorative). Scrollbar `scrollbar-width: thin; scrollbar-color: lcd-ink lcd-bg-lo`, `overscroll-behavior: contain`.
 
 | State | Visual | Contrast | Not colour alone because |
 | ----- | ------ | -------- | ------------------------ |
 | Default | `lcd-ink` on `lcd-bg` | 9.18:1 | - |
-| Hover (pointer only) | bg `lcd-bg-hi`, 120ms linear | 10.45:1 | Hover is never the only cue |
-| Focus-visible | `outline: 3px solid lcd-ink; outline-offset: -3px` (inside the row) | 9.18:1 vs LCD | Outline shape differs from the fill of "selected" |
-| Selected | bg `lcd-ink`, text `lcd-bg` (inverted bar, full row width) | 9.18:1 | Inversion is a shape/lightness change |
-| Selected + focus-visible | outline colour becomes `lcd-bg` | 9.18:1 vs fill | - |
-| Playing | Selected + marker: three bars (a 14x14px box, 2px gaps), `lcd-bg`, at `left: 0.8rem`, animation `marker` (0.7s, `steps(4)`, 0.1s stagger, `transform-origin: bottom`) | - | The marker shape is the cue; reduced motion shows the bars at full height |
-| Loading (> 300ms) | Marker replaced by three dots, `animate-dots` | - | Shape |
-| Error | Back to "selected" | - | Toast explains |
+| Hover (pointer only) | bg `lcd-bg-hi`, 120 ms linear | 10.45:1 | Never the only cue |
+| Focus-visible | `outline: 3px solid lcd-ink; outline-offset: -3px` | 9.18:1 | Outline vs the fill of "selected" |
+| Selected | bg `lcd-ink`, text `lcd-bg`, full row width | 9.18:1 | Inversion is a lightness change |
+| Selected + focus-visible | outline `lcd-bg` | 9.18:1 vs fill | - |
+| Playing | Selected + marker: three bars in a 12 x 12 px box (2 px gaps) at `left: 0.5rem`, `lcd-bg`, `animate-marker`; reduced motion shows full-height bars | - | The marker shape |
+| Loading (> 300 ms) | Marker replaced by three dots, `animate-dots` | - | Shape |
 
-Scrollbar: `scrollbar-width: thin; scrollbar-color: lcd-ink lcd-bg-lo`. `overscroll-behavior: contain`.
+Empty result: the list is replaced by a centred "Nieko nerasta" in a 2px dashed `lcd-ink` box (`radius-sm`, padding 8 x 16).
 
-### 4.3 Search row
+### 5.2 Bottom strip (UX 5.11)
 
-Strip: padding 8px, bg `lcd-bg-lo`, bottom border 2px `lcd-ink`. Field: height `--size-hit`, 2px `lcd-ink` border, `rounded-md`, bg `lcd-bg`, text `text-lcd` (18px, so no iOS zoom), caret `lcd-ink`, placeholder `lcd-ink-soft` (6.38:1). Focus: `outline: 3px solid lcd-ink; outline-offset: 2px`. Clear button: 44x44, 2px `lcd-ink` border, bg `lcd-bg-lo`, 7x7 pixel "x" icon in `lcd-ink` (hover bg `lcd-bg-hi`), visible only when the field has text.
+Fixed under the list/panel, never scrolls. `bg-lcd-bg-lo`, top border 2px `lcd-ink`, padding 4px, gap 4px.
 
-### 4.4 Empty state
+| LCD container width | Layout | Height |
+| ------------------- | ------ | ------ |
+| < 340 px (every phone, and desktop below a 490 px shell) | Two lines: search field (+ x), then the toggle | 2 + 4 + 32 + 4 + 32 + 4 = **78 px** |
+| >= 340 px (`@container lcd (min-width: 340px)`) | One line: search (flex, `minmax(0, 1fr)`) + toggle (auto) | 2 + 4 + 32 + 4 = 42 px |
+| KURTI mode | Toggle only (no search) | 42 px |
 
-The list is replaced by a centred block: "Nieko nerasta" in `text-lcd-meta`, inside a 2px dashed `lcd-ink` rounded box (`rounded-md`), padding 8 x 16. The footer still shows "Įrašų: 0".
+- **Search field**: `radius-sm`, height 2rem, 2px `lcd-ink` border, bg `lcd-bg`, text `text-lcd-meta` (Doto), caret `lcd-ink`, placeholder `lcd-ink-soft` (6.38:1). Right padding 2rem so text never runs under the x. Focus: `outline: 3px solid lcd-ink; outline-offset: 1px` (inside the strip padding).
+- **x (clear)**: a 2rem x 2rem transparent button at the field's right edge (hit area 32 x 32, above the 24 px AA minimum), 7 x 7 pixel icon at 14 px in `lcd-ink` (9.18:1 on `lcd-bg`), hover bg `lcd-bg-hi`, focus outline as the field's, inset. Visible only when the field has text. The native search cancel button is hidden.
+- **Voice toggle**: two equal segments (`grid-template-columns: 1fr 1fr`), each 2rem tall with its own 2px `lcd-ink` border (the second overlaps the first by 2px so the divider is 2px), `radius-sm` on the outer corners. Inactive: `lcd-bg-lo` bg / `lcd-ink` text (7.49:1), hover `lcd-bg-hi` (10.45:1). Active (`aria-pressed="true"`): `lcd-ink` bg / `lcd-bg` text (9.18:1), so the active segment is inverted, never colour alone. Focus: inset `outline: 3px solid lcd-ink; outline-offset: -5px` (`lcd-bg` on the active segment). Hit height 32 px, width at least 80 px at the smallest LCD.
 
-### 4.5 Footer strip
+## 6. Page furniture, toast, scene dimming
 
-Bg `lcd-bg-lo`, top border 2px `lcd-ink`, padding 6px 8px, `text-lcd-meta`, `flex-wrap` (the count wraps under the toggle on very narrow widths). Left: **voice toggle**, a two-segment control with a 2px `lcd-ink` border, `rounded-md`, a 2px divider; each segment 40px tall + border = 44px, min width 44px, padding 0 0.625rem. Inactive: `lcd-bg-lo` bg / `lcd-ink` text (7.49:1), hover `lcd-bg-hi`. Active (`aria-pressed="true"`): `lcd-ink` bg / `lcd-bg` text (9.18:1), so the active one is inverted, never colour alone. Focus: inset 3px outline (`outline-offset: -5px`) in `lcd-ink` (`lcd-bg` on the active segment). Right: "Įrašų: N", `white-space: nowrap`.
+Unchanged from the previous version (the preview shows them).
 
-## 5. Keys
+- Chips: `bg-chip-bg text-chip-fg text-chip rounded-lg shadow-chip px-3 py-1.5`, centred, `gap-1.5`, under the shell. Order: hint (touch only, hidden after the first play), counters, footer note. Counter numbers in `chip-accent`, `tabular-nums`, non-breaking thousands separator. Worst-case contrast 12.45:1.
+- Toast: bottom-centre, 14px above the bottom (plus `env(safe-area-inset-bottom)`), `max-width: calc(100% - 32px)`, `rounded-xl`, 1px `rgb(255 255 255 / 14%)` border, `bg-chip-bg text-chip-fg`, `text-chip` weight 600, `shadow-toast`, `animate-toast-in`. Error: `bg-error-bg`, `error-line` border, `text-white` (13.4:1). Never takes focus, `aria-hidden`.
+- Scene dimming: `filter: saturate(0.9)` on the canvas plus an overlay `radial-gradient(120% 90% at 50% 45%, transparent 40%, rgb(8 12 16 / 45%) 100%)` and a flat `rgb(8 12 16 / 22%)`. The overlay never sits above the shell or the chips.
+- **Transparent backdrop (L1)**: the scene shows around the body. There is no black box. The prepared slices have no dark fringe; if one shows at checkpoint A, tune the fringe step in `tools/prepare-shell.mjs`, never add a CSS outline.
 
-All three: `font-ui` 800 `text-key` (13px), uppercase, `tracking-key`, `text-metal-900`, height/hit area at least 44px. Transitions: `transform` and `box-shadow`, `--duration-fast`, `--ease-out`. Focus-visible on all: `outline: 3px solid var(--color-focus); outline-offset: 3px`.
+## 7. Keys (L4)
 
-### 5.1 Pill (PAIEŠKA, SIŲSTI)
+Two real `<button type="button">`: the **pill** (text KURTI in phrase mode, GARSAI in KURTI mode) and the **round key** (text SIŲSTI, both modes). Transparent background, no border, the bitmap face shows through. The label is HTML text, drawn over the **blank** face in the legacy style.
 
-`rounded-full`, height `--size-hit`, padding-inline `0.5rem` (so "PAIEŠKA" fits 78px at 320px wide), face gradient `metal-100` to `metal-300`, `shadow-key`.
+### 7.1 Label
 
-| State | Visual |
-| ----- | ------ |
-| Default | As above |
-| Hover | Face gradient `metal-50` to `metal-200` (label 12+:1) |
-| Active / pressed | `translateY(3px)`, `shadow-key-down`, flat `metal-300` face (10.27:1) |
-| PAIEŠKA open (`aria-expanded="true"`) | Stays in the pressed state (it is a latching key) |
-| `aria-disabled="true"` (SIŲSTI, nothing selected) | Flat `metal-400` face, no top highlight, `inset 0 1px 3px rgb(0 0 0 / 22%)` shadow, 2px dashed `metal-600` outline inset 5px. Label unchanged (7.93:1). Still focusable; activation shows the toast. |
-| `aria-busy="true"` (sharing) | Pressed position, `animate-busy`: an inner 3px `metal-700` ring pulses 1s. The label is **never faded**. |
-| Focus-visible | Outer ring `focus` colour (5.69:1 on `metal-300` body) |
+| Property | Value |
+| -------- | ----- |
+| Font | `--font-key`: `'Arial Narrow', 'Roboto Condensed', 'Helvetica Neue', Arial, sans-serif`, `font-stretch: condensed`, weight 900 (legacy: Arial Narrow 900) |
+| Colour | `--color-key-ink` `#444444` (the legacy dark grey) |
+| Size | `font-size: max(1rem, calc(var(--u) * 28))`: 16 px at the 300 px shell (`u` = 0.54, 15.1 px, so the 1rem floor applies), 19.4 px at `u` = 0.693, 28 px at full size |
+| Tracking | `0.05em` (legacy 0.03 to 0.05em), line-height 1, `white-space: nowrap`, no `text-transform` (the text is already upper case) |
+| Position | Centred on the face. The round key gets `padding-bottom: 3u` so its optical centre is on the ellipse centre (380, 555) rather than the ring centre (379.5, 556.5) |
 
-### 5.2 Round (PRIIMTI)
+Fit check: the pill face is 177u x 46u (95 x 25 px at the smallest shell); "GARSAI" at 16 px in Arial Narrow 900 is about 58 px wide, in plain Arial Bold (no condensed face installed) about 70 px. The ellipse face is 145u x 133u (78 x 72 px); "SIŲSTI" at 16 px is about 52 to 62 px. Both fit with room, so nothing clips at 1x. At 200% text zoom the 1rem floor doubles to 32 px: the labels may then overflow the faces onto the rim and bezel but stay fully readable (UX 5.2); the `nowrap` keeps them on one line.
 
-Diameter `5.75rem` (92px). Layers, outside in:
+Face colour is the bitmap's `#DDDDDD` (pill face measured `rgb(221 221 221)`; the round-key face is the same or lighter, so `#DDDDDD` is the lower bound used below).
 
-1. **Bezel**: the button itself, bg `metal-950`, `0 3px 0 metal-700` edge + drop shadow.
-2. **LED ring**: inset 5px, 4px border. Off: `led-off`. On (a clip is playing): `led-on` + `shadow-led-on`, animation `animate-led` (1.6s breathing). 12.2:1 against the bezel.
-3. **Face**: inset 9px, `go-400` to `go-600` vertical gradient, `inset 0 2px 0 rgb(255 255 255 / 45%)` highlight, `inset 0 -3px 0 rgb(0 0 0 / 18%)` shade. Content centred: icon (`0.75rem`) over the label "PRIIMTI" in `metal-900` (5.44:1 at the darkest point, higher in the middle).
+### 7.2 States, pill (KURTI / GARSAI) and round key (SIŲSTI)
 
-Icon: play (idle) = stepped triangle `viewBox 0 0 8 10`, `M1 0h2v2h2v2h2v2H5v2H3v2H1z`; stop (playing) = square `viewBox 0 0 10 10`, `M1 1h8v8H1z`. Both `fill: metal-900`, `crispEdges`, `aria-hidden`.
+The press and busy feedback is drawn by a `::before` pseudo-element that sits exactly on the bitmap face (`z-index: -1` inside an `isolation: isolate` button, so it is under the label): pill face = 177u x 46u, full radius, at (10u, 10u) inside the button; round face = 145u x 133u, `border-radius: 50%`, at (10u, 9u). Transitions: `transform` and `background-color`, `--duration-fast`, `--ease-out`.
 
-| State | Visual |
-| ----- | ------ |
-| Default (idle, row selected) | LED off, play icon |
-| Hover | Face gradient lightens by 6% (use `filter: brightness(1.06)` on the face only) |
-| Pressed | `translateY(3px)`, edge shadow collapses, inset shadow |
-| Playing | LED on and breathing, stop icon, accessible name suffix ", sustabdyti" |
-| `aria-disabled="true"` (nothing selected) | Face keeps colour and label; 2px dashed `metal-900` outline inset 6px on the face; LED off |
-| Focus-visible | Outer ring `focus` colour, offset 3px |
+| State | Visual | Label contrast (`key-ink` on the face) |
+| ----- | ------ | -------------------------------------- |
+| Default | Bitmap only; pseudo is transparent | **7.17:1** on `#DDDDDD` (9.74:1 on white) |
+| Hover (pointer only) | Face overlay `rgb(255 255 255 / 25%)`, so the face is about `#E9E9E9` | 8.02:1 |
+| Pressed (`:active`) | Button `translateY(1px)`; face overlay `rgb(0 0 0 / 12%)` (face about `#C2C2C2`) plus `inset 0 3u 4u rgb(0 0 0 / 28%)` (a sunk top edge that stays above the label: the label starts 13u below the face top) | **5.50:1** (worst case) |
+| Focus-visible | Two-tone ring on the button box: `box-shadow: var(--shadow-focus-key)` (2px white) then `outline: 3px solid var(--color-focus); outline-offset: 2px`. Follows the rim (pill) and the ellipse | See below |
+| `aria-disabled="true"` (SIŲSTI with nothing to send) | Face overlay unchanged, plus a 2px dashed `key-ink` outline on the face pseudo, `outline-offset: -6u`. Label unchanged. Still focusable; activation shows the toast | 7.17:1, dashed outline 7.17:1 |
+| `aria-busy="true"` (sharing, generating) | Pressed position; the pseudo shows an inset ring in `key-ink` that pulses 2px to 4px (`animate-key-busy`, 1 s). The label is **never faded**. Reduced motion: static 3px ring (the animation is simply removed, the base ring stays) | 5.50:1; ring `key-ink` vs the pressed face 5.50:1 |
+| Steady ring (SIŲSTI after "Paruošta. Spauskite SIŲSTI dar kartą.", `data-steady`) | The same 3px inset ring, **not pulsing**, until the next tap or until the text or voice changes. Distinguished from busy by not moving and by the status text | 5.50:1 |
 
-Reduced motion: LED stays lit with the glow `shadow-led-on`, no breathing.
+The round key's green ring is part of the bitmap and never changes.
 
-## 6. Grille
+**Why a two-tone focus ring.** The single `focus` blue (`#0A3FA8`, L 0.0645) reaches 3:1 only against backgrounds with luminance above 0.29, but the bitmap around the keys includes the near-black rim and a dark metal groove (the ring would be about 1.2:1 there). White reaches 3:1 against luminance up to 0.30. The two thresholds overlap (0.29 and 0.30), so **at least one of the two rings meets 3:1 against any background**, and white against blue is 9.17:1 so the ring is one visible shape. This keeps the 3 px requirement of UX 9.3 (the outer blue ring is 3 px) and the ring is never clipped (no ancestor clips the shell).
 
-`rounded-lg`, bg gradient `metal-400` to `metal-300`, `inset 0 2px 5px rgb(0 0 0 / 30%)`, 1px light lower lip. SVG `<pattern>` tile 7x7 userSpace: a `metal-600` dot r 1.7 plus a white 55% dot offset 0.6px down as a lower highlight. It tiles to any size. `aria-hidden`.
+## 8. KURTI panel (L5, UX 5.13)
 
-## 7. Page furniture and toast
+Replaces the list and the search field in the LCD surface; the strip stays (toggle only). The panel is a scroll container (`flex: 1; min-height: 0; overflow-y: auto; padding: 4px 6px 6px; gap: 4px`), the strip never scrolls, and the credit is the first thing to scroll away.
 
-Chips: `bg-chip-bg text-chip-fg text-chip rounded-lg shadow-chip px-3 py-1.5`, centred, `gap-1.5`. Order under the radio: hint (touch only), counters, footer note.
+Order and sizes (Doto 1rem unless stated):
 
-- **Hint**: `coarse:inline-flex`; 12x10 speaker icon in `chip-accent` + "Įjunkite garsą". Hidden after the first play.
-- **Counters**: "Paleista: **N** · Išsiųsta: **N**"; numbers in `chip-accent`, weight 600, `tabular-nums`, non-breaking thousands separator.
-- **Footer note**: `<footer>` chip, text per UX 5.9.
-- **Toast**: bottom-centre of the page, 14px above the bottom (plus `env(safe-area-inset-bottom)`), `max-width: calc(100% - 32px)`, padding `0.625rem 1rem`, `rounded-xl`, 1px `rgb(255 255 255 / 14%)` border, `bg-chip-bg text-chip-fg`, `text-chip` weight 600, `shadow-toast`, `animate-toast-in`. Centre it with a fixed full-width flex wrapper (so `toast-in` only moves it vertically; the preview centres with `translateX(-50%)` and so adjusts the keyframe). Error: `bg-error-bg`, 1px `error-line` border, `text-white` (13.4:1). Never takes focus, `aria-hidden`.
+| # | Part | Size / visual | Tokens |
+| - | ---- | ------------- | ------ |
+| 1 | **Label row**: "Jūsų frazė" (left) and the counter "n / 220" (right) | One line, 20 px. At 220 the counter reads "220 / 220 Pasiekta riba." (wraps to 2 lines) | `lcd-ink` 9.18:1 |
+| 2 | **Textarea** (a real `<label for>`, UX 5.13) | 3 rows = `calc(3 * 1.25rem + 0.5rem + 4px)` = **72 px**; **2 rows = 52 px** when the LCD container is shorter than 260 px (`@container lcd (max-height: 260px)`). `resize: none`, 2px `lcd-ink` border, `radius-sm`, bg `lcd-bg`, padding `0.25rem 0.5rem`, scrolls inside. Placeholder `lcd-ink-soft` (6.38:1). Focus: `outline: 3px solid lcd-ink; outline-offset: 1px`. `aria-invalid="true"`: border becomes 3px dashed `lcd-ink` (shape, not colour) plus the message below | `lcd-ink` / `lcd-bg` 9.18:1 |
+| 3 | **PALEISTI** | Full LCD width, 2rem tall, uppercase text, 2px `lcd-ink` border, `radius-sm`. Default `lcd-bg-lo` bg / `lcd-ink` text (7.49:1). Hover `lcd-bg-hi` (10.45:1). Pressed: inverted, `lcd-ink` bg / `lcd-bg` text (9.18:1). `aria-disabled`: dashed 2px border, text unchanged (7.49:1), no hover change. `aria-busy`: pulsing inset ring (`animate-key-busy`), label unchanged. Playing: the 12 px marker bars before the label. Focus: `outline: 3px solid lcd-ink; outline-offset: 1px` | as listed |
+| 4 | **Status area** (`min-height: 2.5rem`, `aria-live="off"`) | One state at a time (table below) | `lcd-ink` 9.18:1 |
+| 5 | **Credit** "Balsas: Coqui TTS (lt/cv/vits)" | Doto 1rem (the "never below 1rem" rule wins over the 12 px UX floor; Doto at 12 px turns to mush), colour `lcd-ink-soft` on `lcd-bg` (**6.38:1**), wraps to 2 lines at 208 px, last in the scroll area so it scrolls away first | `lcd-ink-soft` |
 
-## 8. Narrow, short and zoomed
+At 360 x 740 the LCD is about 214 px tall and the panel area 172 px (214 - 42 strip): label (20) + textarea (52) + PALEISTI (32) + gaps (12) = 116 px, so the first lines of the status area are visible and the rest scrolls. Plan ahead for this: the status area is the second item that matters (progress), so it is placed before the credit.
 
-- **320px**: radio padding 12px; the button row grid is `minmax(0,1fr) auto minmax(0,1fr)` with gap 10px, so each pill is about 78px. Labels stay on one line (`white-space: nowrap`), padding-inline shrinks to `0.375rem` below `xs` if needed.
-- **200% text zoom / 180-360 CSS px**: the pills would clip. Use `@container`/`flex-wrap` so PRIIMTI moves to its own line above the two pills (UX 5.2). Rows wrap text; the footer wraps the count under the toggle.
-- **`short` (height <= 576px)**: cap and grille hidden, radio gap `2`, LCD minimum 4 rows, page scrolls vertically.
-- **Safe area**: page padding uses `max(0.75rem, env(safe-area-inset-*))`.
+### 8.1 Status area states
 
-## 9. Scene dimming
+| State | Content | Visual |
+| ----- | ------- | ------ |
+| Download (size note + progress) | "Atsisiunčiamas balsas (apie 71 MB). Tai tik pirmą kartą." then the progress bar, then "Atsisiunčiama: {a} iš {b} MB" | Text `lcd-ink`. Bar below |
+| Preparing | "Ruošiamas balsas…" and an indeterminate bar | |
+| Voice ready | "Balsas paruoštas." (replaced by the idle hint after 3 s, text stays in the DOM) | |
+| Idle, empty text | "Įveskite frazę ir spauskite PALEISTI." | |
+| Generating | "Kuriama kalba…" and an indeterminate bar | |
+| Playing | "Grojama." | |
+| Press SIŲSTI again | "Paruošta. Spauskite SIŲSTI dar kartą." | SIŲSTI shows the steady ring |
+| Errors (download, create-voice, offline, unsupported, generation) | Alert icon (7 x 7 pixel triangle with "!", 14 px, `lcd-ink`, `aria-hidden`) before the message; the retry states add a **"Bandyti dar kartą"** button (same style as PALEISTI, sentence case, 2rem tall, auto width) | Error is never colour alone: icon + text + (retry) button |
 
-The pixel canvas is dimmed so the radio reads as the hero: `filter: saturate(0.9)` on the canvas, then an overlay `radial-gradient(120% 90% at 50% 45%, transparent 40%, rgb(8 12 16 / 45%) 100%)` plus a flat `rgb(8 12 16 / 22%)`. The overlay never sits above the radio or chips.
+### 8.2 Progress bar
+
+- Height 12 px, 2px `lcd-ink` border, track `lcd-bg`, fill `lcd-ink` (fill vs track **9.18:1**, border vs surroundings 9.18:1; both far above the 3:1 UI minimum). No rounded corners (pixel look), `radius-xs` at most.
+- Determinate: fill width = loaded / total, `role="progressbar"` per UX 5.13. Updates at most 4 times per second. The numbers are also written as text next to it ("Atsisiunčiama: 23 iš 71 MB"), so the state is never colour or width alone.
+- Indeterminate (preparing, generating): the fill is full width with a stripe pattern `repeating-linear-gradient(90deg, lcd-ink 0 4px, transparent 4px 8px)`, `background-size: 16px 100%`, animated by `animate-bar` (stepped, 0.8 s). **Reduced motion: the stripes stay but do not move**, and the text beside it carries the state.
+
+## 9. Narrow, short and zoomed
+
+- **Below 300 px wide** the shell stays at 300 px and the page scrolls sideways only if the viewport itself is narrower. The shell height never goes below 1024u (the lower bound of the clamp), so the LCD never drops under the 1.0x proportion; the page scrolls vertically instead. The frontend gives the page a `min-height: min-content` for this.
+- **Short** (viewport height so small that 1024u does not fit, e.g. landscape phone): the shell keeps 1.0x and the page scrolls; the LCD list keeps at least 2 rows. The old `short` variant (hide cap and grille) no longer applies because those parts are the bitmap.
+- **200% text zoom**: rows, strip, textarea and buttons grow with `rem` (rows may exceed 32 px, never shrink), the list scrolls, labels may overflow their faces (section 7.1). The 24 px hit-area rule is always met.
+- **Safe area**: the page padding uses `max(0.75rem, env(safe-area-inset-*))`.
 
 ## 10. Deviations from the UX spec / notes for the frontend
 
-- Nothing deviates in behaviour. Visual choices the UX spec left open: pressed look for the latching PAIEŠKA, dashed outline for `aria-disabled`, playing marker = three bars, selected row has no extra glyph.
-- UX 5.4 says "Pamerk (1)"; the new phrase list (`docs/ux/phrases.md`) reads "Pamiršk", so the preview shows "Pamiršk (1)".
-- The toast uses `chip-bg` (renamed from `chip`, see design-system 2.4).
+- **Counter position (UX 5.13 says under the textarea).** The preview and this spec put it on the label row, right-aligned, to save a 20 px line on the 214 px LCD. DOM order stays label, textarea, counter (`aria-describedby` unchanged); only the visual order differs, via a grid. If the ux-expert prefers it under the textarea, it costs 20 px.
+- **Credit set in Doto 1rem**, not 12 px UI font (design-system rule: LCD text is always Doto, never below 1rem). It wraps to two lines at the smallest LCD.
+- **Two-tone focus ring on the keys** (white then `focus` blue) instead of a single 3 px `focus` ring, for the reason in section 7.2.
+- **Textarea is 2 rows (not 3) when the LCD is under 260 px tall** (360 x 740 only). UX says 3 visible rows; the panel scrolls anyway, and the progress area must stay reachable.
+- **List rows at 360 x 740 show 4.2 rows** (4 full rows plus the strip), which just meets "at least 4" with nothing to spare. Any added line in the strip or padding drops it below 4.
+- axe cannot read the bitmap colour behind the key labels and reports `color-contrast` as "needs review". The ratios above are the proof; the tester verifies by eye and with a contrast checker on the face colour `#DDDDDD`.
+- `aria-disabled` keys keep full-contrast labels (they are focusable and explain on tap).
+- The toast uses `chip-bg` (see design-system 2.4).
+
+## Shell geometry (legacy `walkie-shell.png`, measured 2026-10-16)
+
+All values are in **source pixels** of the 556x1024 canvas (origin top-left, x/y inclusive, so width = x1 - x0 + 1). Measured by script (sharp raw RGB, flood fills and ray scans on the original, before the backdrop is removed). The prepared slices keep this canvas, so the numbers apply to `public/radio/shell-*.webp` unchanged (the slices are only cut at the lines below).
+
+| Part | Measurement |
+| --- | --- |
+| Canvas | 556 x 1024 |
+| Body extent | x 26-504 at every row y 150-430 (straight vertical sides); the rest is black backdrop |
+| LCD, flat area | x 81-457, y 158-431 = **377 x 274**. Colour `rgb(125 135 124)`, noise <= 2 levels. Found by flood fill (tolerance 2-4) from (275, 300) |
+| LCD, whole opening (flat area plus its inner shadow) | x 77-462, y 148-432 = about 386 x 285. Dark inner shadow: top y 148-157, left x 77-80, right x 458-462; the bottom edge is a 1-2 px step (y 432-433) into the bezel |
+| LCD corner radius | about **4 px** (the flat area is nearly square: the corner inset is 3-4 px for the first rows, then constant) |
+| Pill, dark rim | x 79-276, y 457-522 = 198 x 66 (full-round ends) |
+| Pill, light face | x 89-265, y 467-512 = 177 x 46. Face colour `rgb(221 221 221)`; the lower 5 rows shade down into the rim |
+| Round key, white face | ellipse, x 308-452, y 489-621 = 145 x 133, **centre (380, 555)**, semi-axes about 73 x 67 (flood fill tolerance 12; ray scan from the centre agrees: 67-74 px) |
+| Round key, green ring | ellipse, outer bbox x 298-460, y 480-632 = 163 x 153, **centre (379, 556)**, ring about 4-5 px thick (outer semi-axes about 81 x 76, inner about 76 x 71). Pixels where G exceeds R and B by more than 18 |
+| Logo "RACIJA" | x 136-398, y 66-116 = about 263 x 51. Dark letters; the right-hand letters fade to mid grey, so the right end is read from the picture (+/- 2 px), the left, top and bottom from the pixel scan |
+
+Notes:
+
+- The key is an ellipse (about 8% wider than tall), not a circle: the legacy overlay used a circle of about 186 px with extra padding, which is why legacy percentages are larger than the face. Use the face ellipse for the visual press state and keep the larger hit area.
+- Legacy overlay boxes for reference (source px at 556 x 1024): screen x 75-475, y 154-435 (13.5 %, 15 %, 72 %, 27.5 %); it deliberately covers the bezel's inner shadow and a few px of the right bezel (the flat grey stops at x 457, the bezel highlight runs to about x 475).
+- The pill and key are plain bitmap faces (no text); the LCD overlay paints its own surface (L3), so its radius should be about 4 px and it should cover x 77-462, y 148-433.
+
+### L2 cut lines
+
+The plan proposed y 290-298. Measured on the original, **290-298 is not uniform**: the maximum difference between consecutive rows is 11 levels (at x 52, y 295), and 15 against the first row. It is the brushed-metal bezel texture, not a structural edge, but it is the worst nearby choice.
+
+Method: for every 8-row band starting at y 150-425, the maximum per-channel absolute difference between consecutive rows over the full width 0-555 (7 row pairs x 556 px x 3 channels).
+
+- Most uniform bands: start y 176, 184, 192, 208, 248, 256, 272 all give max 3 (264 gives 4). They are all inside the flat LCD.
+- The band closest to the plan's position is **272-280**: max consecutive difference **3** levels, max difference against the first row of the band 12 (a slow vertical gradient in the bezel texture, invisible when stretched; the sides at x 26 and 504 are straight at every row of the band, and the LCD columns differ by at most 1).
+
+**Confirmed cut lines (source px): top = y 0-272, mid band = y 272-280 (8 rows), bottom = y 280-1024.**
+
+Consequences for L2/L3:
+
+- The top slice is 272 high, the bottom slice 744 high (plan: 290 and 726). The LCD flat area spans y 158-431, so the band sits 114 px below its top and 151 px above its bottom edge: of the legacy 274 px LCD height, 114 px are above the band and 152 px below.
+- Overlay anchors: elements above the band use `top: y u`, below the band use `bottom: (1024 - y) u`. With the band at 272-280, the stretched height replaces the 8 rows, so the bottom-anchored items (pill, key, grille, cable) keep their legacy y relative to the bottom edge of the shell.
+- The 1.4x cap: the legacy LCD height is 274 px (flat) or 281 px (legacy overlay); 0.4 x 281 = 112 px extra, as in the plan.
+
+
+## Desktop size (user feedback, checkpoint A, 2026-10-16)
+
+From `min-width: 64rem` the shell stage is capped at 75% of the viewport height (`flex: 0 1 75%; max-height: 75%`) and centred vertically, so more of the pixel scene shows around the radio. The `--shell-w` clamp is unchanged; it simply resolves against the smaller container.

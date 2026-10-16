@@ -26,6 +26,7 @@ export const PAL = {
   sign: { b: '#2b5fa8', w: '#f1f3f5', g: '#8b929b' },
   glassTop: '#7c9aa6',
   glassBot: '#c7d9c9',
+  chrome: '#6f7b86',
 } as const;
 
 export const BAYER: readonly (readonly number[])[] = [

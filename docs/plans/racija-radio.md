@@ -2,6 +2,8 @@
 
 Status: **approved by the user, 2026-10-16**
 
+> **Partly superseded (2026-10-16) by `legacy-radio.md`:** D4 (CSS/SVG body → legacy bitmap shell), D5 (controls → KURTI/GARSAI pill, SIŲSTI round key, no PRIIMTI/PAIEŠKA) and D16 (KURTI returns with lazy onnxruntime-web). D14 is settled as Doto. Everything else still applies.
+
 User answers (2026-10-16):
 
 - **Q1:** option (a). Tag the old `main` as `legacy-v1`, then force-push the new history to `main` (still only after explicit confirmation at checkpoint C).

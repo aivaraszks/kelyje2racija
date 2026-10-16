@@ -28,6 +28,21 @@
     U+A720-A7FF;
 }
 
+/*
+ * Registered so --shell-w and --u are computed once on the shell as px lengths. The LCD is itself a
+ * size container; unregistered, a descendant reading var(--u) would re-resolve cqw against the LCD.
+ */
+@property --shell-w {
+  syntax: '<length>';
+  inherits: true;
+  initial-value: 300px;
+}
+@property --u {
+  syntax: '<length>';
+  inherits: true;
+  initial-value: 0.54px;
+}
+
 @custom-variant short (@media (max-height: 36rem));
 @custom-variant coarse (@media (pointer: coarse));
 
@@ -37,6 +52,11 @@
   --color-*: initial;
   --color-white: #ffffff;
 
+  /*
+   * TO DELETE after legacy-radio task 8 (the CSS/SVG radio body, keys, cap, cable and grille are
+   * replaced by the bitmap shell): every --color-metal-* step below, EXCEPT metal-950 (kept: it
+   * is the theme-color / page background value). Re-grep src/ before deleting.
+   */
   /* metal (radio body) */
   --color-metal-50: #f7f8fa;
   --color-metal-100: #eef0f3;
@@ -57,6 +77,7 @@
   --color-lcd-ink: #16200f;
   --color-lcd-ink-soft: #2e3c28;
 
+  /* TO DELETE (legacy-radio: there is no PRIIMTI key and no LED): go-400, go-600, led-on, led-off, led-glow */
   /* PRIIMTI green and LED */
   --color-go-400: #5ccb7b;
   --color-go-600: #3fa75e;
@@ -72,14 +93,21 @@
   --color-error-line: #ff8a80;
   --color-focus: #0a3fa8;
 
+  /* NEW (legacy-radio): label ink on the blank bitmap key faces (7.17:1 on #ddd, 5.47:1 pressed) */
+  --color-key-ink: #444444;
+
   /* ---------- typography ---------- */
   --font-lcd: 'Doto', ui-monospace, 'Cascadia Mono', 'SFMono-Regular', Menlo, Consolas, monospace;
   --font-ui: ui-sans-serif, system-ui, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  /* NEW (legacy-radio): bold condensed key labels (KURTI, GARSAI, SIŲSTI) over the bitmap faces */
+  --font-key: 'Arial Narrow', 'Roboto Condensed', 'Helvetica Neue', Arial, sans-serif;
 
+  /* TO DELETE after task 8: --text-lcd (18px). LCD rows, textarea and search use --text-lcd-meta (1rem) from now on. */
   --text-lcd: 1.125rem;
   --text-lcd--line-height: 1.3;
   --text-lcd-meta: 1rem;
   --text-lcd-meta--line-height: 1.25;
+  /* TO DELETE after task 8: --text-key (13px CSS-body key labels). The bitmap key labels use max(1rem, 28u), see components/radio.md. */
   --text-key: 0.8125rem;
   --text-key--line-height: 1.1;
   --text-chip: 0.875rem;
@@ -90,8 +118,15 @@
 
   /* ---------- spacing, size ---------- */
   --spacing: 0.25rem;
+  /* TO REVIEW after task 8: --size-hit (44px) is superseded by --size-lcd-row for LCD controls; delete if nothing uses it. */
   --size-hit: 2.75rem;
+  /* NEW (legacy-radio L6): LCD rows, search field, toggle segments, PALEISTI, retry button */
+  --size-lcd-row: 2rem;
+  /* TO DELETE after task 8: --container-radio (the CSS body width). The shell is sized by --shell-w-min/-max. */
   --container-radio: 30rem;
+  /* NEW (legacy-radio L2): shell width limits, CSS px. --u = shell width / 556. */
+  --shell-w-min: 300px;
+  --shell-w-max: 556px;
 
   /* ---------- breakpoints (default sm/md/lg/xl remain) ---------- */
   --breakpoint-xs: 22.5rem;
@@ -101,10 +136,12 @@
   --radius-sm: 0.25rem;
   --radius-md: 0.5rem;
   --radius-lg: 0.75rem;
+  /* --radius-xl stays for the toast; TO DELETE after task 8: --radius-2xl (CSS radio body) */
   --radius-xl: 1.25rem;
   --radius-2xl: 1.75rem;
 
   /* ---------- shadows ---------- */
+  /* TO DELETE after task 8: shadow-radio, shadow-lcd, shadow-key, shadow-key-down, shadow-led-on (CSS body, bezel, keys, LED) */
   --shadow-radio:
     inset 0 1px 0 rgb(255 255 255 / 70%), inset 0 -2px 0 rgb(0 0 0 / 25%),
     0 18px 40px -8px rgb(5 10 15 / 55%), 0 4px 10px rgb(5 10 15 / 35%);
@@ -118,6 +155,8 @@
   --shadow-led-on: 0 0 10px 2px var(--color-led-glow);
   --shadow-chip: 0 2px 8px rgb(5 10 15 / 35%);
   --shadow-toast: 0 6px 18px rgb(5 10 15 / 50%);
+  /* NEW (legacy-radio): white inner half of the two-tone focus ring on the bitmap keys (outer half = 3px --color-focus outline, offset 2px) */
+  --shadow-focus-key: 0 0 0 2px var(--color-white);
 
   /* ---------- motion ---------- */
   --duration-fast: 120ms;
@@ -126,10 +165,32 @@
   --ease-out: cubic-bezier(0.22, 0.8, 0.3, 1);
 
   --animate-marker: marker 0.7s steps(4, end) infinite;
+  /* TO DELETE after task 8: animate-led (+ @keyframes led) and animate-busy (+ @keyframes busy); replaced by animate-key-busy */
   --animate-led: led 1.6s ease-in-out infinite;
   --animate-busy: busy 1s ease-in-out infinite;
   --animate-toast-in: toast-in 200ms var(--ease-out) both;
   --animate-dots: dots 0.9s steps(3, end) infinite;
+  /* NEW (legacy-radio): SIŲSTI busy ring (inset ring in --color-key-ink pulsing 2px to 4px) and the indeterminate progress bar */
+  --animate-key-busy: key-busy 1s ease-in-out infinite;
+  --animate-bar: bar 0.8s steps(8, end) infinite;
+
+  @keyframes key-busy {
+    0%,
+    100% {
+      box-shadow: inset 0 0 0 2px var(--color-key-ink);
+    }
+    50% {
+      box-shadow: inset 0 0 0 4px var(--color-key-ink);
+    }
+  }
+  @keyframes bar {
+    from {
+      background-position: 0 0;
+    }
+    to {
+      background-position: 16px 0;
+    }
+  }
 
   @keyframes marker {
     0%,

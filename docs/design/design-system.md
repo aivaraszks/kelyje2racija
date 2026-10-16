@@ -5,6 +5,8 @@ Visual preview (the thing to approve): `docs/design/preview/racija-preview.html`
 Component specs: `docs/design/components/radio.md`, `docs/design/components/pixel-scene.md`.
 Assets: `public/favicon.svg` (app icon), `docs/design/assets/og.svg` (Open Graph image, 1200x630; export to `public/og.png` at build time).
 
+**Legacy-radio update (2026-10-16, `docs/plans/legacy-radio.md`):** the radio body is now the legacy bitmap shell (three WebP slices) with HTML overlays. Everything about the CSS/SVG body, cap, cable, grille, PRIIMTI, LED and the metal gradients is **"to delete"**: it stays in this file and in `src/styles.css` (marked) only until frontend task 8 stops using it, then both are pruned. New tokens are marked **NEW**. Component spec: `docs/design/components/radio.md`.
+
 Status: for review at checkpoint A. The tokens in section 10 are applied in `src/styles.css` (identical values; if you change one, change both). The LCD font file is **not yet downloaded** (section 3.1, "Enabling the font").
 
 ## 1. Principles
@@ -13,14 +15,16 @@ Status: for review at checkpoint A. The tokens in section 10 are applied in `src
 2. **Tokens only.** Components use the tokens in section 10 (through Tailwind utilities or `var(--...)`). No hex values in component CSS. The single exception is the pixel scene, whose palette is a TypeScript constant (documented in `pixel-scene.md`).
 3. **Small system.** 11 metal steps, 5 LCD colours, 5 LED/green colours, 6 chip/toast/focus colours. Nothing else.
 4. **Never colour alone.** Selected = inverted bar, playing = animated marker, LED lit = also a stop icon (UX section 4).
-5. **Sharp at any size.** CSS gradients and SVG only. No bitmap shell.
+5. **Legacy look.** ~~Sharp at any size, CSS and SVG only, no bitmap shell.~~ **Superseded (legacy-radio):** the radio is the legacy bitmap (556 px wide, soft when enlarged, never shown above 1:1). Everything on the LCD is still crisp HTML text in Doto.
 6. **One theme.** The radio is a physical object with a fixed look; there is **no dark theme** and no theme toggle. `color-scheme: light` is set on `html`. The page furniture (chips, toast) is already dark and sits on the animated scene, so it needs no variant. `theme-color` meta = `--color-metal-950` (#11161B).
 
 ## 2. Colour
 
 All text pairs must reach WCAG AA (4.5:1 normal text). Ratios below were computed with the WCAG 2.x relative luminance formula (sRGB, 2.4 gamma) from the hex values and rounded to 2 decimals; they were recomputed independently for this revision (all matched). The frontend/tester should re-check with axe. Non-text UI pairs use the 3:1 rule.
 
-### 2.1 Metal (the radio body)
+### 2.1 Metal (the radio body) — TO DELETE after frontend task 8 (keep only `metal-950`)
+
+The bitmap shell replaces the CSS body, keys, cap, cable and grille. Do not use these in new code.
 
 | Token               | Hex       | Use                                             |
 | ------------------- | --------- | ----------------------------------------------- |
@@ -50,7 +54,9 @@ Body gradient (top to bottom): `metal-200` 0% - `metal-300` 45% - `metal-400` 10
 
 LCD overlay (pixel grid + edge vignette): scanlines at most 5% + 4% ink and an inset edge shadow at most 16% ink. Worst case (inside the vignette corner, plus scanlines) the LCD background composites to about `#93A084`, which still gives **>= 5.5:1** with `lcd-ink` (6.1:1 before scanlines). The overlay is `pointer-events: none` and sits above the text.
 
-### 2.3 PRIIMTI green and LED
+### 2.3 PRIIMTI green and LED — TO DELETE after frontend task 8 (no PRIIMTI key, no LED)
+
+Replaced by 2.3a below.
 
 | Token              | Hex                     | Use                                                          |
 | ------------------ | ----------------------- | ------------------------------------------------------------ |
@@ -61,6 +67,16 @@ LCD overlay (pixel grid + edge vignette): scanlines at most 5% + 4% ink and an i
 | `--color-led-glow` | `rgb(77 240 127 / 55%)` | Glow around the lit ring (`--shadow-led-on`)                 |
 
 The LED ring sits in a `metal-950` bezel, which is what gives the lit state its contrast (12.2:1). Unlit is intentionally low contrast (it is "off"); the state is also shown by the stop/play icon inside the button.
+
+### 2.3a Bitmap key labels and focus (NEW)
+
+| Token | Value | Use |
+| ----- | ----- | --- |
+| `--color-key-ink` | `#444444` | Label ink on the blank bitmap key faces (KURTI, GARSAI, SIŲSTI), the dashed `aria-disabled` outline and the busy ring. The legacy dark grey. 7.17:1 on the face `#DDDDDD`, 5.50:1 pressed |
+| `--shadow-focus-key` | `0 0 0 2px #fff` | White inner half of the two-tone key focus ring; the outer half is `outline: 3px solid var(--color-focus); outline-offset: 2px`. Together they reach 3:1 against any background (white 3:1 up to luminance 0.30, `focus` blue from luminance 0.29) |
+| `--font-key` | `'Arial Narrow', 'Roboto Condensed', 'Helvetica Neue', Arial, sans-serif` | Key labels, weight 900, `font-stretch: condensed` |
+
+Key label size is not a token: `max(1rem, calc(var(--u) * 28))` (`radio.md` 7.1). The bitmap face colour `#DDDDDD` (measured on the pill) is not a token either; it is the lower bound used for the ratios.
 
 ### 2.4 Page furniture (over the animated scene)
 
@@ -102,6 +118,21 @@ The chip is 90% opaque so the scene shows through faintly but never changes the 
 | `lcd-ink` (LCD focus ring)            | `lcd-bg`                                        | 9.18:1                 | 3 (UI)      | pass          |
 | `lcd-bg` (focus ring on selected row) | `lcd-ink` (selected fill)                       | 9.18:1                 | 3 (UI)      | pass          |
 | `metal-700` (LCD bezel)               | `metal-300` body                                | 5.46:1                 | 3 (UI)      | pass          |
+| **NEW (legacy-radio)**                |                                                 |                        |             |               |
+| `key-ink` #444444 (key label)         | bitmap face #DDDDDD (default)                   | **7.17:1**             | 4.5         | AA, AAA       |
+| `key-ink`                             | face + 25% white (hover) about #E9E9E9          | 8.02:1                 | 4.5         | AA, AAA       |
+| `key-ink`                             | face + 12% black (pressed, busy) about #C2C2C2  | **5.50:1** (worst)     | 4.5         | AA            |
+| `key-ink`                             | pure white face (if the round key is lighter)   | 9.74:1                 | 4.5         | AA, AAA       |
+| `key-ink` (dashed outline, busy ring) | face / pressed face                             | 7.17:1 / 5.50:1        | 3 (UI)      | pass          |
+| `key-ink` (busy ring on PALEISTI)     | `lcd-bg-lo` #A3B292                             | 4.33:1                 | 3 (UI)      | pass          |
+| white (inner key focus ring)          | `focus` #0A3FA8 (outer ring)                    | 9.17:1                 | 3 (UI)      | pass          |
+| key focus ring, two-tone              | any background                                  | white 3:1 up to luminance 0.30, blue 3:1 from 0.29 | 3 (UI) | pass (overlap) |
+| `lcd-ink` (PALEISTI label, x icon)    | `lcd-bg-lo` / `lcd-bg` / `lcd-bg-hi`            | 7.49 / 9.18 / 10.45:1  | 4.5         | AA, AAA       |
+| `lcd-bg` (PALEISTI pressed, inverted) | `lcd-ink`                                       | 9.18:1                 | 4.5         | AA, AAA       |
+| `lcd-ink-soft` (KURTI credit)         | `lcd-bg`                                        | 6.38:1                 | 4.5         | AA            |
+| `lcd-ink` (progress fill and border)  | `lcd-bg` (track)                                | 9.18:1                 | 3 (UI)      | pass          |
+| `lcd-ink` (textarea / search border)  | `lcd-bg`                                        | 9.18:1                 | 3 (UI)      | pass          |
+| Bitmap LCD grey `rgb(125 135 124)`    | `lcd-ink` (for reference, not used)             | 4.5:1                  | -           | covered by the opaque overlay |
 
 Notes:
 
@@ -139,9 +170,9 @@ Legibility rule for a dot-matrix font: never below `1rem`, always weight 800, `l
 
 | Token             | Size               | Line height | Weight | Font | Use                                                    |
 | ----------------- | ------------------ | ----------- | ------ | ---- | ------------------------------------------------------ |
-| `--text-lcd`      | `1.125rem` (18px)  | 1.3         | 800    | LCD  | LCD rows, search input (>= 16px, no iOS zoom)          |
-| `--text-lcd-meta` | `1rem` (16px)      | 1.25        | 800    | LCD  | LCD footer (voice toggle, "Įrašų: N"), "Nieko nerasta" |
-| `--text-key`      | `0.8125rem` (13px) | 1.1         | 800    | UI   | PAIEŠKA, PRIIMTI, SIŲSTI (uppercase, `tracking-key`)   |
+| `--text-lcd`      | `1.125rem` (18px)  | 1.3         | 800    | LCD  | **TO DELETE after task 8.** Old LCD rows and search input |
+| `--text-lcd-meta` | `1rem` (16px)      | 1.25        | 800    | LCD  | **Now the one LCD size (legacy-radio L6):** rows, search, textarea, toggle, PALEISTI, status, counter, credit |
+| `--text-key`      | `0.8125rem` (13px) | 1.1         | 800    | UI   | **TO DELETE after task 8.** Old CSS key labels. Bitmap key labels: `--font-key`, 900, `max(1rem, 28u)`, tracking 0.05em, colour `key-ink` |
 | `--text-chip`     | `0.875rem` (14px)  | 1.4         | 500    | UI   | Hint, counters, footer note, toast                     |
 
 The three key labels are engraved caps at 13px/800: bold, uppercase and 4.5:1+, and the button is 44px tall, so this is legible and passes AA; at 200% text zoom they grow to 26px and the pills may wrap (see radio.md "Narrow").
@@ -154,7 +185,8 @@ Tailwind 4 base unit: `--spacing: 0.25rem` (4px). Used steps: 1 (4), 2 (8), 3 (1
 - Page margin around the radio: `3` (12px) + safe-area inset (UX: width `min(100% - 24px, 480px)`).
 - Radio inner padding: `3` (12px) on phones, `4` (16px) from `sm`. Gap between button-row items: `2`-`3`. Gap between radio sections: `3`.
 - Chips: `px-3 py-1.5` (12 / 6). Gap between page furniture items: `1.5`-`2`.
-- Minimum hit area: `--size-hit: 2.75rem` (44px) for rows, keys, voice segments and the search clear button.
+- ~~Minimum hit area `--size-hit: 2.75rem` (44px) for rows, keys, voice segments and the search clear button.~~ **Changed (legacy-radio L6, UX U15):** LCD rows and LCD controls (search field, x, voice segments, PALEISTI, retry) are `--size-lcd-row: 2rem` (32px) tall, with at least a 24px hit area (WCAG 2.5.8 AA). The two bitmap keys are far larger (about 107 x 36 px pill rim, 88 x 83 px round key at the smallest shell). `--size-hit` is "to review" after task 8.
+- **Shell unit (NEW):** `--u` = shell width / 556 (one source pixel of the bitmap), registered with `@property` on the shell. Shell width limits: `--shell-w-min: 300px`, `--shell-w-max: 556px`. LCD growth cap: 1.4x (`radio.md` section 2).
 
 ## 5. Radii
 
@@ -180,9 +212,11 @@ Tailwind 4 base unit: `--spacing: 0.25rem` (4px). Used steps: 1 (4), 2 (8), 3 (1
 | `--shadow-chip`     | Chips                                                          |
 | `--shadow-toast`    | Toast                                                          |
 
-Values are in section 10.
+Values are in section 10. **TO DELETE after task 8:** `shadow-radio`, `shadow-lcd`, `shadow-key`, `shadow-key-down`, `shadow-led-on` (the bitmap draws body, bezel and keys). Kept: `shadow-chip`, `shadow-toast`. **NEW:** `--shadow-focus-key`.
 
 ## 7. Breakpoints and layout
+
+> **Legacy-radio update:** the layout is no longer a 480px CSS body. The shell is sized by container units (`radio.md` section 2): width `clamp(min(100cqw, 300px), min(100cqw, 100cqh * 556 / 1136), 556px)`. The table below describes the old layout; `xs`, `sm`, `lg` no longer change the radio, only the page furniture. `short` no longer hides parts of the radio (they are bitmap).
 
 The layout is fluid: one column, radio width `min(100% - 24px, var(--container-radio))` with `--container-radio: 30rem` (480px). Breakpoints are few because only the scene and the radio's maximum size change.
 
@@ -212,6 +246,8 @@ Layers (z-order, back to front): scene canvas (0), dim/vignette overlay (1), pag
 | `--animate-busy`     | `busy 1s ease-in-out infinite`        | SIŲSTI inner ring pulse while sharing (the label is never faded)       |
 | `--animate-toast-in` | `toast-in 200ms var(--ease-out) both` | Toast appears (translateY 8px to 0, fade)                              |
 | `--animate-dots`     | `dots 0.9s steps(3, end) infinite`    | "Loading" dots on a row                                                |
+| `--animate-key-busy` (NEW) | `key-busy 1s ease-in-out infinite` | Inset ring in `key-ink` pulsing 2px to 4px on SIŲSTI / PALEISTI while busy (label never faded). Replaces `animate-busy` and `animate-led`, which are **TO DELETE after task 8** |
+| `--animate-bar` (NEW) | `bar 0.8s steps(8, end) infinite`    | Indeterminate progress stripes in the KURTI panel (reduced motion: static stripes) |
 
 Scene: about 12 fps (frame interval 83.3 ms), see `pixel-scene.md`.
 
@@ -231,7 +267,7 @@ Only 4 inline SVG icons, all `aria-hidden`, drawn on a pixel grid with square ca
 
 ## 10. Tokens as code (Tailwind v4 `@theme`)
 
-This is the exact content of `src/styles.css` (after `@import 'tailwindcss';` and the commented `@font-face` block). `@theme static` is used (instead of plain `@theme`) because Tailwind drops unused theme variables from the output, and our component `.css` files read the variables directly with `var(--...)`. `--color-*: initial;` removes Tailwind's default palette so only the tokens exist.
+This is the content of `src/styles.css` (after `@import 'tailwindcss';` and the `@font-face` block). **Legacy-radio changes (2026-10-16):** the file now carries "TO DELETE" comments on the metal, go/led, `text-lcd`, `text-key`, `container-radio`, `radius-2xl`, `shadow-radio/lcd/key/key-down/led-on`, `animate-led` and `animate-busy` tokens (pruned in task 9), and these **NEW** tokens: `--color-key-ink: #444444`, `--font-key`, `--size-lcd-row: 2rem`, `--shell-w-min: 300px`, `--shell-w-max: 556px`, `--shadow-focus-key`, `--animate-key-busy` (`@keyframes key-busy`) and `--animate-bar` (`@keyframes bar`). The code block below shows the pre-legacy values; read `src/styles.css` for the current file. `@theme static` is used (instead of plain `@theme`) because Tailwind drops unused theme variables from the output, and our component `.css` files read the variables directly with `var(--...)`. `--color-*: initial;` removes Tailwind's default palette so only the tokens exist.
 
 ```css
 @custom-variant short (@media (max-height: 36rem));
@@ -331,7 +367,7 @@ Utilities this generates, for the frontend: `bg-metal-300`, `text-lcd-ink`, `bg-
 
 ## 11. Rules for implementers
 
-- Focus ring: on the radio body and keys `outline: 3px solid var(--color-focus); outline-offset: 3px;` (never clipped: the radio body has no `overflow: hidden`; only the LCD scroll area clips). Inside the LCD: `outline: 3px solid var(--color-lcd-ink); outline-offset: -3px;` on rows, and on the **selected** row `var(--color-lcd-bg)` (ink fill needs a light ring).
+- Focus ring on the **bitmap keys** (legacy-radio): two-tone, `box-shadow: var(--shadow-focus-key); outline: 3px solid var(--color-focus); outline-offset: 2px;` (a single blue ring fails 3:1 on the dark rim and groove around the keys). Elsewhere outside the LCD: `outline: 3px solid var(--color-focus); outline-offset: 3px;` (never clipped: the shell has no `overflow: hidden`; only the LCD clips). Inside the LCD: `outline: 3px solid var(--color-lcd-ink); outline-offset: -3px;` on rows, and on the **selected** row `var(--color-lcd-bg)` (ink fill needs a light ring).
 - Do not set `opacity` on text to "mute" it; use `lcd-ink-soft`.
 - Do not put text directly on the scene. Hint, counters and footer note live in a chip (`bg-chip-bg text-chip-fg text-chip rounded-lg shadow-chip px-3 py-1.5`).
 - Any new colour must be added to section 2 with its contrast ratio before use.

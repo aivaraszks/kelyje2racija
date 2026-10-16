@@ -1,0 +1,101 @@
+<div class="kp">
+  <div class="kp-head">
+    <label for="tts-text">Jūsų frazė</label>
+    <textarea
+      #field
+      id="tts-text"
+      [maxLength]="max"
+      placeholder="Įveskite frazę…"
+      autocapitalize="sentences"
+      spellcheck="false"
+      enterkeyhint="done"
+      [value]="text()"
+      [attr.aria-invalid]="problem() === 'no-chars' ? 'true' : null"
+      [attr.aria-describedby]="describedBy()"
+      (input)="onInput($event)"
+      (paste)="onPaste($event)"
+    ></textarea>
+    <span class="kp-count" id="tts-count"
+      >{{ text().length }} / {{ max }}
+      @if (atLimit()) {
+        Pasiekta riba.
+      }
+    </span>
+  </div>
+  @if (message(); as note) {
+    <p class="kp-msg" id="tts-message">{{ note }}</p>
+  }
+
+  <button
+    #playButton
+    type="button"
+    class="lbtn play"
+    [attr.aria-disabled]="!canAct()"
+    [attr.aria-busy]="generating() ? 'true' : null"
+    (click)="play.emit()"
+  >
+    @if (playing()) {
+      <span class="marker" aria-hidden="true"><i></i><i></i><i></i></span>
+    }
+    PALEISTI
+    @if (playing()) {
+      <span class="sr-only">, grojama</span>
+    }
+  </button>
+
+  <div class="kp-status" aria-live="off">
+    @switch (kind()) {
+      @case ('downloading') {
+        <p>{{ copy.download }}</p>
+        <div
+          class="pbar"
+          role="progressbar"
+          aria-label="Balso atsisiuntimas"
+          aria-valuemin="0"
+          [attr.aria-valuemax]="megabytes().total"
+          [attr.aria-valuenow]="megabytes().loaded"
+          [attr.aria-valuetext]="megabytes().loaded + ' iš ' + megabytes().total + ' MB'"
+        >
+          <i [style.width.%]="megabytes().percent"></i>
+        </div>
+        <p>Atsisiunčiama: {{ megabytes().loaded }} iš {{ megabytes().total }} MB</p>
+      }
+      @case ('preparing') {
+        <p>{{ copy.preparing }}</p>
+        <div class="pbar ind" role="progressbar" aria-label="Ruošiamas balsas"><i></i></div>
+      }
+      @case ('generating') {
+        <p>{{ copy.generating }}</p>
+        <div class="pbar ind" role="progressbar" aria-label="Kuriama kalba"><i></i></div>
+      }
+      @case ('playing') {
+        <p>{{ copy.playing }}</p>
+      }
+      @case ('again') {
+        <p>{{ copy.again }}</p>
+      }
+      @case ('ready') {
+        <p>{{ copy.ready }}</p>
+      }
+      @case ('empty') {
+        <p>{{ copy.empty }}</p>
+      }
+      @default {
+        <p class="err">
+          <svg class="alert" viewBox="0 0 7 7" aria-hidden="true">
+            <path
+              fill-rule="evenodd"
+              d="M3 0h1v1h1v2h1v2h1v2H0V5h1V3h1V1h1z M3 2h1v2H3z M3 5h1v1H3z"
+            />
+          </svg>
+          <span>{{ errorText() }}</span>
+        </p>
+        @if (canRetry()) {
+          <button type="button" class="lbtn retry" (click)="onRetry()">Bandyti dar kartą</button>
+        }
+      }
+    }
+  </div>
+
+  <p class="kp-credit">Balsas: Coqui TTS (lt/cv/vits)</p>
+</div>

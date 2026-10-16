@@ -101,4 +101,74 @@ describe('AudioPlayerService', () => {
     audio().emit('error');
     expect(service.status()).toBe('error');
   });
+
+  describe('unlock', () => {
+    it('plays and pauses the element synchronously without marking a clip as playing', () => {
+      service.unlock();
+      expect(audio().play).toHaveBeenCalledTimes(1);
+      expect(audio().pause).toHaveBeenCalledTimes(1);
+      expect(audio().src).toContain('data:audio/wav');
+      audio().emit('playing');
+      audio().emit('ended');
+      expect(service.status()).toBe('idle');
+      expect(service.playingId()).toBeNull();
+    });
+
+    it('only unlocks once and never interrupts a playing clip', async () => {
+      service.unlock();
+      await Promise.resolve();
+      service.unlock();
+      expect(audio().play).toHaveBeenCalledTimes(1);
+
+      TestBed.resetTestingModule();
+      FakeAudio.instances = [];
+      const fresh = TestBed.inject(AudioPlayerService);
+      void fresh.play(a);
+      fresh.unlock();
+      expect(audio().src).toBe('sounds/a.mp3');
+      expect(audio().play).toHaveBeenCalledTimes(1);
+    });
+
+    it('swallows a rejected unlock play()', async () => {
+      const first = service as unknown as { element(): FakeAudio };
+      first.element().playResult = () => Promise.reject(new DOMException('x', 'NotAllowedError'));
+      expect(() => service.unlock()).not.toThrow();
+      await Promise.resolve();
+      expect(service.status()).toBe('idle');
+    });
+  });
+
+  describe('playBlob', () => {
+    let urls: string[];
+    let revoke: ReturnType<typeof vi.fn>;
+
+    beforeEach(() => {
+      urls = [];
+      revoke = vi.fn();
+      vi.stubGlobal('URL', {
+        createObjectURL: () => {
+          urls.push(`blob:speech-${urls.length}`);
+          return urls[urls.length - 1];
+        },
+        revokeObjectURL: revoke,
+      });
+    });
+
+    it('plays the blob as an object URL under the given id', async () => {
+      const promise = service.playBlob('tts', new Blob(['x']));
+      expect(audio().src).toBe('blob:speech-0');
+      expect(service.playingId()).toBe('tts');
+      await expect(promise).resolves.toBe(true);
+    });
+
+    it('revokes the previous speech URL when it is replaced by speech or by a clip', () => {
+      void service.playBlob('tts', new Blob(['x']));
+      expect(revoke).not.toHaveBeenCalled();
+      void service.playBlob('tts', new Blob(['y']));
+      expect(revoke).toHaveBeenCalledWith('blob:speech-0');
+      void service.play(a);
+      expect(revoke).toHaveBeenCalledWith('blob:speech-1');
+      expect(revoke).toHaveBeenCalledTimes(2);
+    });
+  });
 });

@@ -29,12 +29,10 @@ describe('LcdScreen', () => {
       select: [] as SoundEntry[],
       voice: [] as string[],
       query: [] as string[],
-      close: 0,
     };
     component.soundSelect.subscribe((s) => emitted.select.push(s));
     component.voiceChange.subscribe((v) => emitted.voice.push(v));
     component.queryChange.subscribe((q) => emitted.query.push(q));
-    component.searchClose.subscribe(() => emitted.close++);
     const rows = () => Array.from(root.querySelectorAll<HTMLElement>('[role=option]'));
     const key = (el: Element, k: string, init: KeyboardEventInit = {}) => {
       const event = new KeyboardEvent('keydown', {
@@ -49,7 +47,7 @@ describe('LcdScreen', () => {
     return { fixture, root, emitted, rows, key };
   }
 
-  it('renders a labelled listbox with numbered variants and a count', () => {
+  it('renders a labelled listbox with numbered variants and no visible count', () => {
     const { root, rows } = setup();
     expect(root.querySelector('[role=listbox]')?.getAttribute('aria-label')).toBe('Frazių sąrašas');
     expect(rows().map((r) => r.textContent?.trim())).toEqual([
@@ -58,7 +56,7 @@ describe('LcdScreen', () => {
       'Pamiršk (2)',
       'Iki kito karto.',
     ]);
-    expect(root.querySelector('.count')?.textContent).toBe('Įrašų: 4');
+    expect(root.querySelector('.count')).toBeNull();
   });
 
   it('marks selected and playing rows and gives the playing one a hidden name suffix', () => {
@@ -120,7 +118,6 @@ describe('LcdScreen', () => {
     const { root } = setup({ sounds: [] });
     expect(root.querySelector('[role=listbox]')).toBeNull();
     expect(root.querySelector('.empty')?.textContent).toContain('Nieko nerasta');
-    expect(root.querySelector('.count')?.textContent).toBe('Įrašų: 0');
   });
 
   it('reflects the voice in aria-pressed and emits a change', () => {
@@ -132,21 +129,19 @@ describe('LcdScreen', () => {
     expect(emitted.voice).toEqual(['vyras']);
   });
 
-  describe('search', () => {
-    it('is hidden until opened and has a labelled field', () => {
-      const { root, fixture } = setup();
-      const strip = root.querySelector<HTMLElement>('#radio-search')!;
-      expect(strip.hidden).toBe(true);
-      fixture.componentRef.setInput('searchOpen', true);
-      fixture.detectChanges();
-      expect(strip.hidden).toBe(false);
-      const input = strip.querySelector('input')!;
+  describe('bottom strip', () => {
+    it('shows a labelled search field and the voice toggle at all times', () => {
+      const { root } = setup();
+      const input = root.querySelector('input')!;
+      expect(input.getAttribute('type')).toBe('search');
       expect(input.getAttribute('aria-label')).toBe('Ieškoti įrašų');
       expect(input.getAttribute('autocomplete')).toBe('off');
+      expect(root.querySelector('.strip .seg')).not.toBeNull();
+      expect(root.querySelector('[aria-controls]')).toBeNull();
     });
 
     it('emits the query on input and shows the clear button only with text', () => {
-      const { root, fixture, emitted } = setup({ searchOpen: true });
+      const { root, fixture, emitted } = setup();
       const input = root.querySelector('input')!;
       expect(root.querySelector('.clear')).toBeNull();
       input.value = 'sansu';
@@ -161,20 +156,65 @@ describe('LcdScreen', () => {
       expect(document.activeElement).toBe(input);
     });
 
-    it('Esc asks to close, Enter focuses the first row without selecting', () => {
-      const { root, rows, emitted, key } = setup({ searchOpen: true });
+    it('Esc clears the text and keeps focus; with an empty field it does nothing', () => {
+      const { root, fixture, emitted, key } = setup({ query: 'kit' });
       const input = root.querySelector('input')!;
-      key(input, 'Enter');
-      expect(document.activeElement).toBe(rows()[0]);
-      expect(emitted.select).toEqual([]);
+      input.focus();
+      const esc = key(input, 'Escape');
+      expect(esc.defaultPrevented).toBe(true);
+      expect(emitted.query).toEqual(['']);
+      expect(document.activeElement).toBe(input);
+      fixture.componentRef.setInput('query', '');
+      fixture.detectChanges();
       key(input, 'Escape');
-      expect(emitted.close).toBe(1);
+      expect(emitted.query).toEqual(['']);
     });
 
-    it('focusSearch puts focus in the field', () => {
-      const { fixture, root } = setup({ searchOpen: true });
+    it('Esc on the clear button clears and returns focus to the field', () => {
+      const { root, emitted, key } = setup({ query: 'kit' });
+      const clear = root.querySelector<HTMLButtonElement>('.clear')!;
+      clear.focus();
+      key(clear, 'Escape');
+      expect(emitted.query).toEqual(['']);
+      expect(document.activeElement).toBe(root.querySelector('input'));
+    });
+
+    it('Enter focuses the first row without selecting', () => {
+      const { root, rows, emitted, key } = setup();
+      key(root.querySelector('input')!, 'Enter');
+      expect(document.activeElement).toBe(rows()[0]);
+      expect(emitted.select).toEqual([]);
+    });
+
+    it('focusSearch puts focus in the field; focusList goes to the tab stop or the field', () => {
+      const { fixture, root, rows } = setup({ selectedId: 'c' });
       fixture.componentInstance.focusSearch();
       expect(document.activeElement).toBe(root.querySelector('input'));
+      fixture.componentInstance.focusList();
+      expect(document.activeElement).toBe(rows()[2]);
+      fixture.componentRef.setInput('sounds', []);
+      fixture.detectChanges();
+      fixture.componentInstance.focusList();
+      expect(document.activeElement).toBe(root.querySelector('input'));
+    });
+  });
+
+  describe('create mode', () => {
+    it('replaces the list and the search with the projected slot and keeps the toggle', () => {
+      const { root } = setup({ mode: 'create' });
+      expect(root.querySelector('[role=listbox]')).toBeNull();
+      expect(root.querySelector('.empty')).toBeNull();
+      expect(root.querySelector('input')).toBeNull();
+      expect(root.querySelector('.kurti-slot')).not.toBeNull();
+      expect(root.querySelectorAll('.seg button')).toHaveLength(2);
+    });
+
+    it('restores the list and the query field when returning', () => {
+      const { fixture, root } = setup({ mode: 'create', query: 'kit' });
+      fixture.componentRef.setInput('mode', 'sounds');
+      fixture.detectChanges();
+      expect(root.querySelector('[role=listbox]')).not.toBeNull();
+      expect(root.querySelector('input')?.value).toBe('kit');
     });
   });
 });

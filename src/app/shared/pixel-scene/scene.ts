@@ -31,8 +31,6 @@ interface Geometry {
   rTop: number;
   rBot: number;
   dTop: number;
-  /** Roof header thickness at column x. */
-  headerAt(x: number): number;
 }
 
 function geometry(W: number, H: number): Geometry {
@@ -45,7 +43,6 @@ function geometry(W: number, H: number): Geometry {
     rTop: Math.round(H * 0.6),
     rBot: Math.round(H * 0.69),
     dTop: Math.round(H * 0.8),
-    headerAt: (x) => Math.round(H * 0.04 + H * 0.06 * Math.pow(Math.abs(x - W / 2) / (W / 2), 3)),
   };
 }
 
@@ -132,92 +129,308 @@ export function drawGround(c: Ctx, g: Geometry): void {
   drawSprite(c, SPRITES.sign, Math.round(W * 0.8), rBot + Math.round((dTop - rBot) * 0.6) - 10);
 }
 
-export interface CabinAnchors {
-  /** Air freshener string anchor under the mirror. */
+export interface CabinMetrics {
+  /** Air freshener string anchor, hanging from the visor. */
   fx: number;
   fy: number;
-  /** Gauge dots origin. */
+  /** Cluster warning lights origin. */
   cx: number;
   cy: number;
+  /** Console LED origin. */
+  lx: number;
+  ly: number;
 }
 
-export function drawCabin(c: Ctx, g: Geometry): CabinAnchors {
-  const { W, H, dTop, headerAt } = g;
+/**
+ * Truck cabin interior, driver's seat, left-hand drive (docs/design/components/pixel-scene.md 4a).
+ * Static layer, drawn once; sized from H (pillar, mirrors, visor, dashboard) or min(W, H) (wheel, dials).
+ */
+export function drawCabin(c: Ctx, W: number, H: number): CabinMetrics {
   const C = PAL.cab;
+  const U = Math.min(W, H);
+  const rect = (x: number, y: number, w: number, h: number, col: string) => {
+    c.fillStyle = col;
+    c.fillRect(x, y, w, h);
+  };
+  const dth = dither;
+  const line = (x0: number, y0: number, x1: number, y1: number, w: number, col: string) => {
+    const n = Math.max(Math.abs(x1 - x0), Math.abs(y1 - y0), 1);
+    for (let i = 0; i <= n; i++) {
+      rect(
+        Math.round(x0 + ((x1 - x0) * i) / n - w / 2),
+        Math.round(y0 + ((y1 - y0) * i) / n - w / 2),
+        w,
+        w,
+        col,
+      );
+    }
+  };
+  const dashTop = Math.round(H * 0.77);
+  const visor = (x: number) => Math.round(H * 0.05 + H * 0.015 * Math.sin((Math.PI * x) / W));
+  const pw0 = Math.max(8, Math.round(Math.min(H * 0.09, W * 0.16)));
+  const pwL = (y: number) => Math.max(4, Math.round(pw0 * (1 - 0.45 * Math.min(1, y / dashTop))));
+  const pwR = (y: number) => Math.max(3, Math.round(pwL(y) * 0.55));
+
+  // 1. sun-visor / roof band
   for (let x = 0; x < W; x++) {
-    const t = headerAt(x);
-    for (let y = 0; y < t; y++) px(c, x, y, dither(x, y, C[0], C[1], 0.3));
-    px(c, x, t, C[3]);
-    px(c, x, t + 1, C[2]);
+    const v = visor(x);
+    for (let y = 0; y < v; y++) px(c, x, y, dth(x, y, C[0], C[1], 0.3));
+    px(c, x, v, C[3]);
+    px(c, x, v + 1, C[2]);
   }
-  for (let y = 0; y < dTop + 6; y++) {
-    const pl = Math.round(W * (0.105 - 0.06 * Math.min(1, y / dTop)));
+  rect(Math.round(W * 0.5) - 5, 2, 10, 2, C[3]);
+
+  // 2. A-pillars (slanted, lit inner edge)
+  for (let y = 0; y < dashTop + 6; y++) {
+    const pl = pwL(y);
+    const pr = pwR(y);
     for (let x = 0; x < pl; x++) {
-      const col = x === pl - 1 ? C[4] : x === pl - 2 ? C[3] : dither(x, y, C[0], C[1], x / pl);
-      px(c, x, y, col);
-      px(c, W - 1 - x, y, col);
+      px(c, x, y, x === pl - 1 ? C[4] : x === pl - 2 ? C[3] : dth(x, y, C[0], C[1], x / pl));
+    }
+    for (let x = 0; x < pr; x++) {
+      px(
+        c,
+        W - 1 - x,
+        y,
+        x === pr - 1 ? C[4] : x === pr - 2 ? C[3] : dth(x, y, C[0], C[1], x / pr),
+      );
     }
   }
+
+  // 3. side mirrors on arms, with a dithered sky + road reflection
+  const mirror = (x: number, y: number, w: number, h: number, hz: number) => {
+    for (let yy = 0; yy < h; yy++) {
+      for (let xx = 0; xx < w; xx++) {
+        if ((xx === 0 || xx === w - 1) && (yy === 0 || yy === h - 1)) continue;
+        px(c, x + xx, y + yy, yy === 0 ? C[3] : xx === 0 ? C[2] : C[0]);
+      }
+    }
+    const gw = w - 2;
+    const gh = h - 2;
+    const roadTop = Math.round(gh * (hz + 0.2));
+    for (let gy = 0; gy < gh; gy++) {
+      for (let gx = 0; gx < gw; gx++) {
+        if ((gx === 0 || gx === gw - 1) && (gy === 0 || gy === gh - 1)) continue;
+        const X = x + 1 + gx;
+        const Y = y + 1 + gy;
+        const f = gy / gh;
+        let col: string;
+        if (f < hz) col = dth(X, Y, PAL.sky[2], PAL.sky[4], f / hz);
+        else if (f < hz + 0.06) col = PAL.hillMid[1];
+        else if (f < hz + 0.2)
+          col = dth(X, Y, PAL.meadow[2], PAL.meadow[3], (f - hz - 0.06) / 0.14);
+        else {
+          const rr = gy - roadTop;
+          col =
+            gy === roadTop
+              ? PAL.curb
+              : ((rr >> 1) & 1) === 0 && gx === Math.round(gw * 0.3 + rr * 0.4)
+                ? PAL.line
+                : hash(X, Y) < 0.2
+                  ? PAL.asphalt[1]
+                  : PAL.asphalt[0];
+        }
+        px(c, X, Y, col);
+      }
+    }
+  };
+  const mh1 = Math.min(Math.round(H * 0.17), Math.round(W * 0.35));
+  const mw = Math.round(mh1 * 0.46);
+  const my1 = Math.round(H * 0.1);
+  const mh2 = Math.round(mh1 * 0.5);
+  const my2 = my1 + mh1 + 3;
+  const mx = pwL(my1 + (mh1 >> 1)) + 3;
+  [my1 + 4, my1 + mh1 - 6, my2 + 3, my2 + mh2 - 5].forEach((ay) => {
+    const x0 = pwL(ay) - 1;
+    rect(x0, ay, mx + 1 - x0, 2, C[0]);
+    px(c, x0, ay, C[3]);
+  });
+  mirror(mx, my1, mw, mh1, 0.5);
+  mirror(mx, my2, mw, mh2, 0.42);
+
+  // 4. dashboard: bowed top, shaded downwards
   for (let x = 0; x < W; x++) {
-    const top = Math.round(dTop - H * 0.012 * Math.sin((Math.PI * x) / W));
+    const top = Math.round(dashTop - H * 0.012 * Math.sin((Math.PI * x) / W));
     for (let y = top; y < H; y++) {
       const d = y - top;
       const t = d / Math.max(1, H - top);
-      const col =
+      px(
+        c,
+        x,
+        y,
         d === 0
           ? C[4]
           : d <= 2
             ? C[3]
             : t < 0.35
-              ? dither(x, y, C[2], C[1], t / 0.35)
-              : dither(x, y, C[1], C[0], (t - 0.35) / 0.65);
-      px(c, x, y, col);
+              ? dth(x, y, C[2], C[1], t / 0.35)
+              : dth(x, y, C[1], C[0], (t - 0.35) / 0.65),
+      );
     }
   }
-  // instrument cluster and vents
-  const cx0 = Math.round(W * 0.1);
-  const cy0 = dTop + 3;
-  c.fillStyle = C[0];
-  c.fillRect(cx0, cy0, 16, 6);
-  c.fillStyle = C[3];
-  c.fillRect(cx0, cy0, 16, 1);
-  for (const f of [0.22, 0.78]) {
-    const vx = Math.round(W * f);
-    for (let k = 0; k < 3; k++) {
-      c.fillStyle = C[0];
-      c.fillRect(vx, dTop + 4 + k * 2, 9, 1);
+
+  // 5. gauge cluster (hood, two dials, small display), left of centre
+  const R = Math.round(U * 0.27);
+  const ry = Math.round(R * 0.78);
+  const wx = Math.round(W * 0.3);
+  const wy = dashTop + Math.round(ry * 0.62);
+  const gr = Math.max(5, Math.round(R * 0.22));
+  const dist = Math.round(R * 0.45);
+  const dcy = dashTop + 4 + gr;
+  const hw = dist + gr + 4;
+  const hTop = dashTop - 3;
+  const hBot = dcy + gr + 3;
+  for (let y = hTop; y <= hBot; y++) {
+    const r = y - hTop;
+    const inset = r === 0 ? 3 : r === 1 ? 1 : 0;
+    for (let x = wx - hw + inset; x <= wx + hw - inset; x++) {
+      px(c, x, y, r === 0 ? C[3] : x < wx - hw + 2 || x > wx + hw - 2 ? C[1] : C[0]);
     }
   }
-  // rear-view mirror
-  const mw = Math.max(18, Math.round(W * 0.09));
-  const mh = Math.round(mw * 0.36) + 2;
-  const mx = Math.round(W * 0.6);
-  const my = headerAt(mx) + 3;
-  c.fillStyle = C[0];
-  c.fillRect(mx + (mw >> 1) - 1, headerAt(mx) - 1, 2, 5);
-  c.fillRect(mx + 1, my, mw - 2, mh);
-  c.fillRect(mx, my + 1, mw, mh - 2);
-  for (let y = my + 1; y < my + mh - 1; y++) {
-    for (let x = mx + 1; x < mx + mw - 1; x++) {
-      px(c, x, y, dither(x, y, PAL.glassTop, PAL.glassBot, (y - my) / mh));
+  const dial = (cx: number, cy: number, f: number, ncol: string) => {
+    for (let dy = -gr; dy <= gr; dy++) {
+      for (let dx = -gr; dx <= gr; dx++) {
+        const d = Math.hypot(dx, dy);
+        if (d <= gr + 0.3) {
+          px(c, cx + dx, cy + dy, d > gr - 1.1 ? C[3] : dth(cx + dx, cy + dy, C[1], C[2], 0.25));
+        }
+      }
+    }
+    for (let k = 0; k <= 8; k++) {
+      const a = ((135 + (270 * k) / 8) * Math.PI) / 180;
+      px(
+        c,
+        Math.round(cx + Math.cos(a) * (gr - 2)),
+        Math.round(cy + Math.sin(a) * (gr - 2)),
+        k >= 7 ? PAL.car.r : C[4],
+      );
+    }
+    const a = ((135 + 270 * f) * Math.PI) / 180;
+    for (let s = 1; s <= gr - 2; s++) {
+      px(c, Math.round(cx + Math.cos(a) * s), Math.round(cy + Math.sin(a) * s), ncol);
+    }
+    px(c, cx, cy, C[4]);
+  };
+  dial(wx - dist, dcy, 0.45, PAL.line);
+  dial(wx + dist, dcy, 0.6, PAL.amber);
+  const dw = Math.min(14, Math.max(6, 2 * (dist - gr) - 5));
+  const dx0 = wx - (dw >> 1);
+  const dy0 = dcy - 3;
+  rect(dx0, dy0, dw, 5, C[3]);
+  rect(dx0 + 1, dy0 + 1, dw - 2, 3, C[0]);
+  for (let i = 0; i < dw - 3; i++) if (i % 3 !== 2) px(c, dx0 + 2 + i, dy0 + 2, PAL.lit);
+
+  // 6. steering wheel (rim, three spokes, hub with badge), in front of the gauges
+  const rt = Math.max(3, Math.round(R * 0.12));
+  const rin = R - rt;
+  const ryin = ry - rt;
+  for (let y = wy - ry; y <= Math.min(H - 1, wy + ry); y++) {
+    for (let x = wx - R; x <= wx + R; x++) {
+      const ux = x + 0.5 - wx;
+      const uy = y + 0.5 - wy;
+      const o = (ux / R) ** 2 + (uy / ry) ** 2;
+      const i = (ux / rin) ** 2 + (uy / ryin) ** 2;
+      if (o > 1 || i < 1) continue;
+      const lit = ux + uy < 0;
+      px(
+        c,
+        x,
+        y,
+        o > (1 - 1.5 / R) ** 2
+          ? lit
+            ? C[4]
+            : C[2]
+          : i < (1 + 1.6 / rin) ** 2
+            ? C[2]
+            : dth(x, y, C[0], C[1], lit ? 0.55 : 0.15),
+      );
     }
   }
-  c.fillStyle = C[4];
-  c.fillRect(mx + 2, my + 1, 3, 1);
-  return { fx: mx + 3, fy: my + mh, cx: cx0 + 3, cy: cy0 + 3 };
+  const sw = Math.max(3, Math.round(R * 0.1));
+  const sy = wy + Math.round(ry * 0.22);
+  const spokes: readonly (readonly [number, number])[] = [
+    [wx - rin + 1, sy],
+    [wx + rin - 1, sy],
+    [wx, wy + ryin],
+  ];
+  for (const [ex, ey] of spokes) {
+    line(wx, wy - 1, ex, ey - 1, sw, C[3]);
+    line(wx, wy, ex, ey, sw, C[1]);
+  }
+  const hr = Math.max(5, Math.round(R * 0.24));
+  for (let dy = -hr; dy <= hr; dy++) {
+    for (let dx = -hr; dx <= hr; dx++) {
+      const d = Math.hypot(dx, dy);
+      if (d <= hr + 0.3) {
+        px(
+          c,
+          wx + dx,
+          wy + dy,
+          d > hr - 1.2 ? (dx + dy < 0 ? C[4] : C[2]) : dth(wx + dx, wy + dy, C[1], C[2], 0.4),
+        );
+      }
+    }
+  }
+  const bs = hr >= 12 ? 5 : 3;
+  rect(wx - (bs >> 1), wy - 1, bs, 3, PAL.chrome);
+  px(c, wx, wy, C[2]);
+
+  // 7. centre console, bottom right: display, LEDs, buttons, knobs, vent slots
+  const cw = Math.min(60, Math.max(26, Math.round(W * 0.24)));
+  const ch = 26;
+  const cxs = W - cw - Math.max(6, Math.round(W * 0.05));
+  const cys = dashTop + Math.round((H - dashTop) * 0.3);
+  rect(cxs, cys, cw, ch, C[0]);
+  rect(cxs, cys, cw, 1, C[3]);
+  rect(cxs, cys + 1, 1, ch - 1, C[1]);
+  rect(cxs + cw - 1, cys + 1, 1, ch - 1, C[1]);
+  rect(cxs + 2, cys + 2, cw - 4, 4, C[3]);
+  rect(cxs + 3, cys + 3, cw - 6, 2, C[1]);
+  for (let i = 0; i < cw - 9; i++) if (i % 4 !== 3) px(c, cxs + 4 + i, cys + 3, PAL.amber);
+  rect(cxs + 3, cys + 6, 2, 2, PAL.lit);
+  rect(cxs + cw - 5, cys + 6, 2, 2, C[2]);
+  const bw = Math.min(6, Math.floor((cw - 9) / 4));
+  const bx0 = cxs + ((cw - (4 * bw + 3)) >> 1);
+  for (let k = 0; k < 4; k++) {
+    rect(bx0 + k * (bw + 1), cys + 10, bw, 3, C[2]);
+    rect(bx0 + k * (bw + 1), cys + 10, bw, 1, C[4]);
+  }
+  for (const f of [0.28, 0.72]) {
+    const kx = cxs + Math.round(cw * f);
+    const ky = cys + 18;
+    for (let dy = -3; dy <= 3; dy++) {
+      for (let dx = -3; dx <= 3; dx++) {
+        const d = Math.hypot(dx, dy);
+        if (d <= 3.2) px(c, kx + dx, ky + dy, d > 2.1 ? C[3] : C[1]);
+      }
+    }
+    px(c, kx, ky - 2, C[4]);
+  }
+  rect(cxs + 4, cys + 23, cw - 8, 1, C[1]);
+  rect(cxs + 4, cys + 25, cw - 8, 1, C[1]);
+
+  const fx = Math.round(W * 0.64);
+  return { fx, fy: visor(fx) + 2, cx: wx - 3, cy: dy0 - 4, lx: cxs + cw - 5, ly: cys + 6 };
 }
 
-/** Animated air freshener and gauge dots, drawn over the cabin layer. */
-export function drawCabinDetails(c: Ctx, m: CabinAnchors, t: number): void {
+/** Animated air freshener, cluster warning lights and console LED, drawn over the cabin layer. */
+export function drawCabinDetails(c: Ctx, W: number, H: number, t: number, m: CabinMetrics): void {
+  void W;
+  void H;
+  const C = PAL.cab;
   const sw = Math.round(Math.sin(t * 1.9) * 2);
   const len = 9;
   c.fillStyle = PAL.string;
   for (let i = 0; i < len; i++) c.fillRect(m.fx + Math.round((sw * i) / len), m.fy + i, 1, 1);
   drawPine(c, m.fx + sw, m.fy + len + 8, 8, 0, 0, 0, PAL.fresh);
-  c.fillStyle = t === 0 || Math.floor(t) % 2 === 0 ? PAL.amber : PAL.cab[2];
+  // amber blinks 1 s on / 1 s off (on in the static frame), green steady
+  c.fillStyle = t === 0 || Math.floor(t) % 2 === 0 ? PAL.amber : C[2];
   c.fillRect(m.cx, m.cy, 2, 2);
   c.fillStyle = PAL.lit;
   c.fillRect(m.cx + 5, m.cy, 2, 2);
+  // console LED, opposite phase (off in the static frame)
+  c.fillStyle = t > 0 && Math.floor(t) % 2 === 1 ? PAL.car.r : C[2];
+  c.fillRect(m.lx, m.ly, 2, 2);
 }
 
 /** Left edge of a cloud at time t, wrapping around the screen. */
@@ -260,7 +473,7 @@ export function createScene(
   const hs = Math.max(1, H / 200);
   drawSky(sky.c, g);
   drawGround(ground.c, g);
-  const anchors = drawCabin(cabin.c, g);
+  const anchors = drawCabin(cabin.c, W, H);
 
   const lane = g.rBot - 6;
   const forestN = Math.ceil(W / 5);
@@ -298,7 +511,7 @@ export function createScene(
       drawPine(ctx, x, n.base - 3, h, t, n.ph, n.amp, PAL.needle);
     }
     ctx.drawImage(cabin.el, 0, 0);
-    drawCabinDetails(ctx, anchors, t);
+    drawCabinDetails(ctx, W, H, t, anchors);
   };
 
   return { W, H, render };

@@ -1,0 +1,179 @@
+/* KURTI panel (docs/design/components/radio.md 8). Lives inside the LCD container query box. */
+:host {
+  flex: 1 1 0;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+.kp {
+  flex: 1 1 0;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 4px 6px 6px;
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-lcd-ink) var(--color-lcd-bg);
+}
+.kp > * {
+  flex: none; /* the panel scrolls; its parts never squeeze into each other */
+}
+.kp-head {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  grid-template-areas: 'label count' 'ta ta';
+  column-gap: 8px;
+}
+.kp-head label {
+  grid-area: label;
+}
+.kp-head .kp-count {
+  grid-area: count;
+  text-align: right;
+}
+.kp textarea {
+  grid-area: ta;
+  display: block;
+  width: 100%;
+  height: calc(3 * 1.25rem + 0.5rem + 4px);
+  resize: none;
+  margin-top: 2px;
+  padding: 0.25rem 0.5rem;
+  border: 2px solid var(--color-lcd-ink);
+  border-radius: var(--radius-sm);
+  background: var(--color-lcd-bg);
+  color: inherit;
+  font: inherit;
+  letter-spacing: inherit;
+  caret-color: var(--color-lcd-ink);
+  overflow-y: auto;
+}
+@container lcd (max-height: 260px) {
+  .kp textarea {
+    height: calc(2 * 1.25rem + 0.5rem + 4px);
+  }
+}
+.kp textarea::placeholder {
+  color: var(--color-lcd-ink-soft);
+  opacity: 1;
+}
+.kp textarea[aria-invalid='true'] {
+  border-style: dashed;
+  border-width: 3px;
+}
+.kp textarea:focus-visible,
+.lbtn:focus-visible {
+  outline: 3px solid var(--color-lcd-ink);
+  outline-offset: 1px;
+}
+.lbtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  flex: none;
+  width: 100%;
+  height: var(--size-lcd-row);
+  padding: 0 0.5rem;
+  border: 2px solid var(--color-lcd-ink);
+  border-radius: var(--radius-sm);
+  background: var(--color-lcd-bg-lo);
+  color: inherit;
+  font: inherit;
+  letter-spacing: inherit;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+@media (hover: hover) {
+  .lbtn:hover {
+    background: var(--color-lcd-bg-hi);
+  }
+}
+.lbtn:active {
+  background: var(--color-lcd-ink);
+  color: var(--color-lcd-bg);
+}
+.lbtn[aria-disabled='true'] {
+  border-style: dashed;
+  cursor: default;
+  background: var(--color-lcd-bg-lo);
+  color: var(--color-lcd-ink);
+}
+.lbtn[aria-busy='true'] {
+  animation: var(--animate-key-busy);
+  box-shadow: inset 0 0 0 3px var(--color-key-ink);
+}
+.lbtn.retry {
+  width: auto;
+  align-self: flex-start;
+}
+.kp-msg {
+  margin: 0;
+}
+.kp-status {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-height: 2.5rem;
+}
+.kp-status p,
+.kp-credit {
+  margin: 0;
+}
+.kp-status .err {
+  display: flex;
+  gap: 6px;
+  align-items: flex-start;
+}
+.alert {
+  flex: none;
+  width: 14px;
+  height: 14px;
+  margin-top: 3px;
+  fill: currentColor;
+  shape-rendering: crispedges;
+}
+.pbar {
+  flex: none;
+  height: 12px;
+  border: 2px solid var(--color-lcd-ink);
+  background: var(--color-lcd-bg);
+}
+.pbar i {
+  display: block;
+  height: 100%;
+  background: var(--color-lcd-ink);
+}
+.pbar.ind i {
+  width: 100%;
+  background: repeating-linear-gradient(90deg, var(--color-lcd-ink) 0 4px, transparent 4px 8px);
+  background-size: 16px 100%;
+  animation: var(--animate-bar);
+}
+.kp-credit {
+  color: var(--color-lcd-ink-soft);
+}
+
+/* play marker: the same three bars as a playing row */
+.marker {
+  display: flex;
+  align-items: flex-end;
+  width: 12px;
+  height: 12px;
+  gap: 2px;
+}
+.marker i {
+  flex: 1;
+  height: 100%;
+  background: currentColor;
+  transform-origin: 50% 100%;
+  animation: var(--animate-marker);
+}
+.marker i:nth-child(2) {
+  animation-delay: -0.2s;
+}
+.marker i:nth-child(3) {
+  animation-delay: -0.4s;
+}

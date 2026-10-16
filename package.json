@@ -10,7 +10,8 @@
     "convert:sounds": "node tools/convert-sounds.mjs",
     "test:ci": "ng test --watch=false",
     "format": "prettier --write \"src/**/*.{ts,html,css}\"",
-    "format:check": "prettier --check \"src/**/*.{ts,html,css}\""
+    "format:check": "prettier --check \"src/**/*.{ts,html,css}\"",
+    "prepare:shell": "node tools/prepare-shell.mjs"
   },
   "private": true,
   "packageManager": "pnpm@11.17.0",
@@ -21,6 +22,7 @@
     "@angular/forms": "^22.2.0",
     "@angular/platform-browser": "^22.2.0",
     "@angular/router": "^22.2.0",
+    "onnxruntime-web": "^1.30.0",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0"
   },
@@ -34,6 +36,7 @@
     "jsdom": "^30.0.0",
     "postcss": "^8.5.30",
     "prettier": "^3.8.1",
+    "sharp": "^0.35.5",
     "tailwindcss": "^4.3.3",
     "typescript": "~6.0.2",
     "vitest": "^5.0.0"

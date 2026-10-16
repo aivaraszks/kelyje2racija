@@ -1,72 +1,75 @@
 <div class="page">
   <main class="stage">
-    <section class="radio" role="group" aria-label="Racija">
-      <i class="screw tl" aria-hidden="true"></i>
-      <i class="screw tr" aria-hidden="true"></i>
-      <i class="screw bl" aria-hidden="true"></i>
-      <i class="screw br" aria-hidden="true"></i>
+    <div class="shell-stage">
+      <section class="shell" role="group" aria-label="Racija">
+        <img
+          class="slice slice-top"
+          ngSrc="radio/shell-top.webp"
+          width="556"
+          height="272"
+          alt=""
+          priority
+          draggable="false"
+        />
+        <div
+          class="slice slice-mid"
+          aria-hidden="true"
+          style="background-image: url('radio/shell-mid.webp')"
+        ></div>
+        <img
+          class="slice slice-bottom"
+          ngSrc="radio/shell-bottom.webp"
+          width="556"
+          height="744"
+          alt=""
+          draggable="false"
+        />
 
-      <div class="cap">
-        <h1 class="logo">
-          <app-radio-logo />
-          <span class="sr-only">RACIJA</span>
-        </h1>
-        <app-radio-cable />
-        <span class="jack" aria-hidden="true"></span>
-      </div>
+        <h1 class="logo-h1">RACIJA</h1>
 
-      <app-lcd-screen
-        [sounds]="sounds()"
-        [selectedId]="selectedId()"
-        [playingId]="playingId()"
-        [loadingId]="loadingId()"
-        [voice]="voice()"
-        [query]="query()"
-        [searchOpen]="searchOpen()"
-        (soundSelect)="onRow($event)"
-        (voiceChange)="onVoice($event)"
-        (queryChange)="onQuery($event)"
-        (searchClose)="closeSearch()"
-      />
+        <app-lcd-screen
+          [sounds]="sounds()"
+          [selectedId]="selectedId()"
+          [playingId]="playingId()"
+          [loadingId]="loadingId()"
+          [voice]="voice()"
+          [query]="query()"
+          [mode]="mode()"
+          (soundSelect)="onRow($event)"
+          (voiceChange)="onVoice($event)"
+          (queryChange)="onQuery($event)"
+        >
+          @if (mode() === 'create') {
+            <app-tts-panel
+              kurti
+              [text]="text()"
+              [canAct]="canAct()"
+              [playing]="speaking()"
+              [again]="again()"
+              [problem]="problem()"
+              (textChange)="onText($event)"
+              (play)="onPlayText()"
+              (overflow)="onTextOverflow()"
+            />
+          }
+        </app-lcd-screen>
 
-      <div class="keys-wrap">
-        <div class="keys">
-          <button
-            #searchButton
-            appRadioButton
-            variant="pill"
-            [attr.aria-expanded]="searchOpen()"
-            [attr.aria-controls]="searchId"
-            (click)="toggleSearch()"
-          >
-            PAIEŠKA
-          </button>
-          <button
-            appRadioButton
-            variant="round"
-            [lit]="playingId() !== null"
-            [attr.aria-disabled]="!selected() && playingId() === null"
-            (click)="onAccept()"
-          >
-            PRIIMTI<span class="sr-only">{{
-              playingId() !== null ? ', sustabdyti' : ', groti'
-            }}</span>
-          </button>
-          <button
-            #shareButton
-            appRadioButton
-            variant="pill"
-            [attr.aria-disabled]="!selected()"
-            [attr.aria-busy]="sharing() ? 'true' : null"
-            (click)="onShare()"
-          >
-            SIŲSTI
-          </button>
-        </div>
-      </div>
-
-      <app-radio-grille class="grille" />
-    </section>
+        <button type="button" class="skey pill" (click)="onMode($event)">
+          {{ mode() === 'sounds' ? 'KURTI' : 'GARSAI' }}
+        </button>
+        <button
+          #shareButton
+          type="button"
+          class="skey round"
+          [attr.aria-disabled]="mode() === 'sounds' ? !selected() : !canAct()"
+          [attr.aria-busy]="sharing() || (mode() === 'create' && generating()) ? 'true' : null"
+          [attr.data-steady]="mode() === 'create' && again() ? '' : null"
+          (click)="onSend()"
+        >
+          SIŲSTI
+        </button>
+      </section>
+    </div>
 
     <div class="furniture">
       @if (!played()) {
@@ -77,7 +80,7 @@
           Įjunkite garsą
         </p>
       }
-      <p class="chip">
+      <p class="chip counters">
         <span class="whitespace-nowrap"
           >Paleista: <b class="num">{{ playsText() }}</b></span
         >
@@ -86,10 +89,9 @@
           >Išsiųsta: <b class="num">{{ sharesText() }}</b></span
         >
       </p>
+      <footer class="chip note">Fanų projektas, nesusijęs su žaidimo kūrėjais</footer>
     </div>
   </main>
-
-  <footer class="chip note">Fanų projektas, nesusijęs su žaidimo kūrėjais</footer>
 </div>
 
 <div class="sr-only" role="status" aria-live="polite" aria-atomic="true">{{ live() }}</div>

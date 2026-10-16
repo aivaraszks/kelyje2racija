@@ -12,10 +12,12 @@ import {
 } from '@angular/core';
 import { SoundEntry, Voice, soundLabel } from '../../core/sounds/sound-catalog';
 
-/** Id of the search strip; PAIEŠKA points at it with aria-controls. */
-export const SEARCH_ID = 'radio-search';
+export type RadioMode = 'sounds' | 'create';
 
-/** The LCD: search strip, phrase listbox (roving focus) and the voice/count footer. */
+/**
+ * The LCD: phrase listbox (roving focus) or the KURTI slot on top, and the fixed bottom strip
+ * (search + clear in phrase mode, always the Vyras / Moteris toggle).
+ */
 @Component({
   selector: 'app-lcd-screen',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -30,16 +32,13 @@ export class LcdScreen {
   readonly loadingId = input<string | null>(null);
   readonly voice = input.required<Voice>();
   readonly query = input('');
-  readonly searchOpen = input(false);
+  readonly mode = input<RadioMode>('sounds');
 
   /** A row was activated (tap, Enter or Space). */
   readonly soundSelect = output<SoundEntry>();
   readonly voiceChange = output<Voice>();
   readonly queryChange = output<string>();
-  /** Esc in the search strip. */
-  readonly searchClose = output<void>();
 
-  protected readonly searchId = SEARCH_ID;
   protected readonly label = soundLabel;
 
   private readonly searchField = viewChild<ElementRef<HTMLInputElement>>('searchField');
@@ -58,11 +57,11 @@ export class LcdScreen {
   });
 
   constructor() {
-    // New selection (voice switch, closing search): keep the selected row in view.
+    // New selection (voice switch, back from KURTI): keep the selected row in view.
     afterRenderEffect(() => {
       this.selectedId();
       this.voice();
-      this.searchOpen();
+      this.mode();
       const row = this.rows().find((r) => r.nativeElement.getAttribute('aria-selected') === 'true');
       row?.nativeElement.scrollIntoView?.({
         block: 'nearest',
@@ -77,6 +76,13 @@ export class LcdScreen {
 
   focusFirstRow(): void {
     this.rows()[0]?.nativeElement.focus();
+  }
+
+  /** The listbox's current tab stop; the search field when the list is empty (UX 5.12). */
+  focusList(): void {
+    const stop = this.rows().find((r) => r.nativeElement.tabIndex === 0);
+    if (stop) stop.nativeElement.focus();
+    else this.focusSearch();
   }
 
   protected onFocusRow(id: string): void {
@@ -94,13 +100,23 @@ export class LcdScreen {
     this.focusSearch();
   }
 
+  /** Esc clears the text and keeps focus in the field; with an empty field it does nothing. */
   protected onSearchKeydown(event: KeyboardEvent): void {
     if (event.key === 'Escape') {
-      event.preventDefault();
-      this.searchClose.emit();
+      if (this.query()) {
+        event.preventDefault();
+        this.queryChange.emit('');
+      }
     } else if (event.key === 'Enter') {
       event.preventDefault();
       this.focusFirstRow();
+    }
+  }
+
+  protected onClearKeydown(event: KeyboardEvent): void {
+    if (event.key === 'Escape') {
+      event.preventDefault();
+      this.onClear();
     }
   }
 

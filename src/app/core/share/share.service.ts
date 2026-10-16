@@ -40,11 +40,20 @@ export class ShareService {
     if (!blob) {
       return 'fetch-error';
     }
-    const file = new File([blob], fileName(sound.id), { type: 'audio/mpeg' });
+    return this.shareFile(
+      new File([blob], fileName(sound.id), { type: 'audio/mpeg' }),
+      sound.title,
+    );
+  }
 
+  /**
+   * Shares any file with the Web Share API, or downloads it when sharing files is unsupported.
+   * Never rejects. Nothing is awaited before `navigator.share()`, so call it straight from a tap.
+   */
+  async shareFile(file: File, title: string): Promise<ShareOutcome> {
     if (this.canShareFile(file)) {
       try {
-        await navigator.share({ files: [file], title: sound.title });
+        await navigator.share({ files: [file], title });
         return 'shared';
       } catch (error) {
         const name = (error as { name?: string } | null)?.name;

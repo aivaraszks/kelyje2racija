@@ -27,3 +27,6 @@ testem.log
 __screenshots__/
 .DS_Store
 Thumbs.db
+
+# Legacy shell source (copied from kelyje); only generated WebP slices are committed
+tools/shell-src/

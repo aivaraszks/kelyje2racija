@@ -1,7 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { PixelScene } from './pixel-scene.component';
-import { carX, cloudX, pixelScale, sceneSize } from './scene';
-import { BAYER, dither, hash } from './sprites';
+import { carX, cloudX, drawCabin, drawCabinDetails, pixelScale, sceneSize } from './scene';
+import { BAYER, PAL, dither, hash } from './sprites';
 
 type MqListener = (e: { matches: boolean }) => void;
 
@@ -141,5 +141,59 @@ describe('scene helpers', () => {
     expect(BAYER).toHaveLength(4);
     expect(dither(0, 0, 'a', 'b', 0)).toBe('a');
     expect(dither(0, 0, 'a', 'b', 1)).toBe('b');
+  });
+
+  describe('cabin', () => {
+    const fakeCtx = () => {
+      const fills: { x: number; y: number; w: number; h: number; col: string }[] = [];
+      let fillStyle = '';
+      const c = {
+        set fillStyle(v: string) {
+          fillStyle = v;
+        },
+        get fillStyle() {
+          return fillStyle;
+        },
+        fillRect: (x: number, y: number, w: number, h: number) =>
+          fills.push({ x, y, w, h, col: fillStyle }),
+      };
+      return { c: c as unknown as CanvasRenderingContext2D, fills };
+    };
+
+    it('draws the interior and returns anchors inside the canvas', () => {
+      const { c, fills } = fakeCtx();
+      const m = drawCabin(c, 120, 134);
+      expect(fills.length).toBeGreaterThan(1000);
+      expect(fills.some((f) => f.col === PAL.chrome)).toBe(true);
+      expect(m.fx).toBe(Math.round(120 * 0.64));
+      for (const v of [m.fx, m.cx, m.lx]) {
+        expect(v).toBeGreaterThanOrEqual(0);
+        expect(v).toBeLessThan(120);
+      }
+      for (const v of [m.fy, m.cy, m.ly]) {
+        expect(v).toBeGreaterThanOrEqual(0);
+        expect(v).toBeLessThan(134);
+      }
+    });
+
+    it('is deterministic and survives the largest scene size', () => {
+      const a = fakeCtx();
+      const b = fakeCtx();
+      expect(drawCabin(a.c, 320, 200)).toEqual(drawCabin(b.c, 320, 200));
+      expect(a.fills).toEqual(b.fills);
+    });
+
+    it('blinks the cluster lamp and the console LED in opposite phase', () => {
+      const m = drawCabin(fakeCtx().c, 120, 134);
+      const lamp = (t: number) => {
+        const { c, fills } = fakeCtx();
+        drawCabinDetails(c, 120, 134, t, m);
+        const at = (x: number, y: number) => fills.find((f) => f.x === x && f.y === y)?.col;
+        return { amber: at(m.cx, m.cy), led: at(m.lx, m.ly) };
+      };
+      expect(lamp(0)).toEqual({ amber: PAL.amber, led: PAL.cab[2] });
+      expect(lamp(1.5)).toEqual({ amber: PAL.cab[2], led: PAL.car.r });
+      expect(lamp(2.5).amber).toBe(PAL.amber);
+    });
   });
 });
