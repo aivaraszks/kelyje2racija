@@ -258,3 +258,10 @@
 .seg button[aria-pressed='true']:focus-visible {
   outline-color: var(--color-lcd-bg);
 }
+
+/* iOS Safari zooms the page when a focused field's text is under 16px, so text fields keep 16px there. */
+@supports (-webkit-touch-callout: none) {
+  .sfield input {
+    font-size: 16px;
+  }
+}

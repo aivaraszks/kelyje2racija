@@ -105,7 +105,8 @@
   /* TO DELETE after task 8: --text-lcd (18px). LCD rows, textarea and search use --text-lcd-meta (1rem) from now on. */
   --text-lcd: 1.125rem;
   --text-lcd--line-height: 1.3;
-  --text-lcd-meta: 1rem;
+  /* 11px at the user's request (2026-10-16): 16px felt crowded on the LCD. */
+  --text-lcd-meta: 0.6875rem;
   --text-lcd-meta--line-height: 1.25;
   /* TO DELETE after task 8: --text-key (13px CSS-body key labels). The bitmap key labels use max(1rem, 28u), see components/radio.md. */
   --text-key: 0.8125rem;
