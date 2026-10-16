@@ -16,7 +16,7 @@ Your job:
 3. Write a plan to `docs/plans/<short-feature-name>.md` with:
    - **Goal** — one paragraph, and what "done" means
    - **Decisions** — architecture choices and why (data model, API shape, state, libraries)
-   - **Tasks** — numbered, small, each tagged with an owner: `ux`, `designer`, `frontend`, `backend`, `tester`
+   - **Tasks** — numbered, small, each tagged with an owner: `ux`, `designer`, `frontend`, `backend`, `devops`, `tester`
    - **Files** — files to create or change
    - **Risks / open questions**
 4. Return a short summary of the plan and its path.
